@@ -1,6 +1,6 @@
 /*****************************************************************************
 *   "THE BEER-WARE LICENSE" (Revision 43):
-*   This software was written by Theis Strøm-Hansen <thstroemhansen@gmail.com>
+*   This software was written by Theis Strï¿½m-Hansen <thstroemhansen@gmail.com>
 *   and Mathias Thor <mathias.thor@gmail.com>
 *   As long as you retain this notice you can do whatever you want with it.
 *   If we meet some day, and you think this stuff is worth it, you can buy me
@@ -72,7 +72,7 @@ namespace lpzrobots
     lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Matrix& pose, Axis axis )
     {
 		//TODO: Make OneAxisServoVel
-        HingeJoint* hinge = new HingeJoint( bodyFront, bodyRear, pose, axis );
+        HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, pose, axis );
         hinge->init( odeHandle, osgHandle, true, conf.width * 1.05 );
         joints.push_back( hinge );
 

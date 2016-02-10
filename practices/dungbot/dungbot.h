@@ -1,6 +1,6 @@
 /*****************************************************************************
 *   "THE BEER-WARE LICENSE" (Revision 43):
-*   This software was written by Theis Strøm-Hansen <thstroemhansen@gmail.com>
+*   This software was written by Theis Strï¿½m-Hansen <thstroemhansen@gmail.com>
 *   and Mathias Thor <mathias.thor@gmail.com>
 *   As long as you retain this notice you can do whatever you want with it.
 *   If we meet some day, and you think this stuff is worth it, you can buy me
@@ -17,87 +17,99 @@
 #include <ode_robots/joint.h>
 #include <selforg/inspectable.h>
 
-namespace lpzrobots
+#include <string>
 
-class DungBot : public OdeRobot, public Inspectable
+typedef struct
 {
-    struct Leg
-    {
-        Leg();
-        HingeJoint * tcJoint;
-        HingeJoint * ctrJoint;
-        HingeJoint * ftiJoint;
-        /*Slider*/Joint * footJoint;
-        OneAxisServo * tcServo;
-        OneAxisServo * ctrServo;
-        OneAxisServo * ftiServo;
-        Spring * footSpring;
-        Primitive * shoulder;
-        Primitive * coxa;
-        Primitive * second;
-        Primitive * tibia;
-        Primitive * foot;
-    };
+	double
+	massFront,
+	massRear,
+	frontDimension[3],
+	rearDimension[3];
+}DungBotConf;
 
-	dungBotConf conf;
 
-	static dungBotConf getDefaultConf()
+namespace lpzrobots
+{
+	class DungBot : public OdeRobot, public Inspectable
 	{
-		dungBotConf conf;
-		double scale = 5;
+		struct Leg
+		{
+			Leg();
+			HingeJoint * tcJoint;
+			HingeJoint * ctrJoint;
+			HingeJoint * ftiJoint;
+			/*Slider*/Joint * footJoint;
+			OneAxisServo * tcServo;
+			OneAxisServo * ctrServo;
+			OneAxisServo * ftiServo;
+			Spring * footSpring;
+			Primitive * shoulder;
+			Primitive * coxa;
+			Primitive * second;
+			Primitive * tibia;
+			Primitive * foot;
+		};
 
-		//	Dependent parameters
-		conf.massFront = 1;
-		conf.massRear = 1;
-		conf.frontDimension[3] = {1,2,2};
-		conf.rearDimension[3] = {2,2,2};
+		DungBotConf conf;
 
-		return conf;
-	}
+		static DungBotConf getDefaultConf()
+		{
+			DungBotConf conf;
+			double scale = 5;
 
-    public:
-        enum LegPos
-        {
-            L0, L1, L2, R0, R1, R2, LEG_POS_MAX
-        };
+			//	Dependent parameters
+			conf.massFront = 1;
+			conf.massRear = 1;
+			conf.frontDimension[3] = {1,2,2};
+			conf.rearDimension[3] = {2,2,2};
 
-        enum LegJointType
-        {
-            //  Thoroca-Coxal joint for forward (+) and backward (-) movements.
-            TC,
-            //  Coxa-Trochanteral joint for elevation (+) and depression (-) of the leg
-            CTR,
-            //  Femur-Tibia joints for extension (+) and flexion (-) of the tibia
-            FTI,
-            //  Maximum value, used for iteration
-            LEG_JOINT_TYPE_MAX
-        };
+			return conf;
+		}
 
-        DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
-                    const DungBotConf &conf = getDefaultConf(),
-                    const std::string& name = "DungBot" );
+		public:
+			enum LegPos
+			{
+				L0, L1, L2, R0, R1, R2, LEG_POS_MAX
+			};
 
-        virtual void placeIntern( const osg::Matrix& pose ) override;
-        virtual void create( const osg::Matrix& pose );
-        virtual void doInternalStuff( GlobalData& globalData );
-        virtual void update( void );
-        virtual void sense( GlobalData& globalData );
-        virtual ~DungBot();
+			enum LegJointType
+			{
+				//  Thoroca-Coxal joint for forward (+) and backward (-) movements.
+				TC,
+				//  Coxa-Trochanteral joint for elevation (+) and depression (-) of the leg
+				CTR,
+				//  Femur-Tibia joints for extension (+) and flexion (-) of the tibia
+				FTI,
+				//  Maximum value, used for iteration
+				LEG_JOINT_TYPE_MAX
+			};
 
-    private:
-		//TODO: Ask Leon what to pass here
-        lpzrobots::Primitive* makeBody( const osg::Matrix&, const, const );
-        lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive*, Primitive*, const osg::Matrix&,  Axis* );
-        lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis* );
-        lpzrobots::Primitive* makeLeg( const osg::Matrix& );
-        lpzrobots::Primitive* makeFoot( const osg::Matrix& );
+			DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
+						const DungBotConf &conf = getDefaultConf(),
+						const std::string& name = "DungBot" );
 
-    protected:
-        Position startPosition;
-        Position position;
+			virtual void placeIntern( const osg::Matrix& pose ) override;
+			virtual void create( const osg::Matrix& pose );
+			virtual void doInternalStuff( GlobalData& globalData );
+			virtual void update( void );
+			virtual void sense( GlobalData& globalData );
+			virtual ~DungBot();
 
-};
+		private:
+			//TODO: Ask Leon what to pass here
+			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double );
+			lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive*, Primitive*, const osg::Matrix&,  Axis* );
+			lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis* );
+			lpzrobots::Primitive* makeLeg( const osg::Matrix& );
+			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 
+		protected:
+			Position startPosition;
+			Position position;
+
+	};
+} //End namespace lpzrobot
 
 
 

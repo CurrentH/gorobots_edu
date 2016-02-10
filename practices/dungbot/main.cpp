@@ -1,6 +1,6 @@
 /*****************************************************************************
 *   "THE BEER-WARE LICENSE" (Revision 43):
-*   This software was written by Theis Strøm-Hansen <thstroemhansen@gmail.com>
+*   This software was written by Theis Strï¿½m-Hansen <thstroemhansen@gmail.com>
 *   and Mathias Thor <mathias.thor@gmail.com>
 *   As long as you retain this notice you can do whatever you want with it.
 *   If we meet some day, and you think this stuff is worth it, you can buy me
