@@ -50,8 +50,7 @@ namespace lpzrobots
             osg::Matrix frontPos = TRANSM(conf.size / 2 - conf.frontLength / 2, 0, 0) * pose;
 		**/
 		Axis * axis1 = Axis(0, 1, 0) * pose;
-		makeBodyHingeJoint( front, rear, pose, axis1 );
-
+		makeBodyHingeJoint( front, rear, pose, axis1, conf.frontDimension );
 		//makeLegHingeJoint( void );
     }
 
@@ -70,27 +69,22 @@ namespace lpzrobots
         return bodyPart;
     }
 
-    lpzrobots::HingeJoint* DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Matrix& pose, Axis axis, const double dimension[] )
+    lpzrobots::HingeJoint* DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Matrix& pose, Axis* axis, const double dimension[] )
     {
-		//TODO: Make OneAxisServoVel
-        HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, pose, axis );
-        hinge->init( odeHandle, osgHandle, true, dimension[2] * 1.05 );
-        //joints.push_back( hinge );
+    	//TODO: Make OneAxisServoVel
+		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, pose, axis );
+		hinge->init( odeHandle, osgHandle, true, dimension[2] * 1.05 );
+		//joints.push_back( hinge );
 
-
-        /**  Moved this one down from "Create"   **/
-        OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -1, 1, 1, 0.01, 0, 1.0 );
-
-        return 1;
+		/**  Moved this one down from "Create"   **/
+		OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -1, 1, 1, 0.01, 0, 1.0 );
     }
 
-    lpzrobots::HingeJoint* DungBot::makeLegHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Matrix& pose, Axis axis, const double dimension[] )
+    lpzrobots::HingeJoint* DungBot::makeLegHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Matrix& pose, Axis* axis, const double dimension[] )
     {
         HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, pose, axis );
         hinge->init( odeHandle, osgHandle, true, dimension[2] * 1.05 );
         //joints.push_back( hinge );
-
-        return 1;
     }
 
 

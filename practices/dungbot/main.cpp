@@ -11,9 +11,11 @@
 
 #include "DungBotSimulation.h"
 
+using namespace lpzrobots;
+
 int main( int argc, char **argv )
 {
-    DungBotSimulation sim;
+	DungBotSimulation sim;
     return sim.run( argc, argv ) ? 0 : 1;
 }
 

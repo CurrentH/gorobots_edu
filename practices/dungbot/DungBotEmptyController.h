@@ -1,6 +1,6 @@
 /*****************************************************************************
 *   "THE BEER-WARE LICENSE" (Revision 43):
-*   This software was written by Theis Strøm-Hansen <thstroemhansen@gmail.com>
+*   This software was written by Theis Strï¿½m-Hansen <thstroemhansen@gmail.com>
 *   and Mathias Thor <mathias.thor@gmail.com>
 *   As long as you retain this notice you can do whatever you want with it.
 *   If we meet some day, and you think this stuff is worth it, you can buy me
@@ -21,18 +21,18 @@
 
 class DungBotEmptyController : public AbstractController {
 public:
-	DungBotEmptyController(const std::string& name);
+	DungBotEmptyController( const std::string& name );
 	virtual ~DungBotEmptyController();
 
-	virtual void init( void )  override;
+	virtual void init( int sensornumber, int motornumber, RandGen* randGen = 0 )  override;
 	virtual int getSensorNumber( void ) const override;
 	virtual int getMotorNumber( void ) const override;
 
-	virtual void step( void ) override;
-	virtual void stepNoLearning( void ) override;
+	virtual void step( const sensor* sensors, int sensornumber, motor* motors, int motornumber ) override;
+	virtual void stepNoLearning( const sensor* , int number_sensors, motor* , int number_motors ) override;
 
-	virtual bool store( void ) const override;
-	virtual bool restore( void ) override;
+	virtual bool store( FILE* f ) const override;
+	virtual bool restore( FILE* f ) override;
 
 protected:
 	double nSensors;

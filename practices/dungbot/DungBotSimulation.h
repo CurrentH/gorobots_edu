@@ -10,9 +10,9 @@
 *****************************************************************************/
 
 #ifndef ODE_ROBOTS_ROBOTS_DUNGBOTSIMULATION_H_
-#define ODE_ROBOTS_ROBOTS_DungBotSimulation_H_
-
+#define ODE_ROBOTS_ROBOTS_DUNGBOTSIMULATION_H_
 #include <stdio.h>
+
 #include <ode_robots/simulation.h>
 #include <selforg/noisegenerator.h>
 #include <ode_robots/odeagent.h>
@@ -21,7 +21,6 @@
 #include <ode_robots/playground.h>
 #include <ode_robots/passivebox.h>
 
-#include "dungbot.h"
 #include "DungBotEmptyController.h"
 
 namespace lpzrobots

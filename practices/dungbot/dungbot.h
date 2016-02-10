@@ -96,11 +96,10 @@ namespace lpzrobots
 			virtual ~DungBot();
 
 		private:
-			lpzrobots::Primitive* test( void );
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double[] );
 			lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
-			lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
 			lpzrobots::Primitive* makeLeg( const osg::Matrix& );
+			lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 
 		protected:
