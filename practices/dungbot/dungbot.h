@@ -28,7 +28,6 @@ typedef struct
 	rearDimension[3];
 }DungBotConf;
 
-
 namespace lpzrobots
 {
 	class DungBot : public OdeRobot, public Inspectable
@@ -97,10 +96,10 @@ namespace lpzrobots
 			virtual ~DungBot();
 
 		private:
-			//TODO: Ask Leon what to pass here
-			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double );
-			lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive*, Primitive*, const osg::Matrix&,  Axis* );
-			lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis* );
+			lpzrobots::Primitive* test( void );
+			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double[] );
+			lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
+			lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
 			lpzrobots::Primitive* makeLeg( const osg::Matrix& );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 
@@ -109,6 +108,7 @@ namespace lpzrobots
 			Position position;
 
 	};
+
 } //End namespace lpzrobot
 
 

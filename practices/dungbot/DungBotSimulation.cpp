@@ -14,7 +14,7 @@
 namespace lpzrobots {
 
 DungBotSimulation::DungBotSimulation() {
-	setTitle("LocoKit simulation");
+	setTitle("DungBot simulation");
 	setGroundTexture("whiteground_crosses.jpg");
 	simulation_time_seconds = 0.0;
 	trial_number = 0;
@@ -81,7 +81,7 @@ void DungBotSimulation::instantiateAgent(GlobalData& global) {
 	robot->place(Pos(.0, .0, -0.2));
 
 	// Instantiate controller
-	controller = new DungBotEmptyController("LocoKit Controller");
+	controller = new DungBotEmptyController("DungBot Controller");
 
 	// Create the wiring
 	auto wiring = new One2OneWiring(new NoNoise());
