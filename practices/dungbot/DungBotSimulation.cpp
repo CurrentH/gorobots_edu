@@ -13,7 +13,7 @@
 
 namespace lpzrobots
 {
-	DungBotSimulation::DungBotSimulation()
+	DungBotSimulation::DungBotSimulation( void )
 	{
 		setTitle("DungBot simulation");
 		setGroundTexture("whiteground_crosses.jpg");
@@ -22,25 +22,24 @@ namespace lpzrobots
 		agent = NULL;
 	}
 
-	DungBotSimulation::~DungBotSimulation()
+	DungBotSimulation::~DungBotSimulation( void )
 	{
-		// TODO Auto-generated destructor stub
 	}
 
-	bool DungBotSimulation::command(const OdeHandle&, const OsgHandle&, GlobalData& globalData, int key, bool down)
+	bool DungBotSimulation::command( const OdeHandle&, const OsgHandle&, GlobalData& globalData, int key, bool down )
 	{
 		return false;
 	}
 
-	void DungBotSimulation::bindingDescription(osg::ApplicationUsage& au) const
+	void DungBotSimulation::bindingDescription( osg::ApplicationUsage& au ) const
 	{
 	}
 
-	void DungBotSimulation::start(const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global)
+	void DungBotSimulation::start( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global )
 	{
 		// Configure environment
-		setCameraHomePos(Pos(-5, 5, 2),  Pos(-135, -8.5, 0));
-		global.odeConfig.setParam( "controlinterval", 1 );
+		setCameraHomePos( Pos( -5, 5, 2 ),  Pos( -135, -8.5, 0 ) );
+		global.odeConfig.setParam( "controlinterval", 1 ); //TODO: Leon: Controlinterval?
 		global.odeConfig.setParam( "gravity", -9.8 );
 
 	   // Configure simulation
@@ -49,7 +48,7 @@ namespace lpzrobots
 		instantiateAgent( global );
 	}
 
-	void DungBotSimulation::addCallback(GlobalData& globalData, bool draw, bool pause, bool control)
+	void DungBotSimulation::addCallback( GlobalData& globalData, bool draw, bool pause, bool control )
 	{
 		if( globalData.sim_step >= simulation_time )
 		{
@@ -57,36 +56,36 @@ namespace lpzrobots
 		}
 	}
 
-	bool DungBotSimulation::restart(const OdeHandle&, const OsgHandle&, GlobalData& global)
+	bool DungBotSimulation::restart( const OdeHandle&, const OsgHandle&, GlobalData& global )
 	{
-		if (this->currentCycle == number_of_runs)
+		if( this->currentCycle == number_of_runs )
 			return false;
 
-		if (agent!=0) {
-			OdeAgentList::iterator itr = find(global.agents.begin(),global.agents.end(),agent);
-			if (itr!=global.agents.end())
+		if(agent!=0) {
+			OdeAgentList::iterator itr = find( global.agents.begin(), global.agents.end(),agent );
+			if ( itr!=global.agents.end() )
 			{
-				global.agents.erase(itr);
+				global.agents.erase( itr );
 			}
 			delete agent;
 			agent = 0;
 		}
 
-		instantiateAgent(global);
+		instantiateAgent( global );
 
 		return true;
 	}
 
 	void DungBotSimulation::setSimulationDuration( double seconds )
 	{
-		simulation_time = (long)(seconds/0.01);
+		simulation_time = (long)( seconds/0.01 );
 	}
 
 	void DungBotSimulation::instantiateAgent( GlobalData& global )
 	{
 		// Instantiate robot
 		DungBotConf conf = DungBot::getDefaultConf();
-		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot robot" );
+		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot robot" );	//TODO: Leon: osg = world, ode = physics?
 		robot->place( Pos( 0.0, 0.0, -0.2 ) );
 
 		// Instantiate controller
@@ -97,7 +96,7 @@ namespace lpzrobots
 
 		// Create Agent
 		agent = new OdeAgent( global );
-		agent->init( controller, robot, wiring );
+		agent->init( controller, robot, wiring ); //TODO: ?
 		global.agents.push_back( agent );
 		global.configs.push_back( agent );
 

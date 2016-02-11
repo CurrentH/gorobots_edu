@@ -17,6 +17,9 @@
 #include <ode_robots/joint.h>
 #include <selforg/inspectable.h>
 
+#include <ode_robots/contactsensor.h>
+
+
 #include <string>
 
 typedef struct
@@ -24,8 +27,14 @@ typedef struct
 	double
 	massFront,
 	massRear,
-	frontDimension[3],
-	rearDimension[3];
+	//frontDimension[3],
+	//rearDimension[3];
+	frontDimensionX,
+	frontDimensionY,
+	frontDimensionZ,
+	rearDimensionX,
+	rearDimensionY,
+	rearDimensionZ;
 }DungBotConf;
 
 namespace lpzrobots
@@ -39,10 +48,10 @@ namespace lpzrobots
 			HingeJoint * ctrJoint;
 			HingeJoint * ftiJoint;
 			/*Slider*/Joint * footJoint;
-			OneAxisServo * tcServo;
-			OneAxisServo * ctrServo;
-			OneAxisServo * ftiServo;
-			Spring * footSpring;
+			//OneAxisServo * tcServo;
+			//OneAxisServo * ctrServo;
+			//OneAxisServo * ftiServo;
+			//Spring * footSpring;
 			Primitive * shoulder;
 			Primitive * coxa;
 			Primitive * second;
@@ -52,21 +61,28 @@ namespace lpzrobots
 
 		DungBotConf conf;
 
-		static DungBotConf getDefaultConf()
-		{
-			DungBotConf conf;
-			double scale = 5;
-
-			//	Dependent parameters
-			conf.massFront = 1;
-			conf.massRear = 1;
-			conf.frontDimension[3] = {1,2,2};
-			conf.rearDimension[3] = {2,2,2};
-
-			return conf;
-		}
-
 		public:
+
+			static DungBotConf getDefaultConf()
+			{
+				DungBotConf conf;
+				double scale = 5;
+
+				//	Dependent parameters
+				conf.massFront = 1;
+				conf.massRear = 1;
+				//conf.frontDimension[3] = {1,2,2};	//TODO: Array kontra... det andet
+				//conf.rearDimension[3] = {2,2,2};
+				conf.frontDimensionX = 1;
+				conf.frontDimensionY = 2;
+				conf.frontDimensionZ = 2;
+				conf.rearDimensionX = 2;
+				conf.rearDimensionY = 2;
+				conf.rearDimensionZ = 2;
+
+				return conf;
+			}
+
 			enum LegPos
 			{
 				L0, L1, L2, R0, R1, R2, LEG_POS_MAX
@@ -96,11 +112,12 @@ namespace lpzrobots
 			virtual ~DungBot();
 
 		private:
-			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double[] );
-			lpzrobots::HingeJoint* makeBodyHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
+			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double,const double,const double );
 			lpzrobots::Primitive* makeLeg( const osg::Matrix& );
-			lpzrobots::HingeJoint* makeLegHingeJoint( Primitive*, Primitive*, const osg::Matrix&, Axis*, const double[] );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
+
+			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
+			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 
 		protected:
 			Position startPosition;

@@ -19,8 +19,8 @@
 #include <selforg/one2onewiring.h>
 #include <ode_robots/playground.h>
 #include <ode_robots/passivebox.h>
-#include <ode_robots/springybot.h>
 
+#include "springybot.h" //Edit from: #include <ode_robots/springybot.h"
 #include "SpringyBotEmptyController.h"
 
 namespace lpzrobots {

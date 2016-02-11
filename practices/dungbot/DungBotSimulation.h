@@ -21,6 +21,8 @@
 #include <ode_robots/playground.h>
 #include <ode_robots/passivebox.h>
 
+#include "dungbot.h"
+
 #include "DungBotEmptyController.h"
 
 namespace lpzrobots
@@ -28,8 +30,8 @@ namespace lpzrobots
 	class DungBotSimulation : public Simulation
 	{
 		public:
-			DungBotSimulation();
-			virtual ~DungBotSimulation();
+			DungBotSimulation( void );
+			virtual ~DungBotSimulation( void );
 			virtual void start( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global );
 			virtual void addCallback( GlobalData& globalData, bool draw, bool pause, bool control );
 			virtual bool command ( const OdeHandle&, const OsgHandle&, GlobalData& globalData, int key, bool down );
