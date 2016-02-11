@@ -39,6 +39,21 @@ namespace lpzrobots
         create( initialPose );
 
     }
+    void DungBot::doInternalStuff( GlobalData& globalData )
+    {
+
+    }
+
+    void DungBot::update( void )
+    {
+
+    }
+
+    void DungBot::sense( GlobalData& globalData )
+    {
+
+    }
+
 
     void DungBot::create( const Matrix& pose )
     {
@@ -85,18 +100,5 @@ namespace lpzrobots
         hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
         joints.push_back( hinge );
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
