@@ -52,8 +52,6 @@ shared:  libode_robots_shared
 	$(MAKE) BASELIBS="$(BASELIBSSHARED)" LIBSELFORG="$(LIBSELFORGSHARED)" \
 		LIBODEROBOTS="$(LIBODEROBOTSSHARED)" $(EXEC)
 
-clean:	; rm $(OBJECTS) $(EXECUTEABLE)
-
 $(EXEC): Makefile Makefile.depend $(OFILES) $(LIBODEROBOTS) $(LIBSELFORG)
 	$(CXX) $(CPPFLAGS) $(OFILES) $(LIBS) -o $(EXEC)
 

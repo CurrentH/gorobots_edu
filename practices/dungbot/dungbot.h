@@ -66,7 +66,7 @@ namespace lpzrobots
 			static DungBotConf getDefaultConf()
 			{
 				DungBotConf conf;
-				double scale = 5;
+				//double scale = 5;
 
 				//	Dependent parameters
 				conf.massFront = 1;
