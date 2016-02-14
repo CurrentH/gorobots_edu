@@ -66,9 +66,9 @@ namespace lpzrobots
 		auto rear = makeBody( rearPos, conf.massRear, conf.rearDimensionX,conf.rearDimensionY,conf.rearDimensionZ );
 
 		//TODO: Make axis
-		const Pos tempPos(0,0,0);
+		const Pos nullpos(0,0,0);
 
-		makeBodyHingeJoint( front, rear, tempPos*osg::Matrix::translate(-conf.frontDimensionX / 2, 0, 0) * frontPos, Axis(0,1,0)*frontPos, conf.rearDimensionY );
+		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate(-conf.frontDimensionX / 2, 0, 0) * frontPos, Axis(0,1,0)*frontPos, conf.rearDimensionY );
 		//makeLegHingeJoint( void );
     }
 
