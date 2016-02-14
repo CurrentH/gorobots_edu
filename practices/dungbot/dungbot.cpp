@@ -24,6 +24,7 @@ namespace lpzrobots
 
     DungBot::~DungBot()
     {
+    	// TODO: Should we add a delete func like in amos?
     }
 
     void DungBot::placeIntern( const Matrix& pose )
@@ -35,7 +36,7 @@ namespace lpzrobots
             in the third position.
         **/
 
-        initialPose = osg::Matrix::translate( Vec3( 0, 0, 5 ) * pose );
+        initialPose = osg::Matrix::translate( Vec3( 0, 0, 1 ) * pose );
         create( initialPose );
 
     }
@@ -58,14 +59,16 @@ namespace lpzrobots
     void DungBot::create( const Matrix& pose )
     {
 		//TODO: Change pose for the parts
-		auto front = makeBody( pose, conf.massFront, conf.frontDimensionX,conf.frontDimensionY,conf.frontDimensionZ );
-		auto rear = makeBody( pose, conf.massRear, conf.rearDimensionX,conf.rearDimensionY,conf.rearDimensionZ );
+    	osg::Matrix frontPos = osg::Matrix::translate((conf.frontDimensionX / 2), 0, 0) * pose;
+		auto front = makeBody( frontPos, conf.massFront, conf.frontDimensionX,conf.frontDimensionY,conf.frontDimensionZ );
+
+		osg::Matrix rearPos = osg::Matrix::translate((-conf.rearDimensionX / 2), 0, 0) * pose;
+		auto rear = makeBody( rearPos, conf.massRear, conf.rearDimensionX,conf.rearDimensionY,conf.rearDimensionZ );
 
 		//TODO: Make axis
-
 		const Pos tempPos(0,0,0);
 
-		makeBodyHingeJoint( front, rear, tempPos, Axis(1,1,1)*pose, conf.frontDimensionY );
+		makeBodyHingeJoint( front, rear, tempPos*osg::Matrix::translate(-conf.frontDimensionX / 2, 0, 0) * frontPos, Axis(0,1,0)*frontPos, conf.rearDimensionY );
 		//makeLegHingeJoint( void );
     }
 
@@ -74,7 +77,7 @@ namespace lpzrobots
         // Allocate object
         auto bodyPart = new Box( X,Y,Z );
         // Set texture from Image library
-        bodyPart->setTexture( "Images/purple_velour.jpg" );
+        bodyPart->setTexture( "Images/wall.jpg" );
         // Initialize the primitive
         bodyPart->init( odeHandle, mass, osgHandle );
         // Set pose
