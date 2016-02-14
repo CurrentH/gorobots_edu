@@ -73,12 +73,12 @@ namespace lpzrobots
 				conf.massRear = 1;
 				//conf.frontDimension[3] = {1,2,2};	//TODO: Array kontra... det andet
 				//conf.rearDimension[3] = {2,2,2};
-				conf.frontDimensionX = 1;
-				conf.frontDimensionY = 2;
-				conf.frontDimensionZ = 2;
-				conf.rearDimensionX = 2;
-				conf.rearDimensionY = 2;
-				conf.rearDimensionZ = 2;
+				conf.frontDimensionX = 0.6;
+				conf.frontDimensionY = 0.5;
+				conf.frontDimensionZ = 0.25;
+				conf.rearDimensionX = 1;
+				conf.rearDimensionY = 0.75;
+				conf.rearDimensionZ = 0.25;
 
 				return conf;
 			}
@@ -113,7 +113,7 @@ namespace lpzrobots
 
 		private:
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double,const double,const double );
-			lpzrobots::Primitive* makeLeg( const osg::Matrix& );
+			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );

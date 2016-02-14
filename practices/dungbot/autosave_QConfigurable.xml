@@ -1,0 +1,71 @@
+<!DOCTYPE ConfigurableStateTypeDefinition>
+<ConfigurableStates>
+ <ConfigurableState name="Simulation Environment_0">
+  <ConfigurableWidget tileWidgetWidth="210" isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets>
+    <ConfigurableTileWidget gridRow="0" gridColumn="0" name="cameraspeed" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="0" gridColumn="1" name="commandline" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="0" gridColumn="2" name="controlinterval" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="0" name="fps" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="1" name="gravity" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="2" name="logwhilerecording" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="0" name="noise" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="1" name="randomseed" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="2" name="realtimefactor" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="3" gridColumn="0" name="simstepsize" isVisible="true"/>
+   </ConfigurableTileWidgets>
+  </ConfigurableWidget>
+  <Configurable revision="$Id$" id="846930886" name="Simulation Environment" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals>
+    <paramval name="cameraspeed"/>
+    <paramval value="30.00000000000007" name="fps"/>
+    <paramval name="gravity"/>
+    <paramval name="noise"/>
+    <paramval name="randomseed"/>
+    <paramval name="realtimefactor"/>
+    <paramval name="simstepsize"/>
+   </paramvals>
+   <paramints>
+    <paramint name="controlinterval"/>
+   </paramints>
+   <parambools>
+    <parambool name="commandline"/>
+    <parambool name="logwhilerecording"/>
+   </parambools>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="Dungbot robot's Agent_0">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="" id="1218895454" name="Dungbot robot's Agent" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="Dungbot robot_0">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="2.0" id="139493169" name="Dungbot robot" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="DungBotEmptyController_0">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="1.0" id="1314487954" name="DungBotEmptyController" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+</ConfigurableStates>

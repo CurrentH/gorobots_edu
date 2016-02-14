@@ -58,18 +58,51 @@ namespace lpzrobots
 
     void DungBot::create( const Matrix& pose )
     {
-		//TODO: Change pose for the parts
+        /************************************
+         * BODY PARTS
+         ***********************************/
+    	//TODO: Find away to give different textures to the different body parts.
+
+		//First we find the pose for the center of the body-part to be made, then we run the functions that creates it.
     	osg::Matrix frontPos = osg::Matrix::translate((conf.frontDimensionX / 2), 0, 0) * pose;
 		auto front = makeBody( frontPos, conf.massFront, conf.frontDimensionX,conf.frontDimensionY,conf.frontDimensionZ );
 
 		osg::Matrix rearPos = osg::Matrix::translate((-conf.rearDimensionX / 2), 0, 0) * pose;
 		auto rear = makeBody( rearPos, conf.massRear, conf.rearDimensionX,conf.rearDimensionY,conf.rearDimensionZ );
 
-		//TODO: Make axis
+		//Origin position
 		const Pos nullpos(0,0,0);
 
+		//Place the joint between the two body-parts
 		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate(-conf.frontDimensionX / 2, 0, 0) * frontPos, Axis(0,1,0)*frontPos, conf.rearDimensionY );
-		//makeLegHingeJoint( void );
+
+	    /************************************
+	     * LEGS
+	     ***********************************/
+		//TODO: Need to be coded
+		/* Ideen er at vi kalder makeLegPart med de tre forskellige leg-parts (coxa, femur, tibia).
+		 * Så skal vi kalde en legjoint funktion der kan oprette de tre led (TC, CT, FT)
+		 * SE --> --> --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf
+		 * */
+		auto rotation = Matrix::rotate(((M_PI)/2), 0, 1, 0); // TODO SOM DET KAN SES ROTERES DER IKKE RIGITGT (SE tryLeg2) det skal vi lige løse :)
+
+		osg::Matrix tryLegPos = osg::Matrix::translate((conf.rearDimensionX/4), (conf.rearDimensionY / 2), -(conf.rearDimensionZ / 2)) * rearPos;
+		auto tryLeg = makeLegPart( tryLegPos, 1, 0.05, 0.3 ); // TODO Konstanterne skal være en del af conf.
+
+		osg::Matrix tryLegPos2 = osg::Matrix::translate(-(conf.rearDimensionX/4), (conf.rearDimensionY / 2), -(conf.rearDimensionZ / 2)) * rearPos;
+		auto tryLeg2 = makeLegPart( tryLegPos2, 1, 0.05, 0.3 );
+
+		osg::Matrix tryLegPos3 = osg::Matrix::translate((conf.rearDimensionX/4), -(conf.rearDimensionY / 2), -(conf.rearDimensionZ / 2)) * rearPos;
+		auto tryLeg3 = makeLegPart( tryLegPos3*rotation, 1, 0.05, 0.3 ); //TODO Det er denne rotation vi skal have styr på hvordan vi håndtere
+
+		osg::Matrix tryLegPos4 = osg::Matrix::translate(-(conf.rearDimensionX/4), -(conf.rearDimensionY / 2), -(conf.rearDimensionZ / 2)) * rearPos;
+		auto tryLeg4 = makeLegPart( tryLegPos4, 1, 0.05, 0.3 );
+
+		osg::Matrix tryLegPos5 = osg::Matrix::translate(0, (conf.frontDimensionY / 2), -(conf.frontDimensionZ / 2)) * frontPos;
+		auto tryLeg5 = makeLegPart( tryLegPos5, 1, 0.05, 0.3 );
+
+		osg::Matrix tryLegPos6 = osg::Matrix::translate(0, -(conf.frontDimensionY / 2), -(conf.frontDimensionZ / 2)) * frontPos;
+		auto tryLeg6 = makeLegPart( tryLegPos6, 1, 0.05, 0.3 );
     }
 
     lpzrobots::Primitive* DungBot::makeBody( const Matrix& pose, const double mass, const double X, const double Y, const double Z )
@@ -77,14 +110,31 @@ namespace lpzrobots
         // Allocate object
         auto bodyPart = new Box( X,Y,Z );
         // Set texture from Image library
-        bodyPart->setTexture( "Images/wall.jpg" );
+        bodyPart->setTexture( "Images/chess.rgb");
         // Initialize the primitive
         bodyPart->init( odeHandle, mass, osgHandle );
         // Set pose
         bodyPart->setPose( pose );
         // Add to objects
         objects.push_back( bodyPart );
+
         return bodyPart;
+    }
+
+    lpzrobots::Primitive* DungBot::makeLegPart( const osg::Matrix& pose, const double mass, const double legRadius, const double legHeight) {
+
+    	// Allocate object
+    	lpzrobots::Primitive* leg = new Cylinder( legRadius, legHeight );
+    	// Set texture from Image library
+    	leg->setTexture( "Images/red_velour.rgb" );
+    	// Initialize the primitive
+    	leg->init( odeHandle, mass, osgHandle );
+    	// Set pose
+    	leg->setPose(pose);
+    	// Add to objects
+    	objects.push_back(leg);
+
+    	return leg;
     }
 
     void DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
@@ -103,5 +153,4 @@ namespace lpzrobots
         hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
         joints.push_back( hinge );
     }
-
 }
