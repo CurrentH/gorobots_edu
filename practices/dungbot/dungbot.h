@@ -19,22 +19,16 @@
 
 #include <ode_robots/contactsensor.h>
 
-
 #include <string>
+#include <vector>
 
 typedef struct
 {
-	double
-	massFront,
-	massRear,
-	//frontDimension[3],
-	//rearDimension[3];
-	frontDimensionX,
-	frontDimensionY,
-	frontDimensionZ,
-	rearDimensionX,
-	rearDimensionY,
-	rearDimensionZ;
+	double massFront;
+	double massRear;
+	std::vector<double> frontDimension;
+	std::vector<double> rearDimension;
+
 }DungBotConf;
 
 namespace lpzrobots
@@ -62,7 +56,6 @@ namespace lpzrobots
 		DungBotConf conf;
 
 		public:
-
 			static DungBotConf getDefaultConf()
 			{
 				DungBotConf conf;
@@ -71,14 +64,8 @@ namespace lpzrobots
 				//	Dependent parameters
 				conf.massFront = 1;
 				conf.massRear = 1;
-				//conf.frontDimension[3] = {1,2,2};	//TODO: Array kontra... det andet
-				//conf.rearDimension[3] = {2,2,2};
-				conf.frontDimensionX = 0.6;
-				conf.frontDimensionY = 0.5;
-				conf.frontDimensionZ = 0.25;
-				conf.rearDimensionX = 1;
-				conf.rearDimensionY = 0.75;
-				conf.rearDimensionZ = 0.25;
+				conf.frontDimension = {0.6, 0.5, 0.25};
+				conf.rearDimension = {1.0, 0.75, 0.25};
 
 				return conf;
 			}
@@ -112,7 +99,7 @@ namespace lpzrobots
 			virtual ~DungBot();
 
 		private:
-			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const double,const double,const double );
+			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 
@@ -122,9 +109,7 @@ namespace lpzrobots
 		protected:
 			Position startPosition;
 			Position position;
-
 	};
-
 } //End namespace lpzrobot
 
 
