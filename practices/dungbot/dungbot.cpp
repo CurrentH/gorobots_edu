@@ -81,25 +81,23 @@ namespace lpzrobots
 		 * SE --> --> --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf
 		 * */
 
-		auto rotation = Matrix::rotate( ( ( M_PI )/2 ), 0, 0, 0.1 ); // TODO SOM DET KAN SES ROTERES DER IKKE RIGITGT (SE tryLeg2) det skal vi lige løse :)
-
 		osg::Matrix tryLegPos = osg::Matrix::translate( (conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg = makeLegPart( tryLegPos, 1, 0.05, 0.3 ); // TODO Konstanterne skal være en del af conf.
+		auto tryLeg = makeLegSphereJoint( conf.shoulderRotation[0]*tryLegPos, 1, 0.05 );
 
 		osg::Matrix tryLegPos2 = osg::Matrix::translate( -(conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg2 = makeLegPart( tryLegPos2, 1, 0.05, 0.3 );
+		auto tryLeg2 = makeLegSphereJoint( conf.shoulderRotation[1]*tryLegPos2, 1, 0.05 );
 
 		osg::Matrix tryLegPos3 = osg::Matrix::translate( (conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg3 = makeLegPart( tryLegPos3*rotation, 1, 0.05, 0.3 );
+		auto tryLeg3 = makeLegSphereJoint( conf.shoulderRotation[0]*tryLegPos3, 1, 0.05 );
 
 		osg::Matrix tryLegPos4 = osg::Matrix::translate( -(conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg4 = makeLegPart( tryLegPos4, 1, 0.05, 0.3 );
+		auto tryLeg4 = makeLegSphereJoint( conf.shoulderRotation[1]*tryLegPos4, 1, 0.05 );
 
 		osg::Matrix tryLegPos5 = osg::Matrix::translate( 0, (conf.frontDimension[1] / 2), -(conf.frontDimension[2] / 2) ) * frontPos;
-		auto tryLeg5 = makeLegPart( tryLegPos5, 1, 0.05, 0.3 );
+		auto tryLeg5 = makeLegSphereJoint( conf.shoulderRotation[0]*tryLegPos5, 1, 0.05 );
 
 		osg::Matrix tryLegPos6 = osg::Matrix::translate( 0, -(conf.frontDimension[1] / 2), -(conf.frontDimension[2] / 2) ) * frontPos;
-		auto tryLeg6 = makeLegPart( tryLegPos6, 1, 0.05, 0.3 );
+		auto tryLeg6 = makeLegSphereJoint( conf.shoulderRotation[1]*tryLegPos6, 1, 0.05 );
 
 		std::cout << conf.frontDimension[1] << std::endl;
     }
@@ -152,4 +150,22 @@ namespace lpzrobots
         hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
         joints.push_back( hinge );
     }
+
+    lpzrobots::Primitive* DungBot::makeLegSphereJoint( const osg::Matrix& pose, const double mass, const double sphereRadius )
+    {
+    	// Allocate object
+    	lpzrobots::Primitive* sphereJoint = new Sphere( sphereRadius );
+    	// Set texture from Image library
+    	sphereJoint->setTexture( "Images/red_velour.rgb" );
+    	// Initialize the primitive
+    	sphereJoint->init( odeHandle, mass, osgHandle );
+    	// Set pose
+    	sphereJoint->setPose( pose );
+    	// Add to objects
+    	objects.push_back( sphereJoint );
+
+    	return sphereJoint;
+    }
+
+
 }

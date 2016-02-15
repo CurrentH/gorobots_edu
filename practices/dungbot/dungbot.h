@@ -29,6 +29,13 @@ typedef struct
 	std::vector<double> frontDimension;
 	std::vector<double> rearDimension;
 
+	std::vector<double> shoulderLength;
+	std::vector<double> coxaLength;
+	std::vector<double> femurLength;
+	std::vector<double> tibiaLength;
+
+	std::vector<osg::Matrixd> shoulderRotation;
+
 }DungBotConf;
 
 namespace lpzrobots
@@ -39,16 +46,12 @@ namespace lpzrobots
 		{
 			Leg();
 			HingeJoint * tcJoint;
-			HingeJoint * ctrJoint;
-			HingeJoint * ftiJoint;
+			HingeJoint * ctJoint;	//Called ctrJoint in AmosII
+			HingeJoint * ftJoint;	//Called ftiJoing in AmosII
 			/*Slider*/Joint * footJoint;
-			//OneAxisServo * tcServo;
-			//OneAxisServo * ctrServo;
-			//OneAxisServo * ftiServo;
-			//Spring * footSpring;
 			Primitive * shoulder;
 			Primitive * coxa;
-			Primitive * second;
+			Primitive * femur; 	//Called second in AmosII
 			Primitive * tibia;
 			Primitive * foot;
 		};
@@ -64,8 +67,15 @@ namespace lpzrobots
 				//	Dependent parameters
 				conf.massFront = 1;
 				conf.massRear = 1;
-				conf.frontDimension = {0.6, 0.5, 0.25};
-				conf.rearDimension = {1.0, 0.75, 0.25};
+				conf.frontDimension = { 0.6, 0.5, 0.25 };
+				conf.rearDimension = { 1.0, 0.75, 0.25 };
+
+				conf.shoulderLength = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
+				conf.coxaLength = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+				conf.femurLength = conf.coxaLength;	//TODO: Multiply all elements by 1.2
+				conf.tibiaLength = conf.coxaLength;
+
+				conf.shoulderRotation = { osg::Matrix::rotate( ( ( M_PI )/2 ), 1, 0, 0 ), osg::Matrix::rotate( ( ( M_PI )/2 ), -1, 0, 0 ) };
 
 				return conf;
 			}
@@ -105,6 +115,8 @@ namespace lpzrobots
 
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
+
+			lpzrobots::Primitive* makeLegSphereJoint( const osg::Matrix&, const double, const double );
 
 		protected:
 			Position startPosition;
