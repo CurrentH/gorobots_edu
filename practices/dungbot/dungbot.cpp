@@ -81,25 +81,42 @@ namespace lpzrobots
 		 * SE --> --> --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf
 		 * */
 
-		osg::Matrix tryLegPos = osg::Matrix::translate( (conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg = makeLegSphereJoint( conf.shoulderRotation[0]*tryLegPos, 1, 0.05 );
+		/**
+		 * 	Leg 1
+		 */
+				//TODO: Make outisde function for this, that recursive makes the leg parts.
+		osg::Matrix shoulderPos1 = osg::Matrix::translate( (conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
+		auto shoulder1 = makeLegSphereJoint( conf.shoulderRotation[0]*shoulderPos1, 1, 0.05 );
+		makeLegHingeJoint( rear, shoulder1, nullpos*shoulderPos1, Axis( 0, 1, 0 ) * shoulderPos1, 0.1 );
 
-		osg::Matrix tryLegPos2 = osg::Matrix::translate( -(conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg2 = makeLegSphereJoint( conf.shoulderRotation[1]*tryLegPos2, 1, 0.05 );
+		osg::Matrix tcPos1 = shoulderPos1 * osg::Matrix::translate( 0, 0 , -0.05 );
+		auto TC1 = makeLegPart( tcPos1, 1, 0.05, 0.1 );
+		makeLegHingeJoint( shoulder1, TC1, nullpos*shoulderPos1, Axis( 1, 0, 0 )* shoulderPos1, 0.1 );
+				//TODO: For the next two hinges, find the correct height.
+		osg::Matrix ctPos1 = tcPos1 * osg::Matrix::translate( 0, 0, -0.1);
+		auto CT1 = makeLegPart( ctPos1, 1, 0.05, 0.1 );
+		makeLegHingeJoint( TC1, CT1, nullpos*ctPos1, Axis( 1, 0, 0 )* ctPos1, 0.1 );
 
-		osg::Matrix tryLegPos3 = osg::Matrix::translate( (conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg3 = makeLegSphereJoint( conf.shoulderRotation[0]*tryLegPos3, 1, 0.05 );
+		osg::Matrix ftPos1 = ctPos1 * osg::Matrix::translate( 0, 0, -0.1);
+		auto FT1 = makeLegPart( ftPos1, 1, 0.05, 0.1 );
+		makeLegHingeJoint( CT1, FT1, nullpos*ftPos1, Axis( 1, 0, 0 )* ftPos1, 0.1 );
+		/**
+		 * 	Leg 1 done
+		 */
 
-		osg::Matrix tryLegPos4 = osg::Matrix::translate( -(conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg4 = makeLegSphereJoint( conf.shoulderRotation[1]*tryLegPos4, 1, 0.05 );
+		osg::Matrix shoulderPos2 = osg::Matrix::translate( -(conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
+		auto shoulder2 = makeLegSphereJoint( conf.shoulderRotation[1]*shoulderPos2, 1, 0.05 );
+		osg::Matrix shoulderPos3 = osg::Matrix::translate( (conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
+		auto shoulder3 = makeLegSphereJoint( conf.shoulderRotation[0]*shoulderPos3, 1, 0.05 );
+		osg::Matrix shoulderPos4 = osg::Matrix::translate( -(conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
+		auto shoulder4 = makeLegSphereJoint( conf.shoulderRotation[1]*shoulderPos4, 1, 0.05 );
+		osg::Matrix shoulderPos5 = osg::Matrix::translate( 0, (conf.frontDimension[1] / 2), -(conf.frontDimension[2] / 2) ) * frontPos;
+		auto shoulder5 = makeLegSphereJoint( conf.shoulderRotation[0]*shoulderPos5, 1, 0.05 );
+		osg::Matrix shoulderPos6 = osg::Matrix::translate( 0, -(conf.frontDimension[1] / 2), -(conf.frontDimension[2] / 2) ) * frontPos;
+		auto shoulder6 = makeLegSphereJoint( conf.shoulderRotation[1]*shoulderPos6, 1, 0.05 );
 
-		osg::Matrix tryLegPos5 = osg::Matrix::translate( 0, (conf.frontDimension[1] / 2), -(conf.frontDimension[2] / 2) ) * frontPos;
-		auto tryLeg5 = makeLegSphereJoint( conf.shoulderRotation[0]*tryLegPos5, 1, 0.05 );
 
-		osg::Matrix tryLegPos6 = osg::Matrix::translate( 0, -(conf.frontDimension[1] / 2), -(conf.frontDimension[2] / 2) ) * frontPos;
-		auto tryLeg6 = makeLegSphereJoint( conf.shoulderRotation[1]*tryLegPos6, 1, 0.05 );
 
-		std::cout << conf.frontDimension[1] << std::endl;
     }
 
     lpzrobots::Primitive* DungBot::makeBody( const Matrix& pose, const double mass, const std::vector<double> dimension )
@@ -121,6 +138,7 @@ namespace lpzrobots
     lpzrobots::Primitive* DungBot::makeLegPart( const osg::Matrix& pose, const double mass, const double legRadius, const double legHeight)
     {
     	// Allocate object
+    	//lpzrobots::Primitive* leg = new Capsule( legRadius, legHeight );
     	lpzrobots::Primitive* leg = new Cylinder( legRadius, legHeight );
     	// Set texture from Image library
     	leg->setTexture( "Images/red_velour.rgb" );
@@ -156,7 +174,7 @@ namespace lpzrobots
     	// Allocate object
     	lpzrobots::Primitive* sphereJoint = new Sphere( sphereRadius );
     	// Set texture from Image library
-    	sphereJoint->setTexture( "Images/red_velour.rgb" );
+    	sphereJoint->setTexture( "Images/sandyground.rgb" );
     	// Initialize the primitive
     	sphereJoint->init( odeHandle, mass, osgHandle );
     	// Set pose
