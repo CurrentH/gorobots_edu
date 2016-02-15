@@ -81,7 +81,7 @@ namespace lpzrobots
 		 * SE --> --> --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf
 		 * */
 
-		auto rotation = Matrix::rotate( ( ( M_PI )/2 ), 0, 0, 0 ); // TODO SOM DET KAN SES ROTERES DER IKKE RIGITGT (SE tryLeg2) det skal vi lige løse :)
+		auto rotation = Matrix::rotate( ( ( M_PI )/2 ), 0, 0, 0.1 ); // TODO SOM DET KAN SES ROTERES DER IKKE RIGITGT (SE tryLeg2) det skal vi lige løse :)
 
 		osg::Matrix tryLegPos = osg::Matrix::translate( (conf.rearDimension[0]/4), (conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
 		auto tryLeg = makeLegPart( tryLegPos, 1, 0.05, 0.3 ); // TODO Konstanterne skal være en del af conf.
@@ -90,7 +90,7 @@ namespace lpzrobots
 		auto tryLeg2 = makeLegPart( tryLegPos2, 1, 0.05, 0.3 );
 
 		osg::Matrix tryLegPos3 = osg::Matrix::translate( (conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
-		auto tryLeg3 = makeLegPart( tryLegPos3*rotation, 1, 0.05, 0.3 ); //TODO Det er denne rotation vi skal have styr på hvordan vi håndtere
+		auto tryLeg3 = makeLegPart( tryLegPos3*rotation, 1, 0.05, 0.3 );
 
 		osg::Matrix tryLegPos4 = osg::Matrix::translate( -(conf.rearDimension[0]/4), -(conf.rearDimension[1] / 2), -(conf.rearDimension[2] / 2) ) * rearPos;
 		auto tryLeg4 = makeLegPart( tryLegPos4, 1, 0.05, 0.3 );
