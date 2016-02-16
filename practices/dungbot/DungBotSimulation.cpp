@@ -69,7 +69,7 @@ namespace lpzrobots
 		lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle,osg::Vec3(10, 0.2, 0.55));
 		playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall.jpg",-1.5,-3));
 		playground->setPosition(osg::Vec3(0,0,.0));
-		global.obstacles.push_back(playground);
+		global.obstacles.push_back(playground); //ee
 	}
 
 	void DungBotSimulation::addCallback( GlobalData& globalData, bool draw, bool pause, bool control )
