@@ -51,7 +51,7 @@ namespace lpzrobots
             in the third position.
         **/
 
-        initialPose = osg::Matrix::translate( Vec3( 0, 0, 1 ) * pose );
+        initialPose = osg::Matrix::translate( Vec3( 0, 0, 0.5 ) * pose );
         create( initialPose );
 
     }

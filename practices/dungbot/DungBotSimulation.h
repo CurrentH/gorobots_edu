@@ -45,10 +45,12 @@ namespace lpzrobots
 			OdeAgent* agent;
 			DungBot* robot;
 			DungBotEmptyController* controller;
+			lpzrobots::Joint* robotfixator;
 
 		private:
 			void setSimulationDuration(double seconds);
 			void instantiateAgent(GlobalData& global);
+			void addPlayground();
 	};
 } /* namespace lpzrobots */
 

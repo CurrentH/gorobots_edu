@@ -26,10 +26,28 @@ namespace lpzrobots
 	{
 	}
 
-	bool DungBotSimulation::command( const OdeHandle&, const OsgHandle&, GlobalData& globalData, int key, bool down )
-	{
+	bool DungBotSimulation::command(const lpzrobots::OdeHandle&,
+		  const lpzrobots::OsgHandle&,
+		  lpzrobots::GlobalData& globalData,
+		  int key,
+		  bool down)
+	  {
+		if (down) { // only when key is pressed, not when released
+		  switch (char(key)) {
+			case 'x':
+			  if (robotfixator) {
+				std::cout << "dropping robot" << std::endl;
+				delete robotfixator;
+				robotfixator = NULL;
+			  }
+			  break;
+			default:
+			  return false;
+			  break;
+		  }
+		}
 		return false;
-	}
+	  }
 
 	void DungBotSimulation::bindingDescription( osg::ApplicationUsage& au ) const
 	{
@@ -46,6 +64,12 @@ namespace lpzrobots
 		simulation_time_seconds = 100;
 		number_of_runs = 1;
 		instantiateAgent( global );
+
+		// add playground
+		lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle,osg::Vec3(10, 0.2, 0.55));
+		playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall.jpg",-1.5,-3));
+		playground->setPosition(osg::Vec3(0,0,.0));
+		global.obstacles.push_back(playground);
 	}
 
 	void DungBotSimulation::addCallback( GlobalData& globalData, bool draw, bool pause, bool control )
@@ -86,7 +110,7 @@ namespace lpzrobots
 		// Instantiate robot
 		DungBotConf conf = DungBot::getDefaultConf();
 		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot robot" );	//TODO: Leon: osg = world, ode = physics?
-		robot->place( Pos( 0.0, 0.0, -0.2 ) );
+		robot->place( Pos( 0.0, 0.0, 2 ) ); // CONTROLS THE HEIGHT
 
 		// Instantiate controller
 		controller = new DungBotEmptyController( "DungBotEmptyController" );
@@ -96,12 +120,33 @@ namespace lpzrobots
 
 		// Create Agent
 		agent = new OdeAgent( global );
-		agent->init( controller, robot, wiring ); //TODO: ?
+		agent->init( controller, robot, wiring );
 		global.agents.push_back( agent );
 		global.configs.push_back( agent );
 
 		setSimulationDuration( simulation_time_seconds );
+
+		// create a fixed joint to hold the robot in the air at the beginning
+		robotfixator = new lpzrobots::FixedJoint(robot->getMainPrimitive(),global.environment);
+		robotfixator->init(odeHandle, osgHandle, false);
+
+		// inform global variable over everything that happened:
+		global.configs.push_back(robot);
+		global.agents.push_back(agent);
+		global.configs.push_back(controller);
+
+	    std::cout << "\n"
+	        << "################################\n"
+	        << "#   Press x to free amosII!    #\n"
+	        << "################################\n"
+	        << "\n" << std::endl;
 	}
+
+
+	void DungBotSimulation::addPlayground() {
+		// implement playground here.
+	}
+
 } /* namespace lpzrobots */
 
 
