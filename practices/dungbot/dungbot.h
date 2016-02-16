@@ -29,12 +29,26 @@ typedef struct
 	std::vector<double> frontDimension;
 	std::vector<double> rearDimension;
 
-	std::vector<double> shoulderLength;
-	std::vector<double> coxaLength;
-	std::vector<double> femurLength;
-	std::vector<double> tibiaLength;
+	//std::vector<double> shoulderLength;
+	//std::vector<double> coxaLength;
+	//std::vector<double> femurLength;
+	//std::vector<double> tibiaLength;
 
 	std::vector<osg::Matrixd> shoulderRotation;
+
+	// TEMP LEG
+	double shoulderLength;
+	double shoulderRadius;
+	double coxaLength;
+	double coxaRadius;
+	double femurLength;
+	double femurRadius;
+	double tebiaLength;
+	double tebiaRadius;
+	double footRange;
+	double footRadius;
+	double legdistHindMiddle;
+	double legdistFrontMiddle;
 
 }DungBotConf;
 
@@ -42,19 +56,7 @@ namespace lpzrobots
 {
 	class DungBot : public OdeRobot, public Inspectable
 	{
-		struct Leg
-		{
-			Leg();
-			HingeJoint * tcJoint;
-			HingeJoint * ctJoint;	//Called ctrJoint in AmosII
-			HingeJoint * ftJoint;	//Called ftiJoing in AmosII
-			/*Slider*/Joint * footJoint;
-			Primitive * shoulder;
-			Primitive * coxa;
-			Primitive * femur; 	//Called second in AmosII
-			Primitive * tibia;
-			Primitive * foot;
-		};
+
 
 		DungBotConf conf;
 
@@ -62,29 +64,39 @@ namespace lpzrobots
 			static DungBotConf getDefaultConf()
 			{
 				DungBotConf conf;
-				//double scale = 5;
 
 				//	Dependent parameters
 				conf.massFront = 1;
 				conf.massRear = 1;
-				conf.frontDimension = { 0.6, 0.5, 0.25 };
+				conf.frontDimension = { 0.6, 0.65, 0.25 };
 				conf.rearDimension = { 1.0, 0.75, 0.25 };
 
-				conf.shoulderLength = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
-				conf.coxaLength = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
-				conf.femurLength = conf.coxaLength;	//TODO: Multiply all elements by 1.2
-				conf.tibiaLength = conf.coxaLength;
-
+				//conf.shoulderLength = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
+				//conf.coxaLength = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+				//conf.femurLength = conf.coxaLength;	//TODO: Multiply all elements by 1.2
+				//conf.tibiaLength = conf.coxaLength;
 				conf.shoulderRotation = { osg::Matrix::rotate( ( ( M_PI )/2 ), 1, 0, 0 ), osg::Matrix::rotate( ( ( M_PI )/2 ), -1, 0, 0 ) };
+
+				// TEMP LEGS
+				conf.shoulderLength = 0.3;
+				conf.shoulderRadius = 0.05;
+				conf.coxaLength = 0.3;
+				conf.coxaRadius = 0.05;
+				conf.femurLength = 0.3;
+				conf.femurRadius = 0.05;
+				conf.tebiaLength = 0.3;
+				conf.tebiaRadius = 0.05;
+				conf.footRange = 0.075;
+				conf.footRadius = 0.05;
+				conf.legdistHindMiddle = conf.rearDimension[1];
+				conf.legdistFrontMiddle = conf.rearDimension[1];
 
 				return conf;
 			}
 
-			enum LegPos
-			{
+			enum LegPos {
 				L0, L1, L2, R0, R1, R2, LEG_POS_MAX
 			};
-
 			enum LegJointType
 			{
 				//  Thoroca-Coxal joint for forward (+) and backward (-) movements.
@@ -108,6 +120,24 @@ namespace lpzrobots
 			virtual void sense( GlobalData& globalData );
 			virtual ~DungBot();
 
+		protected:
+		      struct Leg {
+		          Leg();
+		          HingeJoint * tcJoint;
+		          HingeJoint * ctJoint;	//Called ctrJoint in AmosII
+				  HingeJoint * ftJoint;	//Called ftiJoing in AmosII
+		        /*Slider*/Joint * footJoint;
+		          //OneAxisServo * tcServo;
+		          //OneAxisServo * ctrServo;
+		          //OneAxisServo * ftiServo;
+		          //Spring * footSpring;
+		          Primitive * shoulder;
+		          Primitive * coxa;
+		          Primitive * femur; 	//Called second in AmosII
+		          Primitive * tibia;
+		          Primitive * foot;
+		      };
+
 		private:
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
@@ -117,6 +147,10 @@ namespace lpzrobots
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 
 			lpzrobots::Primitive* makeLegSphereJoint( const osg::Matrix&, const double, const double );
+
+			// for legs
+			typedef std::map<LegPos, Leg> LegMap;
+			LegMap legs;
 
 		protected:
 			Position startPosition;
