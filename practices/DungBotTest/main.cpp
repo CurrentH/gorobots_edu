@@ -31,11 +31,10 @@
 // simple wiring
 #include <selforg/one2onewiring.h>
 // the robot
-//#include <ode_robots/amosII.h>
-#include <ode_robots/dungbeetle.h>
 
 // include the controller
-#include "emptycontroller.h"
+#include "dungbot.h"
+#include "DungBotEmptyController.h"
 
 
 // joint needed for fixation of the robot in the beginning
@@ -150,20 +149,16 @@ class ThisSim : public lpzrobots::Simulation {
     //----------create a sphere as the target by Ren-----------------------------
 
     // Add amosII robot
-    DungBeetleConf myAmosIIConf = dungBeetle::getDefaultConf(1.0 /*_scale*/,0 /*_useShoulder*/,1 /*_useFoot*/,1 /*_useBack*/);
-    myAmosIIConf.rubberFeet = true;
+    DungBotConf conf = DungBot::getDefaultConf();
     lpzrobots::OdeHandle rodeHandle = odeHandle;
     rodeHandle.substance = lpzrobots::Substance(3.0, 0.0, 50.0, 0.8);
     //------------------- Link the sphere to the Goal Sensor by Ren---------------
-    for(unsigned int i = 0; i<obst.size(); i++)
-    {
-      myAmosIIConf.GoalSensor_references.push_back(obst.at(i)->getMainPrimitive());
-    }
+
     //------------------- Link the sphere to the Goal Sensor by Ren---------------
-    amos = new dungBeetle(
+    amos = new DungBot(
         rodeHandle,
         osgHandle.changeColor(lpzrobots::Color(1, 1, 1)),
-        myAmosIIConf, "AmosII");
+        conf, "AmosII");
 
     // define the usage of the individual legs
     amos->setLegPosUsage(amos->L0, amos->LEG);
@@ -176,7 +171,7 @@ class ThisSim : public lpzrobots::Simulation {
     // put amos a little bit in the air
     amos->place(osg::Matrix::translate(.0, .0, 0.5));
 
-    controller = new EmptyController();
+    controller = new DungBotEmptyController("DungBotEmptyController");
     // create wiring
     One2OneWiring* wiring = new One2OneWiring(new ColorUniformNoise());
 
@@ -231,7 +226,7 @@ class ThisSim : public lpzrobots::Simulation {
   protected:
   lpzrobots::Joint* robotfixator;
   AbstractController* controller;
-  dungBeetle* amos;
+  DungBot* amos;
 };
 
 int main(int argc, char **argv)

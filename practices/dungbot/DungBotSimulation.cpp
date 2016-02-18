@@ -57,14 +57,13 @@ namespace lpzrobots
 	{
 		// Configure environment
 		setCameraHomePos( Pos( -5, 5, 2 ),  Pos( -135, -8.5, 0 ) );
+
 		global.odeConfig.setParam( "controlinterval", 1 ); //TODO: Leon: Controlinterval?
+		global.odeConfig.setParam( "simstepsize", 0.01 );
 		global.odeConfig.setParam( "gravity", -9.8 );
 
 	    // add playground
-	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.2, 0.3));
-	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
-	    playground->setPosition(osg::Vec3(0,0,.0));
-	    global.obstacles.push_back(playground);
+		addPlayground(odeHandle,osgHandle,global);
 
 		// Configure simulation
 		simulation_time_seconds = 100;
@@ -106,7 +105,7 @@ namespace lpzrobots
 
 	    std::cout << "\n"
 	        << "################################\n"
-	        << "#   Press x to free amosII!    #\n"
+	        << "#   Press x to free DungBot!   #\n"
 	        << "################################\n"
 	        << "\n" << std::endl;
 	}
@@ -146,8 +145,12 @@ namespace lpzrobots
 	}
 
 
-	void DungBotSimulation::addPlayground() {
+	void DungBotSimulation::addPlayground( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global) {
 		// implement playground here.
+	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.2, 0.3));
+	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
+	    playground->setPosition(osg::Vec3(0,0,.0));
+	    global.obstacles.push_back(playground);
 	}
 
 } /* namespace lpzrobots */

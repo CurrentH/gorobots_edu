@@ -50,7 +50,7 @@ namespace lpzrobots
 		private:
 			void setSimulationDuration(double seconds);
 			void instantiateAgent(GlobalData& global);
-			void addPlayground();
+			void addPlayground(const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global);
 	};
 } /* namespace lpzrobots */
 

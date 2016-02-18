@@ -21,10 +21,10 @@ namespace lpzrobots
 	  ctJoint = 0;
 	  ftJoint = 0;
 	  footJoint = 0;
-	  tcServo = 0;
-	  ctrServo = 0;
-	  ftiServo = 0;
-	  footSpring = 0;
+	  //tcServo = 0;
+	  //ctrServo = 0;
+	  //ftiServo = 0;
+	  //footSpring = 0;
 	  shoulder = 0;
 	  coxa = 0;
 	  femur = 0;
@@ -57,13 +57,6 @@ namespace lpzrobots
 
     void DungBot::doInternalStuff( GlobalData& globalData )
     {
-    	OdeRobot::doInternalStuff(globalData);
-    	    // update statistics
-    	position = getPosition();
-
-        //for (ServoList::iterator it = passiveServos.begin(); it != passiveServos.end(); it++) {
-        //  (*it)->set(0.0);
-        //}
     }
 
     void DungBot::update( void )
@@ -161,7 +154,7 @@ namespace lpzrobots
 			LegPos leg = LegPos(i);
 
 			// +1 for R1,R2,R3, -1 for L1,L2,conf.tebiaRadius
-			//const double pmrl = (leg == R0 || leg == R1 || leg == R2) - (leg == L0 || leg == L1 || leg == L2);
+			const double pmrl = (leg == R0 || leg == R1 || leg == R2) - (leg == L0 || leg == L1 || leg == L2);
 
 	        const double backLeg = (leg == R1 || leg == R2) - (leg == L1 || leg == L2);
 	        const double backLegInverse = (leg == R1 || leg == R2) + (leg == L1 || leg == L2);
@@ -173,7 +166,7 @@ namespace lpzrobots
 			osg::Matrix c1 = legtrunkconnections[leg];
 
 			// Coxa placement
-			osg::Matrix coaxCenter = osg::Matrix::translate(0, 0, -conf.coxaLength / 2) * c1; //Position of Center of Mass
+			osg::Matrix coaxCenter = osg::Matrix::translate(conf.coxaRadius/4, 0, -conf.coxaLength / 2) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule(conf.coxaRadius, conf.coxaLength);
 			coxaThorax->setTexture("coxa.jpg");
 			coxaThorax->init(odeHandle, 0.01, osgHandle); // TODO: 1 should be coxa mass
@@ -182,7 +175,7 @@ namespace lpzrobots
 			objects.push_back(coxaThorax);
 
 			// Femur placement
-			osg::Matrix c2 = osg::Matrix::translate(0, 0, -conf.coxaLength/2 ) * coaxCenter;
+			osg::Matrix c2 = osg::Matrix::translate(-conf.coxaRadius/2, 0, conf.coxaLength/2 ) * coaxCenter;
 			osg::Matrix femurcenter = osg::Matrix::translate(0, 0, -conf.femurLength / 2) * c2;
 			Primitive* femurThorax = new Capsule(conf.femurRadius, conf.femurLength);
 			femurThorax->setTexture("femur.jpg");

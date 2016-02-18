@@ -909,10 +909,10 @@ namespace lpzrobots {
         // create motor, overwrite the jointLimit argument with 1.0
         // because it is less obscure and setMinMax makes mistakes
         // otherwise. Parameters are set later
-        OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
+        //OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
         //PUSH THIS STUFF BACK INTO STH!!!! not hipservos obviously
-        legs[leg].tcServo = servo1;
-        servos[getMotorName(leg, TC)] = servo1;
+        //legs[leg].tcServo = servo1;
+        //servos[getMotorName(leg, TC)] = servo1;
 
         // second limb
         Primitive* secondThorax;
@@ -930,10 +930,10 @@ namespace lpzrobots {
 
         joints.push_back(k);
         /** parameters are set later */
-        OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
+        //OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
         //PUSH THIS STUFF BACK INTO STH!!!! not hipservos obviously
-        legs[leg].ctrServo = servo2;
-        servos[getMotorName(leg, CTR)] = servo2;
+        //legs[leg].ctrServo = servo2;
+        // servos[getMotorName(leg, CTR)] = servo2;
 
         // third limb
         Primitive* tebia;
@@ -983,9 +983,9 @@ namespace lpzrobots {
         joints.push_back(l);
         // servo used as a spring
         /** parameters are set later */
-        OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
-        legs[leg].ftiServo = servo3;
-        servos[getMotorName(leg, FTI)] = servo3;
+        // OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
+        //legs[leg].ftiServo = servo3;
+        //servos[getMotorName(leg, FTI)] = servo3;
 
         //spring foot at the end
 

@@ -12,50 +12,16 @@
 #ifndef __DUNGBOT_H
 #define __DUNGBOT_H
 
-// #include <ode/ode.h>
-#include <ode-dbl/ode.h>
-
-// include primitives (box, spheres, cylinders ...)
+#include <ode_robots/oderobot.h>
 #include <ode_robots/primitive.h>
+#include <ode_robots/joint.h>
+#include <selforg/inspectable.h>
 
-// include sensors
 #include <ode_robots/contactsensor.h>
 
-// include joints
-#include <ode_robots/joint.h>
 #include <ode_robots/oneaxisservo.h>
-#include <ode_robots/constantmotor.h>
 #include <string>
-
-// Extra includes
 #include <vector>
-#include <selforg/inspectable.h>
-#include <ode_robots/oderobot.h>
-
-/**
- * forward declarations
- */
-namespace lpzrobots {
-  class HingeJoint;
-  class IRSensor;
-  class Joint;
-  class OneAxisServo;
-  class Primitive;
-  class RaySensorBank;
-  class SliderJoint;
-  class SpeedSensor;
-  class Spring;
-  class TwoAxisServo;
-  // Added sound sensors (2) class
-  class SoundSensor;
-}
-
-
-
-
-
-namespace lpzrobots
-{
 
 typedef struct
 {
@@ -96,33 +62,43 @@ typedef struct
 
 }DungBotConf;
 
-
+namespace lpzrobots
+{
 	class DungBot : public OdeRobot, public Inspectable
 	{
+
 		DungBotConf conf;
+
 		public:
 			static DungBotConf getDefaultConf()
 			{
 				DungBotConf conf;
+
 				//	Dependent parameters
 				conf.massFront = 1;
 				conf.massRear = 1;
 				conf.frontDimension = { 0.6, 0.65, 0.25 };
 				conf.rearDimension = { 1.0, 0.75, 0.25 };
 
+				//conf.shoulderLength = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
+				//conf.coxaLength = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+				//conf.femurLength = conf.coxaLength;	//TODO: Multiply all elements by 1.2
+				//conf.tibiaLength = conf.coxaLength;
 				conf.shoulderRotation = { osg::Matrix::rotate( ( ( M_PI )/2 ), 1, 0, 0 ), osg::Matrix::rotate( ( ( M_PI )/2 ), -1, 0, 0 ) };
 
-				// ------------ Leg dimensions --------
+				// TEMP LEGS
 				conf.shoulderLength = 0.5;
-				conf.shoulderRadius = 0.02;
+				conf.shoulderRadius = 0.05;
 				conf.coxaLength = 0.5;
-				conf.coxaRadius = 0.02;
+				conf.coxaRadius = 0.05;
 				conf.femurLength = 0.5;
-				conf.femurRadius = 0.03;
+				conf.femurRadius = 0.05;
 				conf.tebiaLength = 0.5;
-				conf.tebiaRadius = 0.02;
+				conf.tebiaRadius = 0.05;
 				conf.footRange = 0.075;
-				conf.footRadius = 0.02;
+				conf.footRadius = 0.05;
+				conf.legdistHindMiddle = conf.rearDimension[1];
+				conf.legdistFrontMiddle = conf.rearDimension[1];
 			    // ------------- Front legs -------------
 			    conf.fLegTrunkAngleV = 0.0;	// => forward/backward
 			    conf.fLegTrunkAngleH = 0.0;	// => upward/downward
@@ -175,7 +151,7 @@ typedef struct
 		          OneAxisServo * tcServo;
 		          OneAxisServo * ctrServo;
 		          OneAxisServo * ftiServo;
-		          Spring * footSpring;
+		          //Spring * footSpring;
 		          Primitive * shoulder;
 		          Primitive * coxa;
 		          Primitive * femur; 	//Called second in AmosII
