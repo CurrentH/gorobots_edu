@@ -16,7 +16,7 @@ namespace lpzrobots
 	DungBotSimulation::DungBotSimulation( void )
 	{
 		setTitle("DungBot simulation");
-		setGroundTexture("whiteground_crosses.jpg");
+		setGroundTexture("Images/whiteground.jpg");
 		simulation_time_seconds = 0.0;
 		trial_number = 0;
 		agent = NULL;
@@ -60,17 +60,57 @@ namespace lpzrobots
 		global.odeConfig.setParam( "controlinterval", 1 ); //TODO: Leon: Controlinterval?
 		global.odeConfig.setParam( "gravity", -9.8 );
 
-	   // Configure simulation
+	    // add playground
+	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.2, 0.3));
+	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
+	    playground->setPosition(osg::Vec3(0,0,.0));
+	    global.obstacles.push_back(playground);
+
+		// Configure simulation
 		simulation_time_seconds = 100;
 		number_of_runs = 1;
 		instantiateAgent( global );
 
-		// add playground
-		lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle,osg::Vec3(10, 0.2, 0.55));
-		playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall.jpg",-1.5,-3));
-		playground->setPosition(osg::Vec3(0,0,.0));
-		global.obstacles.push_back(playground); //ee
+
 	}
+
+	void DungBotSimulation::instantiateAgent( GlobalData& global )
+	{
+		// Instantiate robot
+		DungBotConf conf = DungBot::getDefaultConf();
+		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );	//TODO: Leon: osg = world, ode = physics?
+		robot->place( Pos( 0.0, 0.0, 2 ) ); // CONTROLS THE HEIGHT
+
+		// Instantiate controller
+		controller = new DungBotEmptyController( "DungBotEmptyController" );
+
+		// Create the wiring
+		auto wiring = new One2OneWiring( new NoNoise() );
+
+		// Create Agent
+		agent = new OdeAgent( global );
+		agent->init( controller, robot, wiring );
+		global.agents.push_back( agent );
+		global.configs.push_back( agent );
+
+		setSimulationDuration( simulation_time_seconds );
+
+		// create a fixed joint to hold the robot in the air at the beginning
+		robotfixator = new lpzrobots::FixedJoint(robot->getMainPrimitive(),global.environment);
+		robotfixator->init(odeHandle, osgHandle, true);
+
+		// inform global variable over everything that happened:
+		global.configs.push_back(robot);
+		global.agents.push_back(agent);
+		global.configs.push_back(controller);
+
+	    std::cout << "\n"
+	        << "################################\n"
+	        << "#   Press x to free amosII!    #\n"
+	        << "################################\n"
+	        << "\n" << std::endl;
+	}
+
 
 	void DungBotSimulation::addCallback( GlobalData& globalData, bool draw, bool pause, bool control )
 	{
@@ -103,43 +143,6 @@ namespace lpzrobots
 	void DungBotSimulation::setSimulationDuration( double seconds )
 	{
 		simulation_time = (long)( seconds/0.01 );
-	}
-
-	void DungBotSimulation::instantiateAgent( GlobalData& global )
-	{
-		// Instantiate robot
-		DungBotConf conf = DungBot::getDefaultConf();
-		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot robot" );	//TODO: Leon: osg = world, ode = physics?
-		robot->place( Pos( 0.0, 0.0, 2 ) ); // CONTROLS THE HEIGHT
-
-		// Instantiate controller
-		controller = new DungBotEmptyController( "DungBotEmptyController" );
-
-		// Create the wiring
-		auto wiring = new One2OneWiring( new NoNoise() );
-
-		// Create Agent
-		agent = new OdeAgent( global );
-		agent->init( controller, robot, wiring );
-		global.agents.push_back( agent );
-		global.configs.push_back( agent );
-
-		setSimulationDuration( simulation_time_seconds );
-
-		// create a fixed joint to hold the robot in the air at the beginning
-		robotfixator = new lpzrobots::FixedJoint(robot->getMainPrimitive(),global.environment);
-		robotfixator->init(odeHandle, osgHandle, false);
-
-		// inform global variable over everything that happened:
-		global.configs.push_back(robot);
-		global.agents.push_back(agent);
-		global.configs.push_back(controller);
-
-	    std::cout << "\n"
-	        << "################################\n"
-	        << "#   Press x to free amosII!    #\n"
-	        << "################################\n"
-	        << "\n" << std::endl;
 	}
 
 

@@ -31,7 +31,7 @@
 // simple wiring
 #include <selforg/one2onewiring.h>
 // the robot
-//#include <ode_robots/amosII.h>
+#include <ode_robots/amosII.h>
 #include <ode_robots/dungbeetle.h>
 
 // include the controller
@@ -150,7 +150,7 @@ class ThisSim : public lpzrobots::Simulation {
     //----------create a sphere as the target by Ren-----------------------------
 
     // Add amosII robot
-    DungBeetleConf myAmosIIConf = dungBeetle::getDefaultConf(1.0 /*_scale*/,1 /*_useShoulder*/,1 /*_useFoot*/,1 /*_useBack*/);
+    dungbeetleConf myAmosIIConf = dungbeetle::getDefaultConf(1.0 /*_scale*/,1 /*_useShoulder*/,1 /*_useFoot*/,1 /*_useBack*/);
     myAmosIIConf.rubberFeet = true;
     lpzrobots::OdeHandle rodeHandle = odeHandle;
     rodeHandle.substance = lpzrobots::Substance(3.0, 0.0, 50.0, 0.8);
@@ -160,7 +160,7 @@ class ThisSim : public lpzrobots::Simulation {
       myAmosIIConf.GoalSensor_references.push_back(obst.at(i)->getMainPrimitive());
     }
     //------------------- Link the sphere to the Goal Sensor by Ren---------------
-    amos = new dungBeetle(
+    amos = new dungbeetle(
         rodeHandle,
         osgHandle.changeColor(lpzrobots::Color(1, 1, 1)),
         myAmosIIConf, "AmosII");
@@ -231,7 +231,7 @@ class ThisSim : public lpzrobots::Simulation {
   protected:
   lpzrobots::Joint* robotfixator;
   AbstractController* controller;
-  dungBeetle* amos;
+  dungbeetle* amos;
 };
 
 int main(int argc, char **argv)

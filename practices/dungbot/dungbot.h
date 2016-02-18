@@ -49,6 +49,15 @@ typedef struct
 	double footRadius;
 	double legdistHindMiddle;
 	double legdistFrontMiddle;
+	double fLegTrunkAngleV;
+	double fLegTrunkAngleH;
+	double fLegRotAngle;
+	double mLegTrunkAngleV;
+	double mLegTrunkAngleH;
+	double mLegRotAngle;
+	double rLegTrunkAngleV;
+	double rLegTrunkAngleH;
+	double rLegRotAngle;
 
 }DungBotConf;
 
@@ -90,6 +99,18 @@ namespace lpzrobots
 				conf.footRadius = 0.05;
 				conf.legdistHindMiddle = conf.rearDimension[1];
 				conf.legdistFrontMiddle = conf.rearDimension[1];
+			    // ------------- Front legs -------------
+			    conf.fLegTrunkAngleV = 0.0;	// => forward/backward
+			    conf.fLegTrunkAngleH = 0.0;	// => upward/downward
+			    conf.fLegRotAngle = 0.0;	// => till
+			    // ------------- Middle legs ----------------
+			    conf.mLegTrunkAngleV = 0.0;	// => forward/backward
+			    conf.mLegTrunkAngleH = 0.0;	// => upward/downward
+			    conf.mLegRotAngle = 0.0;	// => till
+			    // ------------- Rear legs ------------------
+			    conf.rLegTrunkAngleV = 0.0;	// => forward/backward
+			    conf.rLegTrunkAngleH = 0.0;	// => upward/downward
+			    conf.rLegRotAngle = 0.0;	// => till
 
 				return conf;
 			}
@@ -142,7 +163,7 @@ namespace lpzrobots
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
-
+			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 

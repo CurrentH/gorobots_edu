@@ -44,14 +44,13 @@ namespace lpzrobots
 
     void DungBot::placeIntern( const Matrix& pose )
     {
-        Matrix initialPose;
         /**
             This is some (x,y,z) vector, with the position being the center of the body.
             So make some calculation for how the body looks like, so that the z-equation is
             in the third position.
         **/
 
-        initialPose = osg::Matrix::translate( Vec3( 0, 0, 0.5 ) * pose );
+        osg::Matrix initialPose = pose * TRANSM(0, 0, conf.rearDimension[2]+conf.coxaRadius*1.2);
         create( initialPose );
 
     }
@@ -92,18 +91,15 @@ namespace lpzrobots
 	     * LEGS
 	     ***********************************/
 		/* SE --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf */
+		makeAllLegs( pose , rear, front);
 
-		/* New leg making, based on dungbeetle.cpp */
-		const double coxaLength  = conf.coxaLength;
-		const double coxaRadius  = conf.coxaRadius;
-		const double femurLength = conf.femurLength;
-		const double femurRadius = conf.femurRadius;
-		const double tebiaLength = conf.tebiaLength; //- 2 * conf.tebiaRadius - conf.footRange;
-		const double tebiaRadius = conf.tebiaRadius;
-		const double footLength  = 2 * conf.tebiaRadius + conf.footRange - conf.footRadius;
-		const double footRadius  = conf.footRadius;
+    }
+
+    void DungBot::makeAllLegs( const Matrix& pose, Primitive* front, Primitive* rear)
+    {
+    	// representation of the origin
+    	const Pos nullpos(0,0,0);
 		double xPosition=0, yPosition=0, zPosition=0;
-
 		std::map<LegPos, osg::Matrix> legtrunkconnections;
 
 
@@ -114,7 +110,7 @@ namespace lpzrobots
 
 			// Make the right legs have a negative sign
 			const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
-			// Save hind legs
+			// Hind legs
 			const double lr2= leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
 			// create 3d-coordinates for the leg-trunk connection:
@@ -146,44 +142,46 @@ namespace lpzrobots
 			legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, 0, 0) * osg::Matrix::translate(pos) * pose;
 		}
 
-		// Some rotations.. Examine further
-		/*legtrunkconnections[R2] = osg::Matrix::rotate(M_PI/2, 0, 0, 1) * osg::Matrix::rotate(M_PI/2, 1, 0, 0)
-			* osg::Matrix::rotate(M_PI/2, 1, 1, 0) * legtrunkconnections[R2];
-		legtrunkconnections[L2] = osg::Matrix::rotate(M_PI/2, 0, 0, -1) * osg::Matrix::rotate(M_PI/2, -1, 0, 0)
-			* osg::Matrix::rotate(M_PI/2, 0, 1, 0) * legtrunkconnections[L2];
-		legtrunkconnections[R1] = osg::Matrix::rotate(M_PI/2, 0, 0, 1) * osg::Matrix::rotate(M_PI/2, 1, 0, 0)
-			* osg::Matrix::rotate(M_PI/2, 0, 1, 0) * legtrunkconnections[R1];
-		legtrunkconnections[L1] = osg::Matrix::rotate(M_PI/2, 0, 0, -1) * osg::Matrix::rotate(M_PI/2, -1, 0, 0)
-			* osg::Matrix::rotate(M_PI/2, 0, 1, 0) * legtrunkconnections[L1];
-		legtrunkconnections[R0] = osg::Matrix::rotate(M_PI/2, 0, 0, 1) * osg::Matrix::rotate(M_PI/2+100, 1, 0, 0)
-			  * osg::Matrix::rotate(M_PI/2, 0, 1, 0) * legtrunkconnections[R0];
-		legtrunkconnections[L0] = osg::Matrix::rotate(M_PI/2, 0, 0, -1) * osg::Matrix::rotate(M_PI/2+100, -1, 0, 0)
-			  * osg::Matrix::rotate(M_PI/2, 0, 1, 0) * legtrunkconnections[L0];*/
+        legtrunkconnections[R2] = osg::Matrix::rotate(conf.rLegRotAngle, 0, 0, 1) * osg::Matrix::rotate(conf.rLegTrunkAngleH, 1, 0, 0)
+                * osg::Matrix::rotate(conf.rLegTrunkAngleV, 1, 1, 0) * legtrunkconnections[R2];
+        legtrunkconnections[L2] = osg::Matrix::rotate(conf.rLegRotAngle, 0, 0, -1) * osg::Matrix::rotate(conf.rLegTrunkAngleH, -1, 0, 0)
+                * osg::Matrix::rotate(conf.rLegTrunkAngleV, 0, 1, 0) * legtrunkconnections[L2];
+        legtrunkconnections[R1] = osg::Matrix::rotate(conf.mLegRotAngle, 0, 0, 1) * osg::Matrix::rotate(conf.mLegTrunkAngleH, 1, 0, 0)
+                * osg::Matrix::rotate(conf.mLegTrunkAngleV, 0, 1, 0) * legtrunkconnections[R1];
+        legtrunkconnections[L1] = osg::Matrix::rotate(conf.mLegRotAngle, 0, 0, -1) * osg::Matrix::rotate(conf.mLegTrunkAngleH, -1, 0, 0)
+                * osg::Matrix::rotate(conf.mLegTrunkAngleV, 0, 1, 0) * legtrunkconnections[L1];
+        legtrunkconnections[R0] = osg::Matrix::rotate(conf.fLegRotAngle, 0, 0, 1) * osg::Matrix::rotate(conf.fLegTrunkAngleH, 1, 0, 0)
+				* osg::Matrix::rotate(conf.fLegTrunkAngleV, 0, 1, 0) * legtrunkconnections[R0];
+		legtrunkconnections[L0] = osg::Matrix::rotate(conf.fLegRotAngle, 0, 0, -1) * osg::Matrix::rotate(conf.fLegTrunkAngleH, -1, 0, 0)
+				* osg::Matrix::rotate(conf.fLegTrunkAngleV, 0, 1, 0) * legtrunkconnections[L0];
+
+
+		std::vector<Primitive*> tarsusParts;
 
 	    // create the legs
 	    for (int i = 0; i < LEG_POS_MAX; i++)
 	    {
 			LegPos leg = LegPos(i);
 
-			// +1 for R1,R2,R3, -1 for L1,L2,tebiaRadius
+			// +1 for R1,R2,R3, -1 for L1,L2,conf.tebiaRadius
 			const double pmrl = (leg == R0 || leg == R1 || leg == R2) - (leg == L0 || leg == L1 || leg == L2);
 
 			//first Coxa position
 			osg::Matrix c1 = legtrunkconnections[leg];
 
 			// Coxa placement
-			osg::Matrix CoaxCenter = osg::Matrix::translate(0, 0, -coxaLength / 2) * c1; //Position of Center of Mass
-			Primitive* coxaThorax = new Capsule(coxaRadius, coxaLength);
+			osg::Matrix coaxCenter = osg::Matrix::translate(0, 0, -conf.coxaLength / 2) * c1; //Position of Center of Mass
+			Primitive* coxaThorax = new Capsule(conf.coxaRadius, conf.coxaLength);
 			coxaThorax->setTexture("coxa.jpg");
 			coxaThorax->init(odeHandle, 1, osgHandle); // TODO: 1 should be coxa mass
-			coxaThorax->setPose(CoaxCenter);
+			coxaThorax->setPose(coaxCenter);
 			legs[leg].coxa = coxaThorax;
 			objects.push_back(coxaThorax);
 
 			// Femur placement
-			osg::Matrix c2 = osg::Matrix::translate(0, 0, -coxaLength/2 ) * CoaxCenter;//coxaLength/2
-			osg::Matrix femurcenter = osg::Matrix::translate(0, 0, -femurLength / 2) * c2;
-			Primitive* femurThorax = new Capsule(femurRadius, femurLength);
+			osg::Matrix c2 = osg::Matrix::translate(0, 0, -conf.coxaLength/2 ) * coaxCenter;//conf.coxaLength/2
+			osg::Matrix femurcenter = osg::Matrix::translate(0, 0, -conf.femurLength / 2) * c2;
+			Primitive* femurThorax = new Capsule(conf.femurRadius, conf.femurLength);
 			femurThorax->setTexture("femur.jpg");
 			femurThorax->init(odeHandle, 1, osgHandle); // TODO: 1 should be mass
 			femurThorax->setPose(femurcenter);
@@ -191,9 +189,9 @@ namespace lpzrobots
 			objects.push_back(femurThorax);
 
 			// Tibia placement
-			Primitive* tebia = new Capsule(tebiaRadius, tebiaLength);
-			osg::Matrix c3 = osg::Matrix::translate(0, 0, -femurLength / 2) * femurcenter;
-			osg::Matrix tibiaCenter = osg::Matrix::translate(0, 0, -tebiaLength / 2) * c3;
+			Primitive* tebia = new Capsule(conf.tebiaRadius, conf.tebiaLength);
+			osg::Matrix c3 = osg::Matrix::translate(0, 0, -conf.femurLength / 2) * femurcenter;
+			osg::Matrix tibiaCenter = osg::Matrix::translate(0, 0, -conf.tebiaLength / 2) * c3;
 			tebia->setTexture("tibia.jpg");
 			tebia->init(odeHandle, 1, osgHandle); // TODO: 1 should be tebia mass
 			tebia->setPose(tibiaCenter);
@@ -214,26 +212,26 @@ namespace lpzrobots
 
 			// hingeJoint to first limb
 			HingeJoint* j = new HingeJoint((leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1); // Only L0 and R0 should be attached to front
-			j->init(odeHandle, osgHandle.changeColor("joint"), true, coxaRadius * 2.1);
+			j->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 2.1);
 			joints.push_back(j);
 
 			// create the joint from first to second limb (coxa to second)
 			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
-			k->init(odeHandle, osgHandle.changeColor("joint"), true, coxaRadius * 2.1);
+			k->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 2.1);
 			legs[leg].ctJoint = k;
 			joints.push_back(k);
 
 
 			// springy knee joint
 			HingeJoint* l = new HingeJoint(femurThorax, tebia, anchor3, -axis3);
-			l->init(odeHandle, osgHandle.changeColor("joint"), true, tebiaRadius * 2.1);
+			l->init(odeHandle, osgHandle.changeColor("joint"), true, conf.tebiaRadius * 2.1);
 			legs[leg].ftJoint = l;
 			joints.push_back(l);
 
 	        /*// Spring foot at the end // true = use foot
 			if (false)
 			{
-				osg::Matrix c4 = osg::Matrix::translate(0, 0, -tebiaLength / 2 - 2 * conf.tebiaRadius - conf.footRange + conf.footRadius) * tibiaCenter;
+				osg::Matrix c4 = osg::Matrix::translate(0, 0, -conf.tebiaLength / 2 - 2 * conf.conf.tebiaRadius - conf.footRange + conf.conf.footRadius) * tibiaCenter;
 				osg::Matrix m4 = osg::Matrix::translate(0, 0, 0.0) * c4; //0.0 should be footspringpreload
 
 				const osg::Vec3 anchor4 = nullpos * m4;
@@ -247,7 +245,7 @@ namespace lpzrobots
 				}
 
 				Primitive* foot;
-				foot = new Capsule(footRadius, footLength);
+				foot = new Capsule(conf.footRadius, conf.footLength);
 				foot->setTexture("Images/fur2.jpg");
 				foot->init(my_odeHandle, 1, osgHandle); // TODO 1 should be food mass
 				foot->setPose(m4);
@@ -255,7 +253,7 @@ namespace lpzrobots
 				objects.push_back(foot);
 
 				SliderJoint* m = new SliderJoint(tebia, foot, anchor4, axis4);
-				m->init(odeHandle, osgHandle.changeColor("joint"), true, tebiaRadius, true);
+				m->init(odeHandle, osgHandle.changeColor("joint"), true, conf.tebiaRadius, true);
 				legs[leg].footJoint = m;
 				joints.push_back(m);
 
