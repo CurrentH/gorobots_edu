@@ -68,6 +68,7 @@ namespace lpzrobots
 
     void DungBot::update( void )
     {
+    	OdeRobot::update();
     }
 
     void DungBot::sense( GlobalData& globalData )
@@ -76,7 +77,6 @@ namespace lpzrobots
 
     void DungBot::create( const Matrix& pose )
     {
-
     	odeHandle.createNewSimpleSpace(parentspace, false);
 
     	/************************************
@@ -101,7 +101,7 @@ namespace lpzrobots
 	     * LEGS
 	     ***********************************/
 		/* SE --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf */
-		makeAllLegs( pose , rear, front);
+		makeAllLegs( pose , rear, front );
 
     }
 
