@@ -12,6 +12,8 @@
 #ifndef ODE_ROBOTS_ROBOTS_DUNGBOTPHASECONTROLLER_H_
 #define ODE_ROBOTS_ROBOTS_DUNGBOTPHASECONTROLLER_H_
 
+#include "DungBotSensorMotorDefinition.h"
+
 #include <selforg/abstractcontroller.h>
 #include <ode_robots/joint.h>
 #include <ode_robots/contactsensor.h>
@@ -19,28 +21,29 @@
 #include <fstream>
 #include <map>
 
-class DungBotEmptyController : public AbstractController {
-public:
-	DungBotEmptyController( const std::string& name );
-	virtual ~DungBotEmptyController();
+class DungBotEmptyController : public AbstractController
+{
+	public:
+		DungBotEmptyController( const std::string& name );
+		virtual ~DungBotEmptyController();
 
-	virtual void init( int sensornumber, int motornumber, RandGen* randGen = 0 )  override;
-	virtual int getSensorNumber( void ) const override;
-	virtual int getMotorNumber( void ) const override;
+		virtual void init( int sensornumber, int motornumber, RandGen* randGen = 0 )  override;
+		virtual int getSensorNumber( void ) const override;
+		virtual int getMotorNumber( void ) const override;
 
-	virtual void step( const sensor* sensors, int sensornumber, motor* motors, int motornumber ) override;
-	virtual void stepNoLearning( const sensor* , int number_sensors, motor* , int number_motors ) override;
+		virtual void step( const sensor* sensors, int sensorNumber, motor* motors, int motorNumber ) override;
+		virtual void stepNoLearning( const sensor* , int sensorNumber, motor* motors, int motorNumber ) override;
 
-	virtual bool store( FILE* f ) const override;
-	virtual bool restore( FILE* f ) override;
+		virtual bool store( FILE* f ) const override;
+		virtual bool restore( FILE* f ) override;
 
-protected:
-	double nSensors;
-	double nMotors;
-	bool initialised;
-	long ticks_since_init;
-	double speedSetpoint;
-	double phaseSetpoint;
+	protected:
+		double nSensors;
+		double nMotors;
+		bool initialised;
+		long ticks_since_init;
+		double speedSetpoint;
+		double phaseSetpoint;
 };
 
 

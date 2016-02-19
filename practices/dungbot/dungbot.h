@@ -12,6 +12,9 @@
 #ifndef __DUNGBOT_H
 #define __DUNGBOT_H
 
+//	include motor and sensor definitions
+#include "DungBotSensorMotorDefinition.h"
+
 // #include <ode/ode.h>
 #include <ode-dbl/ode.h>
 
@@ -29,60 +32,57 @@
 
 // Extra includes
 #include <vector>
+#include <iostream>
 #include <selforg/inspectable.h>
 #include <ode_robots/oderobot.h>
 
 /**
  * forward declarations
  */
-namespace lpzrobots {
-  class HingeJoint;
-  class IRSensor;
-  class Joint;
-  class OneAxisServo;
-  class Primitive;
-  class RaySensorBank;
-  class SliderJoint;
-  class SpeedSensor;
-  class Spring;
-  class TwoAxisServo;
-  // Added sound sensors (2) class
-  class SoundSensor;
+// TODO: Any reason these is here, and not inside the namespace below?
+namespace lpzrobots
+{
+	class HingeJoint;
+	class IRSensor;
+	class Joint;
+	class OneAxisServo;
+	class Primitive;
+	class RaySensorBank;
+	class SliderJoint;
+	class SpeedSensor;
+	class Spring;
+	class TwoAxisServo;
+	// Added sound sensors (2) class
+	class SoundSensor;
 }
-
-
-
-
 
 namespace lpzrobots
 {
+	typedef struct
+	{
+		double massFront;
+		double massRear;
+		std::vector<double> frontDimension;
+		std::vector<double> rearDimension;
 
-typedef struct
-{
-	double massFront;
-	double massRear;
-	std::vector<double> frontDimension;
-	std::vector<double> rearDimension;
+		// Legs
+		double coxaLength;
+		double coxaRadius;
+		double coxaMass;
+		double femurLength;
+		double femurRadius;
+		double femurMass;
+		double tibiaLength;
+		double tibiaRadius;
+		double tibiaMass;
+		double footRange;
+		double footRadius;
+		double footMass;
+		double footSpringPreload;
+		double tarusMass;
+		bool   makeFoot;
 
-	// Legs
-	double coxaLength;
-	double coxaRadius;
-	double coxaMass;
-	double femurLength;
-	double femurRadius;
-	double femurMass;
-	double tibiaLength;
-	double tibiaRadius;
-	double tibiaMass;
-	double footRange;
-	double footRadius;
-	double footMass;
-	double footSpringPreload;
-	double tarusMass;
-	bool   makeFoot;
-
-}DungBotConf;
-
+	}DungBotConf;
 
 	class DungBot : public OdeRobot, public Inspectable
 	{
@@ -91,7 +91,6 @@ typedef struct
 			static DungBotConf getDefaultConf()
 			{
 				DungBotConf conf;
-
 
 				/*		MATHIAS THOR's MASS CALCULATION (c) :D
 				 * ---------------------------------------------------------------------
@@ -134,7 +133,8 @@ typedef struct
 				return conf;
 			}
 
-			enum LegPos {
+			enum LegPos
+			{
 				L0, L1, L2, R0, R1, R2, LEG_POS_MAX
 			};
 			enum LegJointType
@@ -148,6 +148,7 @@ typedef struct
 				//  Maximum value, used for iteration
 				LEG_JOINT_TYPE_MAX
 			};
+			typedef DungBotMotorSensor::DungBotMotorNames MotorName;
 
 			DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
 						const DungBotConf &conf = getDefaultConf(),
@@ -160,44 +161,64 @@ typedef struct
 			virtual void sense( GlobalData& globalData );
 			virtual ~DungBot();
 
+
+			virtual void setMotorsIntern( const double* motors, int motornumber );
+			virtual int getSensorsIntern( sensor* sensors, int sensornumber );
+
+			virtual int getSensorNumberIntern( void );
+			virtual int getMotorNumberIntern( void );
+
+			static MotorName getMotorName( LegPos leg, LegJointType joint );
+
 		protected:
-		      struct Leg {
-		          Leg();
-		          HingeJoint * tcJoint;
-		          HingeJoint * ctJoint;	//Called ctrJoint in AmosII
-				  HingeJoint * ftJoint;	//Called ftiJoing in AmosII
-		        /*Slider*/Joint * footJoint;
-		          OneAxisServo * tcServo;
-		          OneAxisServo * ctrServo;
-		          OneAxisServo * ftiServo;
-		          Spring * footSpring;
-		          Primitive * shoulder;
-		          Primitive * coxa;
-		          Primitive * femur; 	//Called second in AmosII
-		          Primitive * tibia;
-		          Primitive * foot;
-		      };
+			void nameMotor( const int motorNo, const char* name );
+			void nameSensor( const int sensorNo, const char* name );
+
+			struct Leg
+			{
+				Leg();
+				HingeJoint * tcJoint;
+				HingeJoint * ctJoint;	//Called ctrJoint in AmosII
+				HingeJoint * ftJoint;	//Called ftiJoing in AmosII
+				/*Slider*/Joint * footJoint;
+				OneAxisServo * tcServo;
+				OneAxisServo * ctrServo;
+				OneAxisServo * ftiServo;
+				Spring * footSpring;
+				Primitive * shoulder;
+				Primitive * coxa;
+				Primitive * femur; 	//Called second in AmosII
+				Primitive * tibia;
+				Primitive * foot;
+			};
+
+			Position startPosition;
+			Position position;
 
 		private:
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
+			lpzrobots::Primitive* makeLegSphereJoint( const osg::Matrix&, const double, const double );
 			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 
-			lpzrobots::Primitive* makeLegSphereJoint( const osg::Matrix&, const double, const double );
+			bool created;
 
-			// for legs
-			typedef std::map<LegPos, Leg> LegMap;
+			//	For legs
+			typedef std::map< LegPos, Leg > LegMap;
+			typedef std::map< MotorName, OneAxisServo* > MotorMap;
+			typedef std::map< std::pair< LegPos, int >, ContactSensor* > TarsusContactMap;
 			LegMap legs;
 
-		protected:
-			Position startPosition;
-			Position position;
+			//	For servos
+			OneAxisServo * backboneServo;
+			MotorMap servos;
+
+			//	For tarsus contact
+			TarsusContactMap tarsusContactSensors;
 	};
 } //End namespace lpzrobot
-
-
 
 #endif

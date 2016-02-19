@@ -16,25 +16,68 @@ using namespace std;
 
 namespace lpzrobots
 {
-	DungBot::Leg::Leg() {
-	  tcJoint = 0;
-	  ctJoint = 0;
-	  ftJoint = 0;
-	  footJoint = 0;
-	  tcServo = 0;
-	  ctrServo = 0;
-	  ftiServo = 0;
-	  footSpring = 0;
-	  shoulder = 0;
-	  coxa = 0;
-	  femur = 0;
-	  tibia = 0;
-	  foot = 0;
+	DungBot::Leg::Leg()
+	{
+		tcJoint = 0;
+		ctJoint = 0;
+		ftJoint = 0;
+		footJoint = 0;
+		tcServo = 0;
+		ctrServo = 0;
+		ftiServo = 0;
+		footSpring = 0;
+		shoulder = 0;
+		coxa = 0;
+		femur = 0;
+		tibia = 0;
+		foot = 0;
 	}
 
     DungBot::DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle, const DungBotConf& conf, const string& name )
     : OdeRobot( odeHandle, osgHandle, name, "2.0" ), conf( conf )
     {
+    	created = false;
+
+    	//	Name the sensors
+    	nameSensor(DungBotMotorSensor::TR0_as, "*TR0 angle sensor");
+		nameSensor(DungBotMotorSensor::TR1_as, "*TR1 angle sensor");
+		nameSensor(DungBotMotorSensor::TR2_as, "*TR2 angle sensor");
+		nameSensor(DungBotMotorSensor::TL0_as, "*TL0 angle sensor");
+		nameSensor(DungBotMotorSensor::TL1_as, "*TL1 angle sensor");
+		nameSensor(DungBotMotorSensor::TL2_as, "*TL2 angle sensor");
+		nameSensor(DungBotMotorSensor::CR0_as, "*CR0 angle sensor");
+		nameSensor(DungBotMotorSensor::CR1_as, "*CR1 angle sensor");
+		nameSensor(DungBotMotorSensor::CR2_as, "*CR2 angle sensor");
+		nameSensor(DungBotMotorSensor::CL0_as, "*CL0 angle sensor");
+		nameSensor(DungBotMotorSensor::CL1_as, "*CL1 angle sensor");
+		nameSensor(DungBotMotorSensor::CL2_as, "*CL2 angle sensor");
+		nameSensor(DungBotMotorSensor::FR0_as, "*FR0 angle sensor");
+		nameSensor(DungBotMotorSensor::FR1_as, "*FR1 angle sensor");
+		nameSensor(DungBotMotorSensor::FR2_as, "*FR2 angle sensor");
+		nameSensor(DungBotMotorSensor::FL0_as, "*FL0 angle sensor");
+		nameSensor(DungBotMotorSensor::FL1_as, "*FL1 angle sensor");
+		nameSensor(DungBotMotorSensor::FL2_as, "*FL2 angle sensor");
+
+        //	Name the motors
+        nameMotor(DungBotMotorSensor::TR0_m, "TR0 motor");
+        nameMotor(DungBotMotorSensor::TR1_m, "TR1 motor");
+        nameMotor(DungBotMotorSensor::TR2_m, "TR2 motor");
+        nameMotor(DungBotMotorSensor::TL0_m, "TL0 motor");
+        nameMotor(DungBotMotorSensor::TL1_m, "TL1 motor");
+        nameMotor(DungBotMotorSensor::TL2_m, "TL2 motor");
+        nameMotor(DungBotMotorSensor::CR0_m, "CR0 motor");
+        nameMotor(DungBotMotorSensor::CR1_m, "CR1 motor");
+        nameMotor(DungBotMotorSensor::CR2_m, "CR2 motor");
+        nameMotor(DungBotMotorSensor::CL0_m, "CL0 motor");
+        nameMotor(DungBotMotorSensor::CL1_m, "CL1 motor");
+        nameMotor(DungBotMotorSensor::CL2_m, "CL2 motor");
+        nameMotor(DungBotMotorSensor::FR0_m, "FR0 motor");
+        nameMotor(DungBotMotorSensor::FR1_m, "FR1 motor");
+        nameMotor(DungBotMotorSensor::FR2_m, "FR2 motor");
+        nameMotor(DungBotMotorSensor::FL0_m, "FL0 motor");
+        nameMotor(DungBotMotorSensor::FL1_m, "FL1 motor");
+        nameMotor(DungBotMotorSensor::FL2_m, "FL2 motor");
+        nameMotor(DungBotMotorSensor::BJ_m, "BJ motor");
     }
 
     DungBot::~DungBot()
@@ -52,7 +95,6 @@ namespace lpzrobots
 
         osg::Matrix initialPose = pose * osg::Matrix::translate(0, 0, conf.rearDimension[2]+conf.coxaRadius*1.2);
         create( initialPose );
-
     }
 
     void DungBot::doInternalStuff( GlobalData& globalData )
@@ -69,14 +111,29 @@ namespace lpzrobots
     void DungBot::update( void )
     {
     	OdeRobot::update();
+    	assert( created );
     }
 
     void DungBot::sense( GlobalData& globalData )
     {
+    	OdeRobot::sense( globalData );
+
+    	for( int i = 0; i < LEG_POS_MAX; i++ )
+		{
+			for( int j = 1; j < 6; j++ )
+			{
+				if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+				{
+					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->sense( globalData );
+				}
+			}
+		}
     }
 
     void DungBot::create( const Matrix& pose )
     {
+    	assert( !created );
+
     	odeHandle.createNewSimpleSpace(parentspace, false);
 
     	std::cout << "FRONT MASS:\t" << conf.massFront << std::endl;
@@ -98,7 +155,6 @@ namespace lpzrobots
     	osg::Matrix frontPos = osg::Matrix::translate( ( conf.frontDimension[0] / 2 ), 0, 0) * pose;
 		auto front = makeBody( frontPos, conf.massFront, conf.frontDimension );
 
-
 		// representation of the origin
 		const Pos nullpos(0,0,0);
 
@@ -109,8 +165,9 @@ namespace lpzrobots
 	     * LEGS
 	     ***********************************/
 		/* SE --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf */
-		makeAllLegs( pose , rear, front );
+		makeAllLegs( pose , rear, front );	//TODO: Edit the order for the front and rear here.
 
+		created = true;
     }
 
     void DungBot::makeAllLegs( const Matrix& pose, Primitive* front, Primitive* rear)
@@ -119,7 +176,6 @@ namespace lpzrobots
     	const Pos nullpos(0,0,0);
 		double xPosition=0, yPosition=0, zPosition=0;
 		std::map<LegPos, osg::Matrix> legtrunkconnections;
-
 
 		// The purpose of this for-loop is to get all the leg-trunk-connections
 		for (int i = 0; i < LEG_POS_MAX; i++) // Run through all of the legs
@@ -132,34 +188,35 @@ namespace lpzrobots
 			const double lr2= leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
 			// create 3d-coordinates for the leg-trunk connection:
-			switch (i) {
-			  case L0:
-			  case R0:
-				  xPosition = conf.frontDimension[0]/2;
-				  yPosition = lr * conf.frontDimension[1]/3;
-				  zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
-				  break;
-			  case L1:
-			  case R1:
-				  xPosition = -conf.rearDimension[0]/3;
-				  yPosition = lr * conf.rearDimension[1]/3;
-				  zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
-				  break;
-			  case L2:
-			  case R2:
-				  xPosition = (-2*conf.rearDimension[0])/3;
-				  yPosition = lr * conf.rearDimension[1]/3;
-				  zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
-				  break;
-			  default:
-				  xPosition = 0;
-			  }
+			switch (i)
+			{
+				case L0:
+				case R0:
+					xPosition = conf.frontDimension[0]/2;
+					yPosition = lr * conf.frontDimension[1]/3;
+					zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
+					break;
+				case L1:
+				case R1:
+					xPosition = -conf.rearDimension[0]/3;
+					yPosition = lr * conf.rearDimension[1]/3;
+					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
+					break;
+				case L2:
+				case R2:
+					xPosition = (-2*conf.rearDimension[0])/3;
+					yPosition = lr * conf.rearDimension[1]/3;
+					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
+					break;
+				default:
+					xPosition = 0;
+			}
+
 			Pos pos = Pos(xPosition,yPosition,zPosition);
 
 		    // Now the rotation. lr2 rotates the four hind legs (PI/2)/2 in Y...
 			legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, lr2/2, 0) * osg::Matrix::translate(pos) * pose;
 		}
-
 
 		std::vector<Primitive*> tarsusParts;
 
@@ -168,7 +225,7 @@ namespace lpzrobots
 	    {
 			LegPos leg = LegPos(i);
 
-			// +1 for R1,R2,R3, -1 for L1,L2,conf.tebiaRadius
+			//	+1 for R0,R1,R2, -1 for L0,L1,L2 conf.tebiaRadius
 			//const double pmrl = (leg == R0 || leg == R1 || leg == R2) - (leg == L0 || leg == L1 || leg == L2);
 
 	        const double backLeg = (leg == R1 || leg == R2) - (leg == L1 || leg == L2);
@@ -214,20 +271,20 @@ namespace lpzrobots
 	        Axis axis1 = Axis(0,0,backLeg+frontL) * c1;
 	        switch (i)
 	        {
-	        case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;//front left
-	        break;
-	        case 1: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;//middle left
-	        break;
-	        case 2: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //rear left ok
-	        break;
-	        case 3: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //front right
-	        break;
-	        case 4: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;  // middle right
-	        break;
-	        case 5: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;  // rear right ok
-	        break;
-	        default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;
-	        break;
+				case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;//front left
+				break;
+				case 1: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;//middle left
+				break;
+				case 2: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //rear left ok
+				break;
+				case 3: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //front right
+				break;
+				case 4: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;  // middle right
+				break;
+				case 5: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;  // rear right ok
+				break;
+				default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;
+				break;
 	        }
 
 			// Proceed along the leg (and the respective z-axis) for second limb
@@ -235,20 +292,20 @@ namespace lpzrobots
 			Axis axis2 = Axis(backLeg+frontL,backLegInverse,backLeg) * c2;
 			switch (i)
 			{
-			case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;//front left
-			break;
-			case 1:axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-100,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2; //midle left ok
-			break;
-			case 2: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-80,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2; //rear left ok
-			break;
-			case 3: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2; //front right
-			break;
-			case 4: axis2=osg::Matrix::rotate(M_PI/180*180,1,0,0)*osg::Matrix::rotate(-95*(M_PI/180-100)+M_PI,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // middle right
-			break;
-			case 5: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate((M_PI/180*-80),0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // rear right ok
-			break;
-			default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
-			break;
+				case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;//front left
+				break;
+				case 1:axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-100,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2; //midle left ok
+				break;
+				case 2: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-80,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2; //rear left ok
+				break;
+				case 3: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2; //front right
+				break;
+				case 4: axis2=osg::Matrix::rotate(M_PI/180*180,1,0,0)*osg::Matrix::rotate(-95*(M_PI/180-100)+M_PI,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // middle right
+				break;
+				case 5: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate((M_PI/180*-80),0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // rear right ok
+				break;
+				default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
+				break;
 			}
 
 			//and third
@@ -256,20 +313,20 @@ namespace lpzrobots
 	        Axis axis3 = Axis(backLeg+frontL,backLegInverse-frontInverse,-frontL) * c3;
 	        switch (i)
 	        {
-	        case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
-	        break;
-	        case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
-	        break;
-	        case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left ok
-	        break;
-	        case 3: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //front right
-	        break;
-	        case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  // middle right
-	        break;
-	        case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; // rear right ok
-	        break;
-	        default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
-	        break;
+				case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
+				break;
+				case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
+				break;
+				case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left ok
+				break;
+				case 3: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //front right
+				break;
+				case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  // middle right
+				break;
+				case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; // rear right ok
+				break;
+				default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
+				break;
 	        }
 
 			// hingeJoint to first limb
@@ -281,6 +338,7 @@ namespace lpzrobots
 	        // otherwise. Parameters are set later
 			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].tcServo = servo1;
+			servos[ getMotorName( leg, TC ) ] = servo1;
 
 			// create the joint from first to second limb (coxa to femur)
 			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
@@ -292,6 +350,7 @@ namespace lpzrobots
 	        // otherwise. Parameters are set later
 			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].ctrServo = servo2;
+			servos[ getMotorName( leg, CTR ) ] = servo2;
 
 			// springy knee joint
 			HingeJoint* l = new HingeJoint(femurThorax, tibia, anchor3, -axis3);
@@ -303,9 +362,10 @@ namespace lpzrobots
 	        // otherwise. Parameters are set later
 			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].ftiServo = servo3;
+			servos[ getMotorName( leg, FTI ) ] = servo3;
 
 			// Foot
-			if(conf.makeFoot) // toggle foot
+			if( conf.makeFoot ) // toggle foot
 			{
 				osg::Matrix c4 = osg::Matrix::translate(0, 0, -conf.tibiaLength / 2 - conf.footRange) * tibiaCenter;
 				osg::Matrix footCenter = osg::Matrix::translate(0, 0, -conf.footSpringPreload) * c4;
@@ -318,7 +378,6 @@ namespace lpzrobots
 				// set the foot to use rubberFeet
 				const Substance FootSubstance(3.0, 0.0, 500.0, 0.1);
 				my_odeHandle.substance = FootSubstance;
-
 
 				Primitive* foot;
 				foot = new Capsule(conf.footRadius, conf.footRange);
@@ -360,28 +419,33 @@ namespace lpzrobots
 				//rotate manually tarsus here
 				switch (i)
 				{
-				case 0: angleTarsus=0;//front left
-				break;
-				case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20; //middle left
-				break;
-				case 2: angleTarsus=0; //rear left ok
-				break;
-				case 3: angleTarsus=(M_PI/180)*20; //front right
-				break;
-				case 4: angleTarsus=(M_PI/180)*140;  // middle right
-				break;
-				case 5: angleTarsus=-(M_PI/180)*290;  // rear right ok
-				break;
-				default: angleTarsus=0;
-				break;
+					case 0: angleTarsus=0;//front left
+					break;
+					case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20; //middle left
+					break;
+					case 2: angleTarsus=0; //rear left ok
+					break;
+					case 3: angleTarsus=(M_PI/180)*20; //front right
+					break;
+					case 4: angleTarsus=(M_PI/180)*140;  // middle right
+					break;
+					case 5: angleTarsus=-(M_PI/180)*290;  // rear right ok
+					break;
+					default: angleTarsus=0;
+					break;
 				}
 
-				if(i < 2){
-				 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
-				}else if( i > 3){
-				 m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
-				}else{
-				 m6 = m5;
+				if( i < 2 )
+				{
+					m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
+				}
+				else if( i > 3 )
+				{
+					m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
+				}
+				else
+				{
+					m6 = m5;
 				}
 				m6 = osg::Matrix::rotate(0,1,0,0) *osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(angleTarsus,0,0,1)* osg::Matrix::translate(0,0,-length/2) * m6 ;
 
@@ -395,46 +459,48 @@ namespace lpzrobots
 				q->init(odeHandle, osgHandle, false);
 				joints.push_back(k);
 
-
-
 				Primitive *section = tarsus;
 
-				for(int j = 1; j < 6; j++){
+				for( int j = 1; j < 6; j++ )
+				{
+					 double lengthS = length/1.9;
+					 double radiusS = radius/1.5;
+					 section = new Capsule( radiusS, lengthS );
+					 section->setTexture( "tarsus.jpg" );
+					 section->init( odeHandle, mass, osgHandle );
 
-				 double lengthS = length/1.9;
-				 double radiusS = radius/1.5;
-				 section = new Capsule(radiusS,lengthS);
-				 section->setTexture("tarsus.jpg");
-				 section->init(odeHandle, mass, osgHandle);
+					 osg::Matrix m7;
 
-				 osg::Matrix m7;
+					 if( i < 2 )
+					 {
+						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+								osg::Matrix::translate(0,0,-length/2) *
+								m6;
+					 }
+					 else if(i > 3)
+					 {
+						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+								osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+								osg::Matrix::translate(0,0,-length/2) *
+								m6;
+					 }
+					 else
+					 {
+						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+								osg::Matrix::translate(0,0,-length/2) *
+								m6;
+					 }
 
-				 if(i < 2){
-					 m7 =                  osg::Matrix::translate(0,0,-lengthS/2) *
-							 osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
-							 osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-							 osg::Matrix::translate(0,0,-length/2) *
-							 m6;
-				 }else if(i > 3){
-					 m7 =                       osg::Matrix::translate(0,0,-lengthS/2) *
-							 osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
-							 osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-							 osg::Matrix::translate(0,0,-length/2) *
-							 m6;
-
-				 }else{
-					 m7 =                             osg::Matrix::translate(0,0,-lengthS/2) *
-							 osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-							 osg::Matrix::translate(0,0,-length/2) *
-							 m6;
-				 }
-
-				 section->setPose(m7);
-				 objects.push_back(section);
-				 tarsusParts.push_back(section);
+					 section->setPose(m7);
+					 objects.push_back(section);
+					 tarsusParts.push_back(section);
 
 
-				 if(j==1)
+				 if( j == 1 )
 				 {
 					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
@@ -444,10 +510,8 @@ namespace lpzrobots
 					 //auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
 					 //tarsussprings.push_back(servo);
 					 //addMotor(spring);
-
 				 }
-
-				 if(j==2)
+				 else if( j == 2 )
 				 {
 					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
@@ -457,12 +521,9 @@ namespace lpzrobots
 					 //auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
 					 //tarsussprings.push_back(servo);
 					 //addMotor(spring);
-
 				 }
-
-
-
-				 else{
+				 else
+				 {
 					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 					 // servo used as a spring
@@ -476,20 +537,14 @@ namespace lpzrobots
 				 m6 = m7;
 
 				 //tarsusContactSensors[std::make_pair(LegPos(i),j)] = new ContactSensor(true, 65/*koh changed 100*/, 1.5 * radiusS, false, true, Color(1,9,3));
-				 //tarsusContactSensors[std::make_pair(LegPos(i),j)]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
-				 //tarsusContactSensors[std::make_pair(LegPos(i),j)]->init(tarsusParts.at(j));
+				 tarsusContactSensors[std::make_pair(LegPos(i),j)] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
+				 tarsusContactSensors[std::make_pair(LegPos(i),j)]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
+				 tarsusContactSensors[std::make_pair(LegPos(i),j)]->init(tarsusParts.at(j));
 				}
 			}
-
-
-
 			tarsusParts.clear();
-
-
-
-
-	      }
 	    }
+    }
 
     lpzrobots::Primitive* DungBot::makeBody( const Matrix& pose, const double mass, const std::vector<double> dimension )
     {
@@ -510,7 +565,6 @@ namespace lpzrobots
     lpzrobots::Primitive* DungBot::makeLegPart( const osg::Matrix& pose, const double mass, const double legRadius, const double legHeight)
     {
     	// Allocate object
-    	//lpzrobots::Primitive* leg = new Capsule( legRadius, legHeight );
     	lpzrobots::Primitive* leg = new Cylinder( legRadius, legHeight );
     	// Set texture from Image library
     	leg->setTexture( "Images/red_velour.rgb" );
@@ -526,12 +580,14 @@ namespace lpzrobots
 
     void DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
-		HingeJoint* hinge = new HingeJoint(frontLimb, rearLimb, position, axis);
+		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 		joints.push_back( hinge );
 
 		/**  Moved this one down from "Create"   **/
-		//OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -1, 1, 1, 0.01, 0, 1.0 );
+		OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -1, 1, 10, 0.01, 0, 1.0 );
+		servos[DungBotMotorSensor::BJ_m] = servo;
+		backboneServo = servo;
     }
 
     void DungBot::makeLegHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
@@ -557,5 +613,127 @@ namespace lpzrobots
     	return sphereJoint;
     }
 
+	void DungBot::nameMotor( const int motorNumber, const char* name )
+	{
+		addInspectableDescription( "y[" + std::itos( motorNumber ) + "]", name );
+	}
+	void DungBot::nameSensor( const int sensorNumber, const char* name )
+	{
+		addInspectableDescription( "x[" + std::itos( sensorNumber ) + "]", name );
+	}
 
+	void DungBot::setMotorsIntern( const double* motors, int motorNumber )
+	{
+		assert( created );
+		assert( motorNumber >= getMotorNumberIntern() );
+		for( MotorMap::iterator it = servos.begin(); it != servos.end(); it++ )
+		{
+			MotorName const name = it->first;
+			OneAxisServo * const servo = it->second;
+			//We multiple with -1 to map to real hexapod
+			if( servo )
+			{
+				servo->set(-motors[name]);
+			}
+		}
+	}
+
+	int DungBot::getSensorsIntern( double* sensors, int sensorNumber )
+	{
+		assert( created );
+		assert( sensorNumber >= getSensorNumberIntern() );
+
+		//	Angle sensors
+		//	We multiple with -1 to map to real hexapod
+		sensors[DungBotMotorSensor::TR0_as] = servos[DungBotMotorSensor::TR0_m] ? -servos[DungBotMotorSensor::TR0_m]->get() : 0;
+		sensors[DungBotMotorSensor::TR1_as] = servos[DungBotMotorSensor::TR1_m] ? -servos[DungBotMotorSensor::TR1_m]->get() : 0;
+		sensors[DungBotMotorSensor::TR2_as] = servos[DungBotMotorSensor::TR2_m] ? -servos[DungBotMotorSensor::TR2_m]->get() : 0;
+		sensors[DungBotMotorSensor::TL0_as] = servos[DungBotMotorSensor::TL0_m] ? -servos[DungBotMotorSensor::TL0_m]->get() : 0;
+		sensors[DungBotMotorSensor::TL1_as] = servos[DungBotMotorSensor::TL1_m] ? -servos[DungBotMotorSensor::TL1_m]->get() : 0;
+		sensors[DungBotMotorSensor::TL2_as] = servos[DungBotMotorSensor::TL2_m] ? -servos[DungBotMotorSensor::TL2_m]->get() : 0;
+		sensors[DungBotMotorSensor::CR0_as] = servos[DungBotMotorSensor::CR0_m] ? -servos[DungBotMotorSensor::CR0_m]->get() : 0;
+		sensors[DungBotMotorSensor::CR1_as] = servos[DungBotMotorSensor::CR1_m] ? -servos[DungBotMotorSensor::CR1_m]->get() : 0;
+		sensors[DungBotMotorSensor::CR2_as] = servos[DungBotMotorSensor::CR2_m] ? -servos[DungBotMotorSensor::CR2_m]->get() : 0;
+		sensors[DungBotMotorSensor::CL0_as] = servos[DungBotMotorSensor::CL0_m] ? -servos[DungBotMotorSensor::CL0_m]->get() : 0;
+		sensors[DungBotMotorSensor::CL1_as] = servos[DungBotMotorSensor::CL1_m] ? -servos[DungBotMotorSensor::CL1_m]->get() : 0;
+		sensors[DungBotMotorSensor::CL2_as] = servos[DungBotMotorSensor::CL2_m] ? -servos[DungBotMotorSensor::CL2_m]->get() : 0;
+		sensors[DungBotMotorSensor::FR0_as] = servos[DungBotMotorSensor::FR0_m] ? -servos[DungBotMotorSensor::FR0_m]->get() : 0;
+		sensors[DungBotMotorSensor::FR1_as] = servos[DungBotMotorSensor::FR1_m] ? -servos[DungBotMotorSensor::FR1_m]->get() : 0;
+		sensors[DungBotMotorSensor::FR2_as] = servos[DungBotMotorSensor::FR2_m] ? -servos[DungBotMotorSensor::FR2_m]->get() : 0;
+		sensors[DungBotMotorSensor::FL0_as] = servos[DungBotMotorSensor::FL0_m] ? -servos[DungBotMotorSensor::FL0_m]->get() : 0;
+		sensors[DungBotMotorSensor::FL1_as] = servos[DungBotMotorSensor::FL1_m] ? -servos[DungBotMotorSensor::FL1_m]->get() : 0;
+		sensors[DungBotMotorSensor::FL2_as] = servos[DungBotMotorSensor::FL2_m] ? -servos[DungBotMotorSensor::FL2_m]->get() : 0;
+		sensors[DungBotMotorSensor::BJ_as] = servos[DungBotMotorSensor::BJ_m] ? -servos[DungBotMotorSensor::BJ_m]->get() : 0;
+
+		sensors[DungBotMotorSensor::L0_s1] = tarsusContactSensors[std::make_pair(L0,1)]->get();
+		sensors[DungBotMotorSensor::L0_s2] = tarsusContactSensors[std::make_pair(L0,2)]->get();
+		sensors[DungBotMotorSensor::L0_s3] = tarsusContactSensors[std::make_pair(L0,3)]->get();
+		sensors[DungBotMotorSensor::L0_s4] = tarsusContactSensors[std::make_pair(L0,4)]->get();
+		sensors[DungBotMotorSensor::L0_s5] = tarsusContactSensors[std::make_pair(L0,5)]->get();
+
+		sensors[DungBotMotorSensor::R0_s1] = tarsusContactSensors[std::make_pair(R0,1)]->get();
+		sensors[DungBotMotorSensor::R0_s2] = tarsusContactSensors[std::make_pair(R0,2)]->get();
+		sensors[DungBotMotorSensor::R0_s3] = tarsusContactSensors[std::make_pair(R0,3)]->get();
+		sensors[DungBotMotorSensor::R0_s4] = tarsusContactSensors[std::make_pair(R0,4)]->get();
+		sensors[DungBotMotorSensor::R0_s5] = tarsusContactSensors[std::make_pair(R0,5)]->get();
+
+		sensors[DungBotMotorSensor::L1_s1] = tarsusContactSensors[std::make_pair(L1,1)]->get();
+		sensors[DungBotMotorSensor::L1_s2] = tarsusContactSensors[std::make_pair(L1,2)]->get();
+		sensors[DungBotMotorSensor::L1_s3] = tarsusContactSensors[std::make_pair(L1,3)]->get();
+		sensors[DungBotMotorSensor::L1_s4] = tarsusContactSensors[std::make_pair(L1,4)]->get();
+		sensors[DungBotMotorSensor::L1_s5] = tarsusContactSensors[std::make_pair(L1,5)]->get();
+
+		sensors[DungBotMotorSensor::R1_s1] = tarsusContactSensors[std::make_pair(R1,1)]->get();
+		sensors[DungBotMotorSensor::R1_s2] = tarsusContactSensors[std::make_pair(R1,2)]->get();
+		sensors[DungBotMotorSensor::R1_s3] = tarsusContactSensors[std::make_pair(R1,3)]->get();
+		sensors[DungBotMotorSensor::R1_s4] = tarsusContactSensors[std::make_pair(R1,4)]->get();
+		sensors[DungBotMotorSensor::R1_s5] = tarsusContactSensors[std::make_pair(R1,5)]->get();
+
+		sensors[DungBotMotorSensor::L2_s1] = tarsusContactSensors[std::make_pair(L2,1)]->get();
+		sensors[DungBotMotorSensor::L2_s2] = tarsusContactSensors[std::make_pair(L2,2)]->get();
+		sensors[DungBotMotorSensor::L2_s3] = tarsusContactSensors[std::make_pair(L2,3)]->get();
+		sensors[DungBotMotorSensor::L2_s4] = tarsusContactSensors[std::make_pair(L2,4)]->get();
+		sensors[DungBotMotorSensor::L2_s5] = tarsusContactSensors[std::make_pair(L2,5)]->get();
+
+		sensors[DungBotMotorSensor::R2_s1] = tarsusContactSensors[std::make_pair(R2,1)]->get();
+		sensors[DungBotMotorSensor::R2_s2] = tarsusContactSensors[std::make_pair(R2,2)]->get();
+		sensors[DungBotMotorSensor::R2_s3] = tarsusContactSensors[std::make_pair(R2,3)]->get();
+		sensors[DungBotMotorSensor::R2_s4] = tarsusContactSensors[std::make_pair(R2,4)]->get();
+		sensors[DungBotMotorSensor::R2_s5] = tarsusContactSensors[std::make_pair(R2,5)]->get();
+
+		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
+	}
+
+	int DungBot::getMotorNumberIntern( void )
+	{
+		return DungBotMotorSensor::DUNGBOT_MOTOR_MAX;
+	}
+
+	int DungBot::getSensorNumberIntern( void )
+	{
+		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
+	}
+
+	DungBot::MotorName DungBot::getMotorName( LegPos leg, LegJointType joint )
+	{
+		if (leg == L0 && joint == TC)	return DungBotMotorSensor::TL0_m;
+		if (leg == L0 && joint == CTR)	return DungBotMotorSensor::CL0_m;
+		if (leg == L0 && joint == FTI)	return DungBotMotorSensor::FL0_m;
+		if (leg == L1 && joint == TC)	return DungBotMotorSensor::TL1_m;
+		if (leg == L1 && joint == CTR)	return DungBotMotorSensor::CL1_m;
+		if (leg == L1 && joint == FTI)	return DungBotMotorSensor::FL1_m;
+		if (leg == L2 && joint == TC)	return DungBotMotorSensor::TL2_m;
+		if (leg == L2 && joint == CTR)	return DungBotMotorSensor::CL2_m;
+		if (leg == L2 && joint == FTI)	return DungBotMotorSensor::FL2_m;
+		if (leg == R0 && joint == TC)	return DungBotMotorSensor::TR0_m;
+		if (leg == R0 && joint == CTR)	return DungBotMotorSensor::CR0_m;
+		if (leg == R0 && joint == FTI)	return DungBotMotorSensor::FR0_m;
+		if (leg == R1 && joint == TC)	return DungBotMotorSensor::TR1_m;
+		if (leg == R1 && joint == CTR)	return DungBotMotorSensor::CR1_m;
+		if (leg == R1 && joint == FTI)	return DungBotMotorSensor::FR1_m;
+		if (leg == R2 && joint == TC)	return DungBotMotorSensor::TR2_m;
+		if (leg == R2 && joint == CTR)	return DungBotMotorSensor::CR2_m;
+		if (leg == R2 && joint == FTI)	return DungBotMotorSensor::FR2_m;
+		return DungBotMotorSensor::DUNGBOT_MOTOR_MAX;
+	}
 }

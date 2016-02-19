@@ -31,23 +31,27 @@ namespace lpzrobots
 		  lpzrobots::GlobalData& globalData,
 		  int key,
 		  bool down)
-	  {
-		if (down) { // only when key is pressed, not when released
-		  switch (char(key)) {
+	{
+		if( down )
+		{
+			// only when key is pressed, not when released
+			switch (char(key))
+			{
 			case 'x':
-			  if (robotfixator) {
-				std::cout << "dropping robot" << std::endl;
-				delete robotfixator;
-				robotfixator = NULL;
-			  }
-			  break;
+				if( robotfixator )
+				{
+					std::cout << "dropping robot" << std::endl;
+					delete robotfixator;
+					robotfixator = NULL;
+				}
+				break;
 			default:
-			  return false;
-			  break;
-		  }
+				return false;
+				break;
+			}
 		}
 		return false;
-	  }
+	}
 
 	void DungBotSimulation::bindingDescription( osg::ApplicationUsage& au ) const
 	{
@@ -69,8 +73,6 @@ namespace lpzrobots
 		simulation_time_seconds = 100;
 		number_of_runs = 1;
 		instantiateAgent( global );
-
-
 	}
 
 	void DungBotSimulation::instantiateAgent( GlobalData& global )
@@ -144,8 +146,8 @@ namespace lpzrobots
 		simulation_time = (long)( seconds/0.01 );
 	}
 
-
-	void DungBotSimulation::addPlayground( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global) {
+	void DungBotSimulation::addPlayground( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global)
+	{
 		// implement playground here.
 	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.2, 0.3));
 	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));

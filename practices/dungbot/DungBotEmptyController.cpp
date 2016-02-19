@@ -10,8 +10,10 @@
 *****************************************************************************/
 
 #include <assert.h>
+#include <iostream>
 
 #include "DungBotEmptyController.h"
+
 using namespace std;
 using namespace matrix;
 
@@ -21,7 +23,7 @@ using namespace matrix;
 DungBotEmptyController::DungBotEmptyController( const std::string& name )
 : AbstractController( name, "1.0" )
 {
-	initialised=false;
+	initialised = false;
 
 	ticks_since_init = 0;
 
@@ -33,21 +35,38 @@ DungBotEmptyController::~DungBotEmptyController()
 {
 }
 
-void DungBotEmptyController::stepNoLearning( const sensor* sensors, int number_sensors, motor* motors, int number_motors )
+void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
 {
+	assert( motorNumber >= DungBotMotorSensor::DUNGBOT_MOTOR_MAX );
+	assert( sensorNumber >= DungBotMotorSensor::DUNGBOT_SENSOR_MAX );
+
+	//TODO:	Find out how to properly find the data from the sensors, look at the lines below:
+	std::cout << motor[MIdx("TR0 motor")] << std::endl;
+	std::cout << sensor[SIdx("*TR0 angle sensor")] << std::endl;
+	std::cout << sensor[SIdx("TR0 angle sensor")] << std::endl;
+/*
+	double leftFrontPosition = sensors[SIdx("left front motor")];
+	double leftRearPosition = sensors[SIdx("left rear motor")];
+	double rightFrontPosition = sensors[SIdx("right front motor")];
+	double rightRearPosition = sensors[SIdx("right rear motor")];
+*/
 }
 
-void DungBotEmptyController::step( const sensor* sensors, int sensornumber, motor* motors, int motornumber )
+void DungBotEmptyController::step( const sensor* sensors, int sensorNumber, motor* motors, int motorNumber )
 {
+	stepNoLearning( sensors, sensorNumber, motors, motorNumber );
 	// Update internal time
 	ticks_since_init++;
 }
 
-void DungBotEmptyController::init( int sensornumber, int motornumber, RandGen* randGen )
+void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* randGen )
 {
-	nSensors = sensornumber;
-	nMotors  = motornumber;
-	initialised=true;
+	assert( motorNumber >= DungBotMotorSensor::DUNGBOT_MOTOR_MAX );
+	assert( sensorNumber >= DungBotMotorSensor::DUNGBOT_SENSOR_MAX );
+
+	nSensors = sensorNumber;
+	nMotors = motorNumber;
+	initialised = true;
 }
 
 int DungBotEmptyController::getSensorNumber() const
