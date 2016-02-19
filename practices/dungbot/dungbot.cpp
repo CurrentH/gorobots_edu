@@ -227,19 +227,19 @@ namespace lpzrobots
 			Axis axis2 = Axis(backLeg+frontL,backLegInverse,backLeg) * c2;
 			switch (i)
 			{
-			case 0: axis2=ROTM(0,1,0,0)*ROTM(0,0,1,0)*ROTM(0,0,0,1)*axis2;//front left
+			case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;//front left
 			break;
-			case 1:axis2=ROTM(M_PI/180,1,0,0)*ROTM(M_PI/180*-100,0,1,0)*ROTM(M_PI/180*30+M_PI/2,0,0,1)*axis2; //midle left ok
+			case 1:axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-100,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2; //midle left ok
 			break;
-			case 2: axis2=ROTM(M_PI/180,1,0,0)*ROTM(M_PI/180*-80,0,1,0)*ROTM(M_PI/180*30+M_PI/2,0,0,1)*axis2; //rear left ok
+			case 2: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-80,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2; //rear left ok
 			break;
-			case 3: axis2=ROTM(0,1,0,0)*ROTM(0,0,1,0)*ROTM(0,0,0,1)*axis2; //front right
+			case 3: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2; //front right
 			break;
-			case 4: axis2=ROTM(M_PI/180*180,1,0,0)*ROTM(-95*(M_PI/180-100)+M_PI,0,1,0)*ROTM(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // middle right
+			case 4: axis2=osg::Matrix::rotate(M_PI/180*180,1,0,0)*osg::Matrix::rotate(-95*(M_PI/180-100)+M_PI,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // middle right
 			break;
-			case 5: axis2=ROTM(M_PI/180,1,0,0)*ROTM((M_PI/180*-80),0,1,0)*ROTM(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // rear right ok
+			case 5: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate((M_PI/180*-80),0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2;  // rear right ok
 			break;
-			default: axis2=ROTM(0,1,0,0)*ROTM(0,0,1,0)*ROTM(0,0,0,1)*axis2;
+			default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 			break;
 			}
 
@@ -248,19 +248,19 @@ namespace lpzrobots
 	        Axis axis3 = Axis(backLeg+frontL,backLegInverse-frontInverse,-frontL) * c3;
 	        switch (i)
 	        {
-	        case 0: axis3=ROTM(0,1,0,0)*ROTM(0,0,1,0)*ROTM(0,0,0,1)*axis3;//front left
+	        case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
 	        break;
-	        case 1: axis3=ROTM(0,1,0,0)*ROTM(M_PI/180*-50,0,1,0)*ROTM(0,0,0,1)*axis3;//middle left
+	        case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
 	        break;
-	        case 2: axis3=ROTM(0,1,0,0)*ROTM(M_PI/180*-30,0,1,0)*ROTM(0,0,0,1)*axis3; //rear left ok
+	        case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left ok
 	        break;
-	        case 3: axis3=ROTM(0,1,0,0)*ROTM(0,0,1,0)*ROTM(0,0,0,1)*axis3; //front right
+	        case 3: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //front right
 	        break;
-	        case 4: axis3=ROTM(0,1,0,0)*ROTM(M_PI/180*-50,0,1,0)*ROTM(0,0,0,1)*axis3;  // middle right
+	        case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  // middle right
 	        break;
-	        case 5: axis3=ROTM(0,1,0,0)*ROTM(M_PI/180*-30,0,1,0)*ROTM(0,0,0,1)*axis3; // rear right ok
+	        case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; // rear right ok
 	        break;
-	        default:axis3=ROTM(0,1,0,0)*ROTM(0,0,1,0)*ROTM(0,0,0,1)*axis3;
+	        default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
 	        break;
 	        }
 
@@ -274,7 +274,7 @@ namespace lpzrobots
 			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].tcServo = servo1;
 
-			// create the joint from first to second limb (coxa to second)
+			// create the joint from first to second limb (coxa to femur)
 			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
 			k->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 2.1);
 			legs[leg].ctJoint = k;
@@ -296,7 +296,7 @@ namespace lpzrobots
 			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].ftiServo = servo3;
 
-
+			// Foot
 
 	    }
     }
