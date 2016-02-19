@@ -64,35 +64,22 @@ typedef struct
 	std::vector<double> frontDimension;
 	std::vector<double> rearDimension;
 
-	//std::vector<double> shoulderLength;
-	//std::vector<double> coxaLength;
-	//std::vector<double> femurLength;
-	//std::vector<double> tibiaLength;
-
-	std::vector<osg::Matrixd> shoulderRotation;
-
-	// TEMP LEG
-	double shoulderLength;
-	double shoulderRadius;
+	// Legs
 	double coxaLength;
 	double coxaRadius;
+	double coxaMass;
 	double femurLength;
 	double femurRadius;
-	double tebiaLength;
-	double tebiaRadius;
+	double femurMass;
+	double tibiaLength;
+	double tibiaRadius;
+	double tibiaMass;
 	double footRange;
 	double footRadius;
-	double legdistHindMiddle;
-	double legdistFrontMiddle;
-	double fLegTrunkAngleV;
-	double fLegTrunkAngleH;
-	double fLegRotAngle;
-	double mLegTrunkAngleV;
-	double mLegTrunkAngleH;
-	double mLegRotAngle;
-	double rLegTrunkAngleV;
-	double rLegTrunkAngleH;
-	double rLegRotAngle;
+	double footMass;
+	double footSpringPreload;
+	double tarusMass;
+	bool   makeFoot;
 
 }DungBotConf;
 
@@ -104,37 +91,45 @@ typedef struct
 			static DungBotConf getDefaultConf()
 			{
 				DungBotConf conf;
-				//	Dependent parameters
-				conf.massFront = 1;
-				conf.massRear = 1;
-				conf.frontDimension = { 0.6, 0.65, 0.25 };
-				conf.rearDimension = { 1.0, 0.75, 0.25 };
 
-				conf.shoulderRotation = { osg::Matrix::rotate( ( ( M_PI )/2 ), 1, 0, 0 ), osg::Matrix::rotate( ( ( M_PI )/2 ), -1, 0, 0 ) };
+
+				/*		MATHIAS THOR's MASS CALCULATION (c) :D
+				 * ---------------------------------------------------------------------
+				 * 	The average density of the human body [ρ=kg/m³]: 985
+				 * 	Mass of a capsule [m]: 	m = ρV = ρ π radius²((4/3)radius+height)
+				 * 	Mass of a box [m]: 		m = ρV = ρ height width length
+				 * 	eg. conf.coxaMass = 985*3.14*conf.coxaRadius*conf.coxaRadius*((4/3)*conf.coxaRadius+conf.coxaLength);
+				 * ---------------------------------------------------------------------
+				 */
+
+				//	----------- Body dimensions -------
+				conf.frontDimension = { 0.4, 0.45, 0.2 };
+				conf.massFront 	= 1.75;
+				conf.rearDimension 	= { 0.8, 0.55, 0.2 };
+				conf.massRear 	= 2;
+				//-------------------------------------
 
 				// ------------ Leg dimensions --------
-				conf.shoulderLength = 0.5;
-				conf.shoulderRadius = 0.02;
-				conf.coxaLength = 0.5;
-				conf.coxaRadius = 0.02;
-				conf.femurLength = 0.5;
-				conf.femurRadius = 0.03;
-				conf.tebiaLength = 0.5;
-				conf.tebiaRadius = 0.02;
-				conf.footRange = 0.075;
-				conf.footRadius = 0.02;
-			    // ------------- Front legs -------------
-			    conf.fLegTrunkAngleV = 0.0;	// => forward/backward
-			    conf.fLegTrunkAngleH = 0.0;	// => upward/downward
-			    conf.fLegRotAngle = 0.0;	// => till
-			    // ------------- Middle legs ----------------
-			    conf.mLegTrunkAngleV = 0.0;	// => forward/backward
-			    conf.mLegTrunkAngleH = 0.0;	// => upward/downward
-			    conf.mLegRotAngle = 0.0;	// => till
-			    // ------------- Rear legs ------------------
-			    conf.rLegTrunkAngleV = 0.0;	// => forward/backward
-			    conf.rLegTrunkAngleH = 0.0;	// => upward/downward
-			    conf.rLegRotAngle = 0.0;	// => till
+				conf.coxaLength = 0.3;
+				conf.coxaRadius = 0.02;		// COXA
+				conf.coxaMass = 0.25;
+
+				conf.femurLength = 0.3;
+				conf.femurRadius = 0.02;	// FEMUR
+				conf.femurMass = 0.25;
+
+				conf.tibiaLength = 0.3;
+				conf.tibiaRadius = 0.02;	// TEBIA
+				conf.tibiaMass = 0.25;
+
+				conf.footRange = 0.05;
+				conf.footRadius = 0.015;		// FOOT
+				conf.footMass = 0.09;
+			    conf.footSpringPreload = 0.0;
+
+			    conf.tarusMass = 0.008;
+			    //-------------------------------------
+			    conf.makeFoot = true;		// If true the foot is made
 
 				return conf;
 			}

@@ -1,5 +1,16 @@
 <!DOCTYPE ConfigurableStateTypeDefinition>
 <ConfigurableStates>
+ <ConfigurableState name="DungBotEmptyController_1">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="1.0" id="767139432" name="DungBotEmptyController" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
  <ConfigurableState name="Simulation Environment_0">
   <ConfigurableWidget tileWidgetWidth="210" isCollapsed="false" numberOfTilesPerRow="3">
    <ConfigurableTileWidgets>
@@ -57,11 +68,44 @@
    <parambools/>
   </Configurable>
  </ConfigurableState>
+ <ConfigurableState name="Dungbot_Robot's Agent_0">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="" id="1604370170" name="Dungbot_Robot's Agent" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="Dungbot_Robot_0">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="2.0" id="2106208639" name="Dungbot_Robot" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="Dungbot_Robot_1">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="2.0" id="2106208639" name="Dungbot_Robot" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
  <ConfigurableState name="DungBotEmptyController_0">
   <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
    <ConfigurableTileWidgets/>
   </ConfigurableWidget>
-  <Configurable revision="1.0" id="985601557" name="DungBotEmptyController" autosaveFunction="1">
+  <Configurable revision="1.0" id="767139432" name="DungBotEmptyController" autosaveFunction="1">
    <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
    <paramvals/>
    <paramints/>
