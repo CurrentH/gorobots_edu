@@ -415,29 +415,28 @@ namespace lpzrobots
 				OdeHandle my_odeHandle = odeHandle;
 
 				// set the foot to use rubberFeet
-				const Substance FootSubstance(3.0, 0.0, 500.0, 0.1);
+				const Substance FootSubstance( 3.0, 0.0, 500.0, 0.1 );
 				my_odeHandle.substance = FootSubstance;
 
 				Primitive* foot;
-				foot = new Capsule(conf.footRadius, conf.footRange);
-				foot->setTexture("foot.jpg");
+				foot = new Capsule( conf.footRadius, conf.footRange );
+				foot->setTexture( "foot.jpg" );
 				foot->init(my_odeHandle, conf.footMass, osgHandle);
 				foot->setPose(footCenter);
 				legs[leg].foot = foot;
 				objects.push_back(foot);
 
-				HingeJoint* m = new HingeJoint(tibia, foot, anchor4, axis4);						//TODO SHOULD BE A SliderJoint and not HingeJoint
-				m->init(odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius, true );
+				//SliderJoint* m = new SliderJoint( tibia, foot, anchor4, axis4 );
+				HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );						//TODO SHOULD BE A SliderJoint and not HingeJoint
+				m->init( odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius, true );
 				legs[leg].footJoint = m;
 				joints.push_back( m );
 
 				/** parameters are set later */
-				/*
-				Spring* spring = new Spring(m, -1, 1, 1, 0.05, 1, 0, 1);
+				Spring* spring = new Spring( m, -1, 1, 1, 0.05, 1, 0, 1 );
 				legs[leg].footSpring = spring;
 				passiveServos.push_back( spring );
 				odeHandle.addIgnoredPair( femurThorax, foot );
-				*/	//TODO:	Ask Leon about this spring.
 
 				// New: tarsus
 				Primitive *tarsus;
@@ -446,7 +445,7 @@ namespace lpzrobots
 				double radius = conf.footRadius/2; // was conf.footRadius/3
 				double length = conf.footRange;
 				double mass = conf.tarusMass/10;
-				tarsus = new Capsule(radius,length);
+				tarsus = new Capsule( radius,length );
 				tarsus->setTexture("tarsus.jpg");
 				tarsus->init(odeHandle, mass, osgHandle);
 
@@ -795,9 +794,8 @@ namespace lpzrobots
 	    //	We set all parameters here
 	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
-		/*
 			Spring * const footspring = it->second.footSpring;
-			if (footspring)
+			if( footspring )
 			{
 				footspring->setPower(conf.footPower);
 				footspring->setDamping(conf.footDamping);
@@ -805,7 +803,7 @@ namespace lpzrobots
 				//	Min is up, Max is down.
 				footspring->setMinMax(conf.footSpringLimitD, conf.footSpringLimitU);
 			}
-		*/
+
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
 			{
@@ -870,13 +868,13 @@ namespace lpzrobots
 		 */
 
 		//	----------- Body dimensions -------
+		conf.size = 0;	//TODO:	This should be 0.43, but that moves the tabia out, there properly needs to be a * size everywhere.
 		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
 		conf.massRear 	= 2;
 		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
 		conf.massFront 	= 1.75;
 		conf.headDimension 	= { conf.frontDimension[0]*0.57, conf.frontDimension[0]*0.57, conf.rearDimension[2]*1 };
 		conf.massHead 	= 1;
-
 
 		// ------------ Leg dimensions --------
 		conf.coxaLength = 0.3;	// COXA
@@ -930,6 +928,12 @@ namespace lpzrobots
 		/**
 		 * 	Power of the motors, and joint stiffness
 		 */
+
+		conf.footSpringPreload = 8.0 / 43.0 * conf.size;
+		// negative is downwards (spring extends)
+		conf.footSpringLimitD = conf.footSpringPreload;
+		conf.footSpringLimitU = conf.footSpringPreload;// + conf.footRange;
+
 		const double backPower_scale = 30.0;
 		const double coxaPower_scale = 10.0;
 		const double springstiffness = 350.0;

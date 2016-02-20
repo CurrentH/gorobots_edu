@@ -28,105 +28,30 @@
 #include <ode_robots/joint.h>
 #include <ode_robots/oneaxisservo.h>
 #include <ode_robots/constantmotor.h>
-#include <string>
+#include <ode_robots/spring.h>
 
 // Extra includes
-#include <vector>
-#include <iostream>
 #include <selforg/inspectable.h>
 #include <ode_robots/oderobot.h>
+#include <vector>
+#include <iostream>
+#include <string>
+
+//	Includes of typedefs and extra
+#include "DungBotIncludes.h"
 
 namespace lpzrobots
 {
-	/**
-	 * forward declarations
-	 */
-	class HingeJoint;
-	class IRSensor;
-	class Joint;
-	class OneAxisServo;
-	class Primitive;
-	class RaySensorBank;
-	class SliderJoint;
-	class Spring;
-	class TwoAxisServo;
-
-	typedef struct
-	{
-		//	Body
-		double massFront;
-		double massRear;
-		double massHead;
-		std::vector<double> headDimension;
-		std::vector<double> frontDimension;
-		std::vector<double> rearDimension;
-
-		//	Legs
-		double coxaLength;
-		double coxaRadius;
-		double coxaMass;
-		double femurLength;
-		double femurRadius;
-		double femurMass;
-		double tibiaLength;
-		double tibiaRadius;
-		double tibiaMass;
-		double footRange;
-		double footRadius;
-		double footMass;
-		double footSpringPreload;
-		double tarusMass;
-		bool   makeFoot;
-
-		//	Motor settings
-		double backPower;
-		double coxaPower;
-		double femurPower;
-		double tibiaPower;
-		double footPower;
-		double backDamping;
-		double coxaDamping;
-		double femurDamping;
-		double tibiaDamping;
-		double footDamping;
-		double backMaxVel;
-		double coxaMaxVel;
-		double femurMaxVel;
-		double tibiaMaxVel;
-		double footMaxVel;
-
-		//	Joint limits
-		double backJointLimitD;
-		double backJointLimitU;
-		double fCoxaJointLimitF;
-		double fCoxaJointLimitB;
-	    double mCoxaJointLimitF;
-	    double mCoxaJointLimitB;
-	    double rCoxaJointLimitF;
-	    double rCoxaJointLimitB;
-	    double fFemurJointLimitD;
-	    double fFemurJointLimitU;
-	    double mFemurJointLimitD;
-	    double mFemurJointLimitU;
-	    double rFemurJointLimitD;
-	    double rFemurJointLimitU;
-	    double fTibiaJointLimitD;
-	    double fTibiaJointLimitU;
-	    double mTibiaJointLimitD;
-	    double mTibiaJointLimitU;
-	    double rTibiaJointLimitD;
-	    double rTibiaJointLimitU;
-
-	}DungBotConf;
-
 	class DungBot : public OdeRobot, public Inspectable
 	{
 		DungBotConf conf;
 		public:
+		//	Public attributes
 			enum LegPos
 			{
 				L0, L1, L2, R0, R1, R2, LEG_POS_MAX
 			};
+
 			enum LegJointType
 			{
 				//  Thoroca-Coxal joint for forward (+) and backward (-) movements.
@@ -138,9 +63,12 @@ namespace lpzrobots
 				//  Maximum value, used for iteration
 				LEG_JOINT_TYPE_MAX
 			};
+
 			typedef DungBotMotorSensor::DungBotMotorNames MotorName;
 			typedef DungBotMotorSensor::DungBotSensorNames SensorName;
 
+		public:
+			//	Public methods
 			static DungBotConf getDefaultConf( void );
 
 			DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
@@ -154,7 +82,6 @@ namespace lpzrobots
 			virtual void sense( GlobalData& globalData );
 			virtual ~DungBot();
 
-
 			virtual void setMotorsIntern( const double* motors, int motornumber );
 			virtual int getSensorsIntern( sensor* sensors, int sensornumber );
 			virtual int getSensorNumberIntern( void );
@@ -164,8 +91,14 @@ namespace lpzrobots
 			virtual bool setParam( const paramkey& key, paramval val );
 
 		protected:
+		//	Protected methods
 			void nameMotor( const int motorNo, const char* name );
 			void nameSensor( const int sensorNo, const char* name );
+
+		protected:
+		//	Protected attributes
+			Position startPosition;
+			Position position;
 
 			struct Leg
 			{
@@ -185,10 +118,8 @@ namespace lpzrobots
 				Primitive * foot;
 			};
 
-			Position startPosition;
-			Position position;
-
 		private:
+		//	Private methods
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
@@ -198,6 +129,8 @@ namespace lpzrobots
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeHeadFixedJoint( Primitive*, Primitive*, const Pos, const double );
 
+		private:
+		//	Private attributes
 			bool created;
 
 			//	Typedefs
@@ -217,6 +150,7 @@ namespace lpzrobots
 
 			//	For tarsus contact
 			TarsusContactMap tarsusContactSensors;
+
 	};
 } //End namespace lpzrobot
 
