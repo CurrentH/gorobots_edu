@@ -41,15 +41,16 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	assert( sensorNumber >= DungBotMotorSensor::DUNGBOT_SENSOR_MAX );
 
 	//TODO:	Find out how to properly find the data from the sensors, look at the lines below:
-	std::cout << motor[MIdx("TR0 motor")] << std::endl;
-	std::cout << sensor[SIdx("*TR0 angle sensor")] << std::endl;
-	std::cout << sensor[SIdx("TR0 angle sensor")] << std::endl;
-/*
+
+
+	std::cout << motor[DungBotMotorSensor::TR0_m];
+
+	/*
 	double leftFrontPosition = sensors[SIdx("left front motor")];
 	double leftRearPosition = sensors[SIdx("left rear motor")];
 	double rightFrontPosition = sensors[SIdx("right front motor")];
 	double rightRearPosition = sensors[SIdx("right rear motor")];
-*/
+	*/
 }
 
 void DungBotEmptyController::step( const sensor* sensors, int sensorNumber, motor* motors, int motorNumber )
