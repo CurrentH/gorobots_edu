@@ -78,6 +78,35 @@ namespace lpzrobots
         nameMotor(DungBotMotorSensor::FL1_m, "FL1 motor");
         nameMotor(DungBotMotorSensor::FL2_m, "FL2 motor");
         nameMotor(DungBotMotorSensor::BJ_m, "BJ motor");
+/*
+        addParameter( "coxaPower", &conf.coxaPower );
+        addParameter( "secondPower", &conf.femurPower );
+        addParameter( "coxaDamp", &conf.coxaDamping );
+        addParameter( "fcoxaJointLimitF", &conf.fCoxaJointLimitF );
+        addParameter( "fcoxaJointLimitB", &conf.fCoxaJointLimitB );
+        addParameter( "mcoxaJointLimitF", &conf.mCoxaJointLimitF );
+        addParameter( "mcoxaJointLimitB", &conf.mCoxaJointLimitB );
+        addParameter( "rcoxaJointLimitF", &conf.rCoxaJointLimitF );
+        addParameter( "rcoxaJointLimitB", &conf.rCoxaJointLimitB );
+        addParameter( "fsecondJointLimitD", &conf.fFemurJointLimitD );
+        addParameter( "fsecondJointLimitU", &conf.fFemurJointLimitU );
+        addParameter( "msecondJointLimitD", &conf.mFemurJointLimitD );
+        addParameter( "msecondJointLimitU", &conf.mFemurJointLimitU );
+        addParameter( "rsecondJointLimitD", &conf.rFemurJointLimitD );
+        addParameter( "rsecondJointLimitU", &conf.rFemurJointLimitU );
+
+
+        addParameter( "coxaMaxVel", &conf.coxaMaxVel );
+
+		addParameter( "tebiaPower", &conf.tibiaPower );
+		addParameter( "tebiaDamp", &conf.tibiaDamping );
+		addParameter( "ftebiaJointLimitD", &conf.fTibiaJointLimitD );
+		addParameter( "ftebiaJointLimitU", &conf.fTibiaJointLimitU );
+		addParameter( "mtebiaJointLimitD", &conf.mTibiaJointLimitD );
+		addParameter( "mtebiaJointLimitU", &conf.mTibiaJointLimitU );
+		addParameter( "rtebiaJointLimitD", &conf.rTibiaJointLimitD );
+		addParameter( "rtebiaJointLimitU", &conf.rTibiaJointLimitU );
+*/
     }
 
     DungBot::~DungBot()
@@ -102,16 +131,23 @@ namespace lpzrobots
     	OdeRobot::doInternalStuff(globalData);
     	    // update statistics
     	position = getPosition();
-
-        //for (ServoList::iterator it = passiveServos.begin(); it != passiveServos.end(); it++) {
-        //  (*it)->set(0.0);
-        //}
     }
 
     void DungBot::update( void )
     {
     	OdeRobot::update();
     	assert( created );
+
+    	for( int i = 0; i < LEG_POS_MAX; i++ )
+		{
+			for( int j = 1; j < 6; j++ ) //TODO: Find out if j should be = 0 instead of 1.
+			{
+				if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+				{
+					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] -> update();
+				}
+			}
+		}
     }
 
     void DungBot::sense( GlobalData& globalData )
@@ -740,5 +776,171 @@ namespace lpzrobots
 		if (leg == R2 && joint == CTR)	return DungBotMotorSensor::CR2_m;
 		if (leg == R2 && joint == FTI)	return DungBotMotorSensor::FR2_m;
 		return DungBotMotorSensor::DUNGBOT_MOTOR_MAX;
+	}
+
+	bool DungBot::setParam( const paramkey& key, paramval val )
+	{
+	    bool rv = Configurable::setParam(key, val);
+
+	    //	We set all parameters here
+	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
+	    {
+		/*
+			Spring * const footspring = it->second.footSpring;
+			if (footspring)
+			{
+				footspring->setPower(conf.footPower);
+				footspring->setDamping(conf.footDamping);
+				footspring->setMaxVel(conf.footMaxVel);
+				//	Min is up, Max is down.
+				footspring->setMinMax(conf.footSpringLimitD, conf.footSpringLimitU);
+			}
+		*/
+			OneAxisServo * tc = it->second.tcServo;
+			if( tc )
+			{
+				tc->setPower(conf.coxaPower);
+				tc->setDamping(conf.coxaDamping);
+				tc->setMaxVel(conf.coxaMaxVel);
+				if (it->first == L2 || it->first == R2) tc->setMinMax(conf.rCoxaJointLimitF, conf.rCoxaJointLimitB);
+				if (it->first == L1 || it->first == R1) tc->setMinMax(conf.mCoxaJointLimitF, conf.mCoxaJointLimitB);
+				if (it->first == L0 || it->first == R0) tc->setMinMax(conf.fCoxaJointLimitF, conf.fCoxaJointLimitB);
+			}
+
+			OneAxisServo * ctr = it->second.ctrServo;
+			if (ctr)
+			{
+				ctr->setPower( conf.femurPower );
+				ctr->setDamping( conf.femurDamping );
+				ctr->setMaxVel( conf.femurMaxVel );
+				//	Min is up, up is negative
+				//ctr->setMinMax( conf.femurJointLimitU, conf.femurJointLimitD ); //TODO: Do we want this in?
+				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
+				if (it->first == L1 || it->first == R1) ctr->setMinMax(conf.mFemurJointLimitU, conf.mFemurJointLimitD);
+				if (it->first == L0 || it->first == R0) ctr->setMinMax(conf.fFemurJointLimitU, conf.fFemurJointLimitD);
+			}
+
+			OneAxisServo * fti = it->second.ftiServo;
+			if ( fti )
+			{
+				fti->setPower(conf.tibiaPower);
+				fti->setDamping(conf.tibiaDamping);
+				fti->setMaxVel(conf.tibiaMaxVel);
+				//	Min is up, up is negative
+				//fti->setMinMax(conf.tebiaJointLimitU, conf.tebiaJointLimitD);
+				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
+				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
+				if (it->first == L0 || it->first == R0) fti->setMinMax(conf.fTibiaJointLimitU, conf.fTibiaJointLimitD);
+			}
+		}
+
+		if (backboneServo)
+		{
+			backboneServo->setPower(conf.backPower);
+			backboneServo->setDamping(conf.backDamping);
+			backboneServo->setMaxVel(conf.backMaxVel);
+			backboneServo->setMinMax(conf.backJointLimitU, conf.backJointLimitD);
+		}
+
+		return rv;
+	}
+
+	DungBotConf DungBot::getDefaultConf( void )
+	{
+		DungBotConf conf;
+
+		/**
+		 * MATHIAS THOR's MASS CALCULATION (c) :D
+		 * ---------------------------------------------------------------------
+		 * 	The average density of the human body [ρ=kg/m³]: 985
+		 * 	Mass of a capsule [m]: 	m = ρV = ρ π radius²((4/3)radius+height)
+		 * 	Mass of a box [m]: 		m = ρV = ρ height width length
+		 * 	eg. conf.coxaMass = 985*3.14*conf.coxaRadius*conf.coxaRadius*((4/3)*conf.coxaRadius+conf.coxaLength);
+		 * ---------------------------------------------------------------------
+		 */
+
+		//	----------- Body dimensions -------
+		conf.frontDimension = { 0.4, 0.45, 0.2 };
+		conf.massFront 	= 1.75;
+		conf.rearDimension 	= { 0.8, 0.55, 0.2 };
+		conf.massRear 	= 2;
+
+		// ------------ Leg dimensions --------
+		conf.coxaLength = 0.3;	// COXA
+		conf.coxaRadius = 0.02;
+		conf.coxaMass = 0.25;
+
+		conf.femurLength = 0.3;	// FEMUR
+		conf.femurRadius = 0.02;
+		conf.femurMass = 0.25;
+
+		conf.tibiaLength = 0.3;	// TEBIA
+		conf.tibiaRadius = 0.02;
+		conf.tibiaMass = 0.25;
+
+		conf.footRange = 0.05;	// FOOT
+		conf.footRadius = 0.015;
+		conf.footMass = 0.09;
+		conf.footSpringPreload = 0.0;
+
+		conf.tarusMass = 0.008;
+
+		/**
+		 *	Joint Limits
+		 *	Setting the Max, and Min values of each joint.
+		 */
+		conf.backJointLimitD = M_PI / 180 * 45.0;
+		conf.backJointLimitU =	-M_PI / 180 * 45.0;
+
+		//	TC JOINT
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 100.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB = M_PI / 180.0 * 90.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 100.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB = M_PI / 180 * 30.0;		// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 80.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB = M_PI / 180.0 * 50.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    //	CT JOINT
+	    conf.fFemurJointLimitD = M_PI / 180.0 * 110.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.mFemurJointLimitD = M_PI / 180.0 * 0.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 80.0;
+	    conf.rFemurJointLimitD = M_PI / 180.0 * 20.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 100.0;
+	    //	FT JOINT
+	    conf.fTibiaJointLimitD = M_PI / 180.0 *0.0;
+	    conf.fTibiaJointLimitU = M_PI / 180.0 *150.0;
+	    conf.mTibiaJointLimitD = M_PI / 180.0 *100.0;
+	    conf.mTibiaJointLimitU = M_PI / 180.0 *0.0;
+	    conf.rTibiaJointLimitD = M_PI / 180.0 *100.0;
+	    conf.rTibiaJointLimitU = M_PI / 180.0 *0.0;
+
+		/**
+		 * 	Power of the motors, and joint stiffness
+		 */
+		const double backPower_scale = 30.0;
+		const double coxaPower_scale = 10.0;
+		const double springstiffness = 350.0;
+
+		conf.backPower = backPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength * conf.massRear;
+		conf.coxaPower = coxaPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength * conf.massRear;
+		conf.femurPower = conf.coxaPower;
+		conf.tibiaPower = conf.coxaPower;
+		conf.footPower = ( springstiffness * 0.08 / 2.2 ) * conf.massRear / conf.footSpringPreload;
+
+		conf.backDamping = 0.0;
+		conf.coxaDamping = 0.0;
+		conf.femurDamping = 0.0;
+		conf.tibiaDamping = 0.01;
+		conf.footDamping = 0.05;
+
+		conf.backMaxVel = 1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel = 1.7 * 1.961 * M_PI;
+		conf.femurMaxVel = 1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel = 1.7 * 1.961 * M_PI;
+		conf.footMaxVel = 1.7 * 1.961 * M_PI;
+
+		conf.makeFoot = true;		// If true the foot is made
+
+		return conf;
 	}
 }

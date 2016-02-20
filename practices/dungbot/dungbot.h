@@ -53,12 +53,13 @@ namespace lpzrobots
 
 	typedef struct
 	{
+		//	Body
 		double massFront;
 		double massRear;
 		std::vector<double> frontDimension;
 		std::vector<double> rearDimension;
 
-		// Legs
+		//	Legs
 		double coxaLength;
 		double coxaRadius;
 		double coxaMass;
@@ -75,57 +76,51 @@ namespace lpzrobots
 		double tarusMass;
 		bool   makeFoot;
 
+		//	Motor settings
+		double backPower;
+		double coxaPower;
+		double femurPower;
+		double tibiaPower;
+		double footPower;
+		double backDamping;
+		double coxaDamping;
+		double femurDamping;
+		double tibiaDamping;
+		double footDamping;
+		double backMaxVel;
+		double coxaMaxVel;
+		double femurMaxVel;
+		double tibiaMaxVel;
+		double footMaxVel;
+
+		//	Joint limits
+		double backJointLimitD;
+		double backJointLimitU;
+		double fCoxaJointLimitF;
+		double fCoxaJointLimitB;
+	    double mCoxaJointLimitF;
+	    double mCoxaJointLimitB;
+	    double rCoxaJointLimitF;
+	    double rCoxaJointLimitB;
+	    double fFemurJointLimitD;
+	    double fFemurJointLimitU;
+	    double mFemurJointLimitD;
+	    double mFemurJointLimitU;
+	    double rFemurJointLimitD;
+	    double rFemurJointLimitU;
+	    double fTibiaJointLimitD;
+	    double fTibiaJointLimitU;
+	    double mTibiaJointLimitD;
+	    double mTibiaJointLimitU;
+	    double rTibiaJointLimitD;
+	    double rTibiaJointLimitU;
+
 	}DungBotConf;
 
 	class DungBot : public OdeRobot, public Inspectable
 	{
 		DungBotConf conf;
 		public:
-			static DungBotConf getDefaultConf()
-			{
-				DungBotConf conf;
-
-				/*		MATHIAS THOR's MASS CALCULATION (c) :D
-				 * ---------------------------------------------------------------------
-				 * 	The average density of the human body [ρ=kg/m³]: 985
-				 * 	Mass of a capsule [m]: 	m = ρV = ρ π radius²((4/3)radius+height)
-				 * 	Mass of a box [m]: 		m = ρV = ρ height width length
-				 * 	eg. conf.coxaMass = 985*3.14*conf.coxaRadius*conf.coxaRadius*((4/3)*conf.coxaRadius+conf.coxaLength);
-				 * ---------------------------------------------------------------------
-				 */
-
-				//	----------- Body dimensions -------
-				conf.frontDimension = { 0.4, 0.45, 0.2 };
-				conf.massFront 	= 1.75;
-				conf.rearDimension 	= { 0.8, 0.55, 0.2 };
-				conf.massRear 	= 2;
-				//-------------------------------------
-
-				// ------------ Leg dimensions --------
-				conf.coxaLength = 0.3;
-				conf.coxaRadius = 0.02;		// COXA
-				conf.coxaMass = 0.25;
-
-				conf.femurLength = 0.3;
-				conf.femurRadius = 0.02;	// FEMUR
-				conf.femurMass = 0.25;
-
-				conf.tibiaLength = 0.3;
-				conf.tibiaRadius = 0.02;	// TEBIA
-				conf.tibiaMass = 0.25;
-
-				conf.footRange = 0.05;
-				conf.footRadius = 0.015;		// FOOT
-				conf.footMass = 0.09;
-			    conf.footSpringPreload = 0.0;
-
-			    conf.tarusMass = 0.008;
-			    //-------------------------------------
-			    conf.makeFoot = true;		// If true the foot is made
-
-				return conf;
-			}
-
 			enum LegPos
 			{
 				L0, L1, L2, R0, R1, R2, LEG_POS_MAX
@@ -142,6 +137,9 @@ namespace lpzrobots
 				LEG_JOINT_TYPE_MAX
 			};
 			typedef DungBotMotorSensor::DungBotMotorNames MotorName;
+			typedef DungBotMotorSensor::DungBotSensorNames SensorName;
+
+			static DungBotConf getDefaultConf( void );
 
 			DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
 						const DungBotConf &conf = getDefaultConf(),
@@ -157,11 +155,11 @@ namespace lpzrobots
 
 			virtual void setMotorsIntern( const double* motors, int motornumber );
 			virtual int getSensorsIntern( sensor* sensors, int sensornumber );
-
 			virtual int getSensorNumberIntern( void );
 			virtual int getMotorNumberIntern( void );
-
 			static MotorName getMotorName( LegPos leg, LegJointType joint );
+
+			virtual bool setParam( const paramkey& key, paramval val );
 
 		protected:
 			void nameMotor( const int motorNo, const char* name );
