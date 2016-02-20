@@ -191,12 +191,15 @@ namespace lpzrobots
     	osg::Matrix frontPos = osg::Matrix::translate( ( conf.frontDimension[0] / 2 ), 0, 0) * pose;
 		auto front = makeBody( frontPos, conf.massFront, conf.frontDimension );
 
+		osg::Matrix headPos = osg::Matrix::translate( ( conf.frontDimension[0] ), 0, 0) * pose;
+		auto head = makeHead( headPos, conf.massHead, conf.headDimension );
+
 		// representation of the origin
 		const Pos nullpos(0,0,0);
 
 		//Place the joint between the two body-parts
 		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * frontPos, conf.rearDimension[1] );
-
+		makeHeadFixedJoint( front, head, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, conf.headDimension[1] );
 	    /************************************
 	     * LEGS
 	     ***********************************/
@@ -228,20 +231,20 @@ namespace lpzrobots
 			{
 				case L0:
 				case R0:
-					xPosition = conf.frontDimension[0]/2;
-					yPosition = lr * conf.frontDimension[1]/3;
+					xPosition = conf.frontDimension[0]*0.5;
+					yPosition = lr * conf.frontDimension[1]/6;
 					zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				case L1:
 				case R1:
-					xPosition = -conf.rearDimension[0]/3;
-					yPosition = lr * conf.rearDimension[1]/3;
+					xPosition = -conf.rearDimension[0]*0.1875;
+					yPosition = lr * conf.rearDimension[1]/6;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				case L2:
 				case R2:
-					xPosition = (-2*conf.rearDimension[0])/3;
-					yPosition = lr * conf.rearDimension[1]/3;
+					xPosition = -conf.rearDimension[0]*0.5;
+					yPosition = lr * conf.rearDimension[1]/6;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				default:
@@ -440,7 +443,7 @@ namespace lpzrobots
 				Primitive *tarsus;
 				double angle = M_PI/12;
 
-				double radius = conf.footRadius/3;
+				double radius = conf.footRadius/2; // was conf.footRadius/3
 				double length = conf.footRange;
 				double mass = conf.tarusMass/10;
 				tarsus = new Capsule(radius,length);
@@ -631,6 +634,13 @@ namespace lpzrobots
 		backboneServo = servo;
     }
 
+    void DungBot::makeHeadFixedJoint(Primitive* head, Primitive* front, const Pos position, const double Y)
+    {
+		FixedJoint* fixed = new FixedJoint( head, front, position);
+		fixed->init( odeHandle, osgHandle, true, Y * 1.00 );
+		joints.push_back( fixed );
+    }
+
     void DungBot::makeLegHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
         HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
@@ -638,20 +648,20 @@ namespace lpzrobots
         joints.push_back( hinge );
     }
 
-    lpzrobots::Primitive* DungBot::makeLegSphereJoint( const osg::Matrix& pose, const double mass, const double sphereRadius )
+    lpzrobots::Primitive* DungBot::makeHead( const osg::Matrix& pose, const double mass, const std::vector<double> dimension )
     {
     	// Allocate object
-    	lpzrobots::Primitive* sphereJoint = new Sphere( sphereRadius );
+    	lpzrobots::Primitive* head = new Cylinder( dimension[2], dimension[0] );
     	// Set texture from Image library
-    	sphereJoint->setTexture( "Images/sandyground.rgb" );
+    	head->setTexture( "body.jpg" );
     	// Initialize the primitive
-    	sphereJoint->init( odeHandle, mass, osgHandle );
+    	head->init( odeHandle, mass, osgHandle );
     	// Set pose
-    	sphereJoint->setPose( pose );
+    	head->setPose( pose );
     	// Add to objects
-    	objects.push_back( sphereJoint );
+    	objects.push_back( head );
 
-    	return sphereJoint;
+    	return head;
     }
 
 	void DungBot::nameMotor( const int motorNumber, const char* name )
@@ -860,10 +870,13 @@ namespace lpzrobots
 		 */
 
 		//	----------- Body dimensions -------
-		conf.frontDimension = { 0.4, 0.45, 0.2 };
-		conf.massFront 	= 1.75;
-		conf.rearDimension 	= { 0.8, 0.55, 0.2 };
+		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
 		conf.massRear 	= 2;
+		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
+		conf.massFront 	= 1.75;
+		conf.headDimension 	= { conf.frontDimension[0]*0.57, conf.frontDimension[0]*0.57, conf.rearDimension[2]*1 };
+		conf.massHead 	= 1;
+
 
 		// ------------ Leg dimensions --------
 		conf.coxaLength = 0.3;	// COXA
@@ -879,7 +892,7 @@ namespace lpzrobots
 		conf.tibiaMass = 0.25;
 
 		conf.footRange = 0.05;	// FOOT
-		conf.footRadius = 0.015;
+		conf.footRadius = 0.02;
 		conf.footMass = 0.09;
 		conf.footSpringPreload = 0.0;
 

@@ -1,0 +1,94 @@
+<!DOCTYPE ConfigurableStateTypeDefinition>
+<ConfigurableStates>
+ <ConfigurableState name="Simulation Environment_0">
+  <ConfigurableWidget tileWidgetWidth="210" isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets>
+    <ConfigurableTileWidget gridRow="0" gridColumn="0" name="cameraspeed" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="0" gridColumn="1" name="commandline" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="0" gridColumn="2" name="controlinterval" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="0" name="fps" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="1" name="gravity" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="2" name="logwhilerecording" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="0" name="noise" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="1" name="randomseed" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="2" name="realtimefactor" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="3" gridColumn="0" name="simstepsize" isVisible="true"/>
+   </ConfigurableTileWidgets>
+  </ConfigurableWidget>
+  <Configurable revision="$Id$" id="846930886" name="Simulation Environment" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals>
+    <paramval name="cameraspeed"/>
+    <paramval name="fps"/>
+    <paramval name="gravity"/>
+    <paramval name="noise"/>
+    <paramval name="randomseed"/>
+    <paramval name="realtimefactor"/>
+    <paramval value="0.009600000000000003" name="simstepsize"/>
+   </paramvals>
+   <paramints>
+    <paramint name="controlinterval"/>
+   </paramints>
+   <parambools>
+    <parambool name="commandline"/>
+    <parambool name="logwhilerecording"/>
+   </parambools>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="_0">
+  <ConfigurableWidget isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets/>
+  </ConfigurableWidget>
+  <Configurable revision="$Id: tripodgait18dof.cpp,v 0.1 $" id="567555902" name="" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals/>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+ <ConfigurableState name="AmosII_0">
+  <ConfigurableWidget tileWidgetWidth="210" isCollapsed="false" numberOfTilesPerRow="3">
+   <ConfigurableTileWidgets>
+    <ConfigurableTileWidget gridRow="0" gridColumn="0" name="coxaDamp" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="0" gridColumn="1" name="coxaMaxVel" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="0" gridColumn="2" name="coxaPower" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="0" name="fcoxaJointLimitB" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="1" name="fcoxaJointLimitF" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="1" gridColumn="2" name="fsecondJointLimitD" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="0" name="fsecondJointLimitU" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="1" name="mcoxaJointLimitB" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="2" gridColumn="2" name="mcoxaJointLimitF" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="3" gridColumn="0" name="msecondJointLimitD" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="3" gridColumn="1" name="msecondJointLimitU" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="3" gridColumn="2" name="rcoxaJointLimitB" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="4" gridColumn="0" name="rcoxaJointLimitF" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="4" gridColumn="1" name="rsecondJointLimitD" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="4" gridColumn="2" name="rsecondJointLimitU" isVisible="true"/>
+    <ConfigurableTileWidget gridRow="5" gridColumn="0" name="secondPower" isVisible="true"/>
+   </ConfigurableTileWidgets>
+  </ConfigurableWidget>
+  <Configurable revision="DungBeetle" id="1871782192" name="AmosII" autosaveFunction="1">
+   <!--While in autosave mode, only values, bounds and descriptions of parameters which are differing from their original values are stored.-->
+   <paramvals>
+    <paramval name="coxaDamp"/>
+    <paramval name="coxaMaxVel"/>
+    <paramval name="coxaPower"/>
+    <paramval name="fcoxaJointLimitB"/>
+    <paramval name="fcoxaJointLimitF"/>
+    <paramval name="fsecondJointLimitD"/>
+    <paramval name="fsecondJointLimitU"/>
+    <paramval name="mcoxaJointLimitB"/>
+    <paramval name="mcoxaJointLimitF"/>
+    <paramval name="msecondJointLimitD"/>
+    <paramval name="msecondJointLimitU"/>
+    <paramval name="rcoxaJointLimitB"/>
+    <paramval name="rcoxaJointLimitF"/>
+    <paramval name="rsecondJointLimitD"/>
+    <paramval name="rsecondJointLimitU"/>
+    <paramval name="secondPower"/>
+   </paramvals>
+   <paramints/>
+   <parambools/>
+  </Configurable>
+ </ConfigurableState>
+</ConfigurableStates>

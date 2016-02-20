@@ -56,6 +56,8 @@ namespace lpzrobots
 		//	Body
 		double massFront;
 		double massRear;
+		double massHead;
+		std::vector<double> headDimension;
 		std::vector<double> frontDimension;
 		std::vector<double> rearDimension;
 
@@ -190,10 +192,11 @@ namespace lpzrobots
 			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
-			lpzrobots::Primitive* makeLegSphereJoint( const osg::Matrix&, const double, const double );
+			lpzrobots::Primitive* makeHead( const osg::Matrix&, const double, const std::vector<double> );
 			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
+			void makeHeadFixedJoint( Primitive*, Primitive*, const Pos, const double );
 
 			bool created;
 
