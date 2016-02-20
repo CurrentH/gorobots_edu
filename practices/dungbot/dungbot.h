@@ -36,12 +36,11 @@
 #include <selforg/inspectable.h>
 #include <ode_robots/oderobot.h>
 
-/**
- * forward declarations
- */
-// TODO: Any reason these is here, and not inside the namespace below?
 namespace lpzrobots
 {
+	/**
+	 * forward declarations
+	 */
 	class HingeJoint;
 	class IRSensor;
 	class Joint;
@@ -49,15 +48,9 @@ namespace lpzrobots
 	class Primitive;
 	class RaySensorBank;
 	class SliderJoint;
-	class SpeedSensor;
 	class Spring;
 	class TwoAxisServo;
-	// Added sound sensors (2) class
-	class SoundSensor;
-}
 
-namespace lpzrobots
-{
 	typedef struct
 	{
 		double massFront;
@@ -206,14 +199,19 @@ namespace lpzrobots
 
 			bool created;
 
-			//	For legs
+			//	Typedefs
 			typedef std::map< LegPos, Leg > LegMap;
 			typedef std::map< MotorName, OneAxisServo* > MotorMap;
 			typedef std::map< std::pair< LegPos, int >, ContactSensor* > TarsusContactMap;
+			typedef std::vector<OneAxisServo*> ServoList;
+
+			//	For legs
+			std::vector< std::shared_ptr< OneAxisServo > > tarsussprings;
 			LegMap legs;
 
 			//	For servos
 			OneAxisServo * backboneServo;
+			ServoList passiveServos;
 			MotorMap servos;
 
 			//	For tarsus contact

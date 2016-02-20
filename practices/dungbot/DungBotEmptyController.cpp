@@ -42,8 +42,17 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	//TODO:	Find out how to properly find the data from the sensors, look at the lines below:
 
-
-	std::cout << motor[DungBotMotorSensor::TR0_m];
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	{
+		if( sensor[i] < -10 )
+		{
+			motor[i] = 1;
+		}
+		else
+		{
+			motor[i] = -1;
+		}
+	}
 
 	/*
 	double leftFrontPosition = sensors[SIdx("left front motor")];

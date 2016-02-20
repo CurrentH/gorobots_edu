@@ -336,7 +336,7 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
+			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
 			legs[leg].tcServo = servo1;
 			servos[ getMotorName( leg, TC ) ] = servo1;
 
@@ -348,7 +348,7 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
+			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
 			legs[leg].ctrServo = servo2;
 			servos[ getMotorName( leg, CTR ) ] = servo2;
 
@@ -360,7 +360,7 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
+			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
 			legs[leg].ftiServo = servo3;
 			servos[ getMotorName( leg, FTI ) ] = servo3;
 
@@ -388,15 +388,17 @@ namespace lpzrobots
 				objects.push_back(foot);
 
 				HingeJoint* m = new HingeJoint(tibia, foot, anchor4, axis4);						//TODO SHOULD BE A SliderJoint and not HingeJoint
-				m->init(odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius, true);
+				m->init(odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius, true );
 				legs[leg].footJoint = m;
-				joints.push_back(m);
+				joints.push_back( m );
 
 				/** parameters are set later */
-				//Spring* spring = new Spring(m, -1, 1, 1);
-				//legs[leg].footSpring = spring;
-				//passiveServos.push_back(spring);
-				odeHandle.addIgnoredPair(femurThorax, foot);
+				/*
+				Spring* spring = new Spring(m, -1, 1, 1, 0.05, 1, 0, 1);
+				legs[leg].footSpring = spring;
+				passiveServos.push_back( spring );
+				odeHandle.addIgnoredPair( femurThorax, foot );
+				*/	//TODO:	Ask Leon about this spring.
 
 				// New: tarsus
 				Primitive *tarsus;
@@ -504,34 +506,37 @@ namespace lpzrobots
 				 {
 					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+
 					 // servo used as a spring
-					 //auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
 					 joints.push_back(k);
-					 //auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 //tarsussprings.push_back(servo);
-					 //addMotor(spring);
+					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+					 tarsussprings.push_back(servo);
+					 addMotor(spring);
 				 }
 				 else if( j == 2 )
 				 {
 					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+
 					 // servo used as a spring
-					 //auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
 					 joints.push_back(k);
-					 //auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 //tarsussprings.push_back(servo);
-					 //addMotor(spring);
+					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+					 tarsussprings.push_back(servo);
+					 addMotor(spring);
 				 }
 				 else
 				 {
 					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+
 					 // servo used as a spring
-					 //auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.01); // parameters are set later
-					 joints.push_back(k);
-					 //auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 //tarsussprings.push_back(servo);
-					 //addMotor(spring);
+					 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // parameters are set later
+					 joints.push_back( k );
+					 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
+					 tarsussprings.push_back( servo );
+					 addMotor( spring );
 				 }
 
 				 m6 = m7;
@@ -585,7 +590,7 @@ namespace lpzrobots
 		joints.push_back( hinge );
 
 		/**  Moved this one down from "Create"   **/
-		OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -1, 1, 10, 0.01, 0, 1.0 );
+		OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -30, 30, 1000, 0.01, 0, 1.0 );
 		servos[DungBotMotorSensor::BJ_m] = servo;
 		backboneServo = servo;
     }
