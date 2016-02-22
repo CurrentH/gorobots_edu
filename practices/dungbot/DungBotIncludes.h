@@ -25,15 +25,15 @@ namespace lpzrobots
 		std::vector<double> rearDimension;
 
 		//	Legs
-		double coxaLength;
+		std::vector<double> coxaLength;
 		double coxaRadius;
-		double coxaMass;
-		double femurLength;
+		std::vector<double> coxaMass;
+		std::vector<double> femurLength;
 		double femurRadius;
-		double femurMass;
-		double tibiaLength;
+		std::vector<double> femurMass;
+		std::vector<double> tibiaLength;
 		double tibiaRadius;
-		double tibiaMass;
+		std::vector<double> tibiaMass;
 		double footRange;
 		double footRadius;
 		double footMass;

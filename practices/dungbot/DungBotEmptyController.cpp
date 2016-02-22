@@ -40,32 +40,18 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	assert( motorNumber >= DungBotMotorSensor::DUNGBOT_MOTOR_MAX );
 	assert( sensorNumber >= DungBotMotorSensor::DUNGBOT_SENSOR_MAX );
 
-	//TODO:	Find out how to properly find the data from the sensors, look at the lines below:
+/*		//TODO:	Get the motor to move the legs with a sine.
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
-		/*
-		if( sensor[i] < -10 )
-		{
-			motor[i] = 1;
-		}
-		else
-		{
-			motor[i] = -1;
-		}*/
-
-		motor[i] = sin( ticks_since_init );
-		cout << ticks_since_init << " " << sin( ticks_since_init ) << endl;
-
+		motor[i] = 0;//sin( ticks_since_init );
+		//cout << ticks_since_init << " " << sin( ticks_since_init ) << endl;
 	}
-
-
-
-	/*
-	double leftFrontPosition = sensors[SIdx("left front motor")];
-	double leftRearPosition = sensors[SIdx("left rear motor")];
-	double rightFrontPosition = sensors[SIdx("right front motor")];
-	double rightRearPosition = sensors[SIdx("right rear motor")];
-	*/
+/*
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_SENSOR_MAX; i++ )
+	{
+		cout << i << ": " << sensor[i] << endl;
+	}
+*/
 }
 
 void DungBotEmptyController::step( const sensor* sensors, int sensorNumber, motor* motors, int motorNumber )
