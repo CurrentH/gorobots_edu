@@ -23,7 +23,6 @@
  *                                                                         *
  **************************************************************************/
 
-
 // Adding sensors
 // 1) Include header file
 // 2) In--> getSensors(sensor* sensors, int sensornumber),
@@ -32,7 +31,6 @@
 // add your sensor for sensing environment, e.g., "sensor->sense(global);"
 // 4) In--> create(const osg::Matrix& pose), attache your sensor to the robot, e.g., "soundsensor1->init(legs[L0].shoulder);"
 // 5) In--> destroy(), delete your sensor values, e.g., "delete sensor"
-
 
 //#define VERBOSE
 #include "dungbeetle.h"
@@ -124,19 +122,18 @@ namespace lpzrobots {
     addParameter("rsecondJointLimitD", &conf.rsecondJointLimitD);
     addParameter("rsecondJointLimitU", &conf.rsecondJointLimitU);
 
-
     addParameter("coxaMaxVel", &conf.coxaMaxVel);
 
-    if (conf.useTebiaJoints) {
-      addParameter("tebiaPower", &conf.tebiaPower);
-      addParameter("tebiaDamp", &conf.tebiaDamping);
-      addParameter("ftebiaJointLimitD", &conf.ftebiaJointLimitD);
-	  addParameter("ftebiaJointLimitU", &conf.ftebiaJointLimitU);
-	  addParameter("mtebiaJointLimitD", &conf.mtebiaJointLimitD);
-	  addParameter("mtebiaJointLimitU", &conf.mtebiaJointLimitU);
-	  addParameter("rtebiaJointLimitD", &conf.rtebiaJointLimitD);
-	  addParameter("rtebiaJointLimitU", &conf.rtebiaJointLimitU);
-
+    if(conf.useTebiaJoints)
+    {
+		addParameter("tebiaPower", &conf.tebiaPower);
+		addParameter("tebiaDamp", &conf.tebiaDamping);
+		addParameter("ftebiaJointLimitD", &conf.ftebiaJointLimitD);
+		addParameter("ftebiaJointLimitU", &conf.ftebiaJointLimitU);
+		addParameter("mtebiaJointLimitD", &conf.mtebiaJointLimitD);
+		addParameter("mtebiaJointLimitU", &conf.mtebiaJointLimitU);
+		addParameter("rtebiaJointLimitD", &conf.rtebiaJointLimitD);
+		addParameter("rtebiaJointLimitU", &conf.rtebiaJointLimitU);
     }
 
     // name the sensors

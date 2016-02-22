@@ -126,7 +126,8 @@ namespace lpzrobots
 		if( this->currentCycle == number_of_runs )
 			return false;
 
-		if(agent!=0) {
+		if( agent!=0 )
+		{
 			OdeAgentList::iterator itr = find( global.agents.begin(), global.agents.end(),agent );
 			if ( itr!=global.agents.end() )
 			{
@@ -151,8 +152,8 @@ namespace lpzrobots
 		// implement playground here.
 	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.2, 0.3));
 	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
-	    playground->setPosition(osg::Vec3(0,0,.0));
-	    global.obstacles.push_back(playground);
+	    playground->setPosition( osg::Vec3( 0, 0, .0 ) );
+	    global.obstacles.push_back( playground );
 	}
 
 } /* namespace lpzrobots */

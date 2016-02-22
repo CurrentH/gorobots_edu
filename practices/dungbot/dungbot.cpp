@@ -80,32 +80,31 @@ namespace lpzrobots
         nameMotor(DungBotMotorSensor::BJ_m, "BJ motor");
 /*
         addParameter( "coxaPower", &conf.coxaPower );
-        addParameter( "secondPower", &conf.femurPower );
+        addParameter( "femurPower", &conf.femurPower );
         addParameter( "coxaDamp", &conf.coxaDamping );
-        addParameter( "fcoxaJointLimitF", &conf.fCoxaJointLimitF );
-        addParameter( "fcoxaJointLimitB", &conf.fCoxaJointLimitB );
-        addParameter( "mcoxaJointLimitF", &conf.mCoxaJointLimitF );
-        addParameter( "mcoxaJointLimitB", &conf.mCoxaJointLimitB );
-        addParameter( "rcoxaJointLimitF", &conf.rCoxaJointLimitF );
-        addParameter( "rcoxaJointLimitB", &conf.rCoxaJointLimitB );
-        addParameter( "fsecondJointLimitD", &conf.fFemurJointLimitD );
-        addParameter( "fsecondJointLimitU", &conf.fFemurJointLimitU );
-        addParameter( "msecondJointLimitD", &conf.mFemurJointLimitD );
-        addParameter( "msecondJointLimitU", &conf.mFemurJointLimitU );
-        addParameter( "rsecondJointLimitD", &conf.rFemurJointLimitD );
-        addParameter( "rsecondJointLimitU", &conf.rFemurJointLimitU );
-
+        addParameter( "fCoxaJointLimitF", &conf.fCoxaJointLimitF );
+        addParameter( "fCoxaJointLimitB", &conf.fCoxaJointLimitB );
+        addParameter( "mCoxaJointLimitF", &conf.mCoxaJointLimitF );
+        addParameter( "mCoxaJointLimitB", &conf.mCoxaJointLimitB );
+        addParameter( "rCoxaJointLimitF", &conf.rCoxaJointLimitF );
+        addParameter( "rCoxaJointLimitB", &conf.rCoxaJointLimitB );
+        addParameter( "fFemurJointLimitD", &conf.fFemurJointLimitD );
+        addParameter( "fFemurJointLimitU", &conf.fFemurJointLimitU );
+        addParameter( "mFemurJointLimitD", &conf.mFemurJointLimitD );
+        addParameter( "mFemurJointLimitU", &conf.mFemurJointLimitU );
+        addParameter( "rFemurJointLimitD", &conf.rFemurJointLimitD );
+        addParameter( "rFemurJointLimitU", &conf.rFemurJointLimitU );
 
         addParameter( "coxaMaxVel", &conf.coxaMaxVel );
 
-		addParameter( "tebiaPower", &conf.tibiaPower );
-		addParameter( "tebiaDamp", &conf.tibiaDamping );
-		addParameter( "ftebiaJointLimitD", &conf.fTibiaJointLimitD );
-		addParameter( "ftebiaJointLimitU", &conf.fTibiaJointLimitU );
-		addParameter( "mtebiaJointLimitD", &conf.mTibiaJointLimitD );
-		addParameter( "mtebiaJointLimitU", &conf.mTibiaJointLimitU );
-		addParameter( "rtebiaJointLimitD", &conf.rTibiaJointLimitD );
-		addParameter( "rtebiaJointLimitU", &conf.rTibiaJointLimitU );
+		addParameter( "tibiaPower", &conf.tibiaPower );
+		addParameter( "tibiaDamp", &conf.tibiaDamping );
+		addParameter( "fTibiaJointLimitD", &conf.fTibiaJointLimitD );
+		addParameter( "fTibiaJointLimitU", &conf.fTibiaJointLimitU );
+		addParameter( "mTibiaJointLimitD", &conf.mTibiaJointLimitD );
+		addParameter( "mTibiaJointLimitU", &conf.mTibiaJointLimitU );
+		addParameter( "rTibiaJointLimitD", &conf.rTibiaJointLimitD );
+		addParameter( "rTibiaJointLimitU", &conf.rTibiaJointLimitU );
 */
     }
 
@@ -870,11 +869,11 @@ namespace lpzrobots
 		//	----------- Body dimensions -------
 		conf.size = 0;	//TODO:	This should be 0.43, but that moves the tabia out, there properly needs to be a * size everywhere.
 		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
-		conf.massRear 	= 2;
+		conf.massRear 	= 0.4;//2;
 		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
-		conf.massFront 	= 1.75;
+		conf.massFront 	= 0.175;
 		conf.headDimension 	= { conf.frontDimension[0]*0.57, conf.frontDimension[0]*0.57, conf.rearDimension[2]*1 };
-		conf.massHead 	= 1;
+		conf.massHead 	= 0.1;
 
 		// ------------ Leg dimensions --------
 		conf.coxaLength = 0.3;	// COXA
@@ -932,10 +931,10 @@ namespace lpzrobots
 		conf.footSpringPreload = 8.0 / 43.0 * conf.size;
 		// negative is downwards (spring extends)
 		conf.footSpringLimitD = conf.footSpringPreload;
-		conf.footSpringLimitU = conf.footSpringPreload;// + conf.footRange;
+		conf.footSpringLimitU = conf.footSpringPreload + conf.footRange;
 
-		const double backPower_scale = 30.0;
-		const double coxaPower_scale = 10.0;
+		const double backPower_scale = 3000.0;
+		const double coxaPower_scale = 1000.0;
 		const double springstiffness = 350.0;
 
 		conf.backPower = backPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength * conf.massRear;

@@ -82,4 +82,5 @@ namespace lpzrobots
 		double rTibiaJointLimitD;
 		double rTibiaJointLimitU;
 	}DungBotConf;
+
 }

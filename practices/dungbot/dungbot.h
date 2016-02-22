@@ -32,6 +32,7 @@
 
 // Extra includes
 #include <selforg/inspectable.h>
+#include <selforg/configurable.h>		//Not used as is.. Should maybe used for addParameter, but that doesn't seem to work with it.
 #include <ode_robots/oderobot.h>
 #include <vector>
 #include <iostream>
@@ -91,11 +92,6 @@ namespace lpzrobots
 			virtual bool setParam( const paramkey& key, paramval val );
 
 		protected:
-		//	Protected methods
-			void nameMotor( const int motorNo, const char* name );
-			void nameSensor( const int sensorNo, const char* name );
-
-		protected:
 		//	Protected attributes
 			Position startPosition;
 			Position position;
@@ -118,16 +114,10 @@ namespace lpzrobots
 				Primitive * foot;
 			};
 
-		private:
-		//	Private methods
-			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
-			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
-			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
-			lpzrobots::Primitive* makeHead( const osg::Matrix&, const double, const std::vector<double> );
-			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
-			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
-			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
-			void makeHeadFixedJoint( Primitive*, Primitive*, const Pos, const double );
+		protected:
+		//	Protected methods
+			void nameMotor( const int motorNo, const char* name );
+			void nameSensor( const int sensorNo, const char* name );
 
 		private:
 		//	Private attributes
@@ -137,7 +127,7 @@ namespace lpzrobots
 			typedef std::map< LegPos, Leg > LegMap;
 			typedef std::map< MotorName, OneAxisServo* > MotorMap;
 			typedef std::map< std::pair< LegPos, int >, ContactSensor* > TarsusContactMap;
-			typedef std::vector<OneAxisServo*> ServoList;
+			typedef std::vector< OneAxisServo* > ServoList;
 
 			//	For legs
 			std::vector< std::shared_ptr< OneAxisServo > > tarsussprings;
@@ -150,6 +140,17 @@ namespace lpzrobots
 
 			//	For tarsus contact
 			TarsusContactMap tarsusContactSensors;
+
+		private:
+		//	Private methods
+			lpzrobots::Primitive* makeBody( const osg::Matrix&, const double , const std::vector<double> );
+			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
+			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
+			lpzrobots::Primitive* makeHead( const osg::Matrix&, const double, const std::vector<double> );
+			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
+			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
+			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
+			void makeHeadFixedJoint( Primitive*, Primitive*, const Pos, const double );
 
 	};
 } //End namespace lpzrobot
