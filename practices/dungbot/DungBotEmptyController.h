@@ -41,7 +41,7 @@ class DungBotEmptyController : public AbstractController
 		double nSensors;
 		double nMotors;
 		bool initialised;
-		long ticks_since_init;
+		double ticks_since_init;
 		double speedSetpoint;
 		double phaseSetpoint;
 };

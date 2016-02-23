@@ -68,7 +68,7 @@ namespace DungBotMotorSensor
 		L2_s4 = 53,
 		L2_s5 = 54,
 
-		DUNGBOT_SENSOR_MAX = 55,
+		DUNGBOT_SENSOR_MAX = 54,
 	};
 
 	enum DungBotMotorNames
@@ -97,7 +97,7 @@ namespace DungBotMotorSensor
 		BJ_m = 18,  // Upward (+), Downward (-)
 
 		//Changing according to the maximum motor number
-		DUNGBOT_MOTOR_MAX = 19,
+		DUNGBOT_MOTOR_MAX = 18,
 	};
 }//	Ending namespace DungBot
 #endif

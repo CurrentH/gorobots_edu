@@ -370,9 +370,18 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
+
+			/*
 			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
 			legs[leg].tcServo = servo1;
 			servos[ getMotorName( leg, TC ) ] = servo1;
+			*/
+
+			auto coxaMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
+			//coxaMotor->setBaseName("coxaMotor");
+			addSensor( coxaMotor );
+			addMotor( coxaMotor );
+
 
 			// create the joint from first to second limb (coxa to femur)
 			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
@@ -382,9 +391,16 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
+
+			/*
+			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 20.0, 1.0);
 			legs[leg].ctrServo = servo2;
 			servos[ getMotorName( leg, CTR ) ] = servo2;
+			*/
+
+			auto femurMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
+			addSensor( femurMotor );
+			addMotor( femurMotor );
 
 			// springy knee joint
 			HingeJoint* l = new HingeJoint(femurThorax, tibia, anchor3, -axis3);
@@ -394,9 +410,16 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			//OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
-			//legs[leg].ftiServo = servo3;
-			//servos[ getMotorName( leg, FTI ) ] = servo3;
+
+			/*
+			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 20.0, 1.0);
+			legs[leg].ftiServo = servo3;
+			servos[ getMotorName( leg, FTI ) ] = servo3;
+			*/
+
+			auto tibiaMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
+			addSensor( tibiaMotor );
+			addMotor( tibiaMotor );
 
 			// Foot
 			if( conf.makeFoot ) // toggle foot
@@ -451,20 +474,20 @@ namespace lpzrobots
 
 				double angleTarsus=0;
 
-				//rotate manually tarsus here
+				//	Rotate manually tarsus here
 				switch (i)
-				{
-					case 0: angleTarsus=0;//front left
+				{	//TODO:	See if the rotations of the Tarsus is correct
+					case 0: angleTarsus=0;	//front left
 					break;
-					case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20; //middle left
+					case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20;	//middle left
 					break;
-					case 2: angleTarsus=0; //rear left ok
+					case 2: angleTarsus=0;	//rear left ok
 					break;
-					case 3: angleTarsus=(M_PI/180)*20; //front right
+					case 3: angleTarsus=(M_PI/180)*20;	//front right
 					break;
-					case 4: angleTarsus=(M_PI/180)*140;  // middle right
+					case 4: angleTarsus=(M_PI/180)*140;	// middle right
 					break;
-					case 5: angleTarsus=-(M_PI/180)*290;  // rear right ok
+					case 5: angleTarsus=-(M_PI/180)*290;	// rear right ok
 					break;
 					default: angleTarsus=0;
 					break;
@@ -862,14 +885,10 @@ namespace lpzrobots
 		//	----------- Body dimensions -------
 		conf.size = 0.0; //	Should be 0.43, but this increases the foot length retardedly.
 		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
-		conf.massRear 	= 0.4;
 		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
-		conf.massFront 	= 0.175;
 		conf.headDimension 	= { conf.frontDimension[0]*0.57, conf.frontDimension[0]*0.57, conf.rearDimension[2]*1 };
-		conf.massHead 	= 0.1;
 
 		//const double density = 3.0 / ( 0.43 * 0.07 * 0.065 );
-
 		conf.massFront = 0.01; //conf.frontDimension[0] * conf.frontDimension[1] * conf.frontDimension[2] * density;
 		conf.massRear = 0.01; //conf.rearDimension[0] * conf.rearDimension[1] * conf.rearDimension[2] * density;
 		conf.massHead = 0.01; //M_PI * conf.headDimension[0] * conf.headDimension[0] * conf.headDimension[2] * density;
@@ -879,17 +898,17 @@ namespace lpzrobots
 		conf.coxaLength = { conf.rearDimension[0]*0.15, conf.rearDimension[0]*0.3, conf.rearDimension[0]*0.45 };
 		conf.coxaRadius = 0.02;
 		conf.coxaMass = {
-				985*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[0] ),
-				985*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[1] ),
-				985*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[2] )};
+				98.5*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[0] ),
+				98.5*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[1] ),
+				98.5*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[2] )};
 
 		//conf.femurLength = 0.3;	// FEMUR
 		conf.femurLength = { conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55 };
 		conf.femurRadius = 0.02;
 		conf.femurMass = {
-				985*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[0] ),
-				985*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[1] ),
-				985*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[2] )};
+				98.5*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[0] ),
+				98.5*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[1] ),
+				98.5*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[2] )};
 
 		//conf.tibiaLength = 0.3;	// TEBIA
 		conf.tibiaLength = { conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.70 };
@@ -953,6 +972,12 @@ namespace lpzrobots
 		conf.femurPower = conf.coxaPower;
 		conf.tibiaPower = conf.coxaPower;
 		conf.footPower = ( springstiffness * 0.08 / 2.2 ) * conf.massRear / conf.footSpringPreload;
+
+		std::cout << "Back power: "<< conf.backPower << std::endl;
+		std::cout << "Coxa power: "<< conf.coxaPower << std::endl;
+		std::cout << "Femur power: "<< conf.femurPower << std::endl;
+		std::cout << "Tibia power: "<< conf.backPower << std::endl;
+		std::cout << "Foot power: "<< conf.tibiaPower << std::endl;
 
 		conf.backDamping = 0.0;
 		conf.coxaDamping = 0.0;

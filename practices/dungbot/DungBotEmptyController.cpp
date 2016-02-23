@@ -25,10 +25,13 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name )
 {
 	initialised = false;
 
-	ticks_since_init = 0;
+	ticks_since_init = 0.0;
 
 	speedSetpoint = 4.0;
 	phaseSetpoint = 4.0;
+
+	nSensors = 0;
+	nMotors = 0;
 }
 
 DungBotEmptyController::~DungBotEmptyController()
@@ -39,26 +42,19 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 {
 	assert( motorNumber >= DungBotMotorSensor::DUNGBOT_MOTOR_MAX );
 	assert( sensorNumber >= DungBotMotorSensor::DUNGBOT_SENSOR_MAX );
-
-/*		//TODO:	Get the motor to move the legs with a sine.
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
-	{
-		motor[i] = 0;//sin( ticks_since_init );
-		//cout << ticks_since_init << " " << sin( ticks_since_init ) << endl;
-	}
-/*
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_SENSOR_MAX; i++ )
-	{
-		cout << i << ": " << sensor[i] << endl;
-	}
-*/
 }
 
-void DungBotEmptyController::step( const sensor* sensors, int sensorNumber, motor* motors, int motorNumber )
+void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
 {
-	stepNoLearning( sensors, sensorNumber, motors, motorNumber );
+	//stepNoLearning( sensors, sensorNumber, motors, motorNumber );
 	// Update internal time
-	ticks_since_init++;
+	ticks_since_init += 0.01;
+
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	{
+		motor[i] = sin( ticks_since_init );
+	}
+
 }
 
 void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* randGen )
