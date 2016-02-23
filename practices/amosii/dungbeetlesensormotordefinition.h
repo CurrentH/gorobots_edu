@@ -86,14 +86,9 @@ enum DungBeetleSensorNames{
   L2_s4=61,
   L2_s5=62,
 
-
-
-
   DUNGBEETLE_SENSOR_MAX = 63,
 
 };
-
-
 
 enum DungBeetleMotorNames{
   TR0_m = 0,

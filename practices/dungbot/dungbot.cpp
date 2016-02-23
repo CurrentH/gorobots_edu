@@ -37,7 +37,32 @@ namespace lpzrobots
     : OdeRobot( odeHandle, osgHandle, name, "2.0" ), conf( conf )
     {
     	created = false;
-
+/*
+        addParameter( "coxaPower", &conf.coxaPower );
+        addParameter( "femurPower", &conf.femurPower );
+        addParameter( "coxaDamp", &conf.coxaDamping );
+        addParameter( "fCoxaJointLimitF", &conf.fCoxaJointLimitF );
+        addParameter( "fCoxaJointLimitB", &conf.fCoxaJointLimitB );
+        addParameter( "mCoxaJointLimitF", &conf.mCoxaJointLimitF );
+        addParameter( "mCoxaJointLimitB", &conf.mCoxaJointLimitB );
+        addParameter( "rCoxaJointLimitF", &conf.rCoxaJointLimitF );
+        addParameter( "rCoxaJointLimitB", &conf.rCoxaJointLimitB );
+        addParameter( "fFemurJointLimitD", &conf.fFemurJointLimitD );
+        addParameter( "fFemurJointLimitU", &conf.fFemurJointLimitU );
+        addParameter( "mFemurJointLimitD", &conf.mFemurJointLimitD );
+        addParameter( "mFemurJointLimitU", &conf.mFemurJointLimitU );
+        addParameter( "rFemurJointLimitD", &conf.rFemurJointLimitD );
+        addParameter( "rFemurJointLimitU", &conf.rFemurJointLimitU );
+        addParameter( "coxaMaxVel", &conf.coxaMaxVel );
+		addParameter( "tibiaPower", &conf.tibiaPower );
+		addParameter( "tibiaDamp", &conf.tibiaDamping );
+		addParameter( "fTibiaJointLimitD", &conf.fTibiaJointLimitD );
+		addParameter( "fTibiaJointLimitU", &conf.fTibiaJointLimitU );
+		addParameter( "mTibiaJointLimitD", &conf.mTibiaJointLimitD );
+		addParameter( "mTibiaJointLimitU", &conf.mTibiaJointLimitU );
+		addParameter( "rTibiaJointLimitD", &conf.rTibiaJointLimitD );
+		addParameter( "rTibiaJointLimitU", &conf.rTibiaJointLimitU );
+*/
     	//	Name the sensors
     	nameSensor(DungBotMotorSensor::TR0_as, "*TR0 angle sensor");
 		nameSensor(DungBotMotorSensor::TR1_as, "*TR1 angle sensor");
@@ -78,32 +103,7 @@ namespace lpzrobots
         nameMotor(DungBotMotorSensor::FL1_m, "FL1 motor");
         nameMotor(DungBotMotorSensor::FL2_m, "FL2 motor");
         nameMotor(DungBotMotorSensor::BJ_m, "BJ motor");
-/*
-        addParameter( "coxaPower", &conf.coxaPower );
-        addParameter( "femurPower", &conf.femurPower );
-        addParameter( "coxaDamp", &conf.coxaDamping );
-        addParameter( "fCoxaJointLimitF", &conf.fCoxaJointLimitF );
-        addParameter( "fCoxaJointLimitB", &conf.fCoxaJointLimitB );
-        addParameter( "mCoxaJointLimitF", &conf.mCoxaJointLimitF );
-        addParameter( "mCoxaJointLimitB", &conf.mCoxaJointLimitB );
-        addParameter( "rCoxaJointLimitF", &conf.rCoxaJointLimitF );
-        addParameter( "rCoxaJointLimitB", &conf.rCoxaJointLimitB );
-        addParameter( "fFemurJointLimitD", &conf.fFemurJointLimitD );
-        addParameter( "fFemurJointLimitU", &conf.fFemurJointLimitU );
-        addParameter( "mFemurJointLimitD", &conf.mFemurJointLimitD );
-        addParameter( "mFemurJointLimitU", &conf.mFemurJointLimitU );
-        addParameter( "rFemurJointLimitD", &conf.rFemurJointLimitD );
-        addParameter( "rFemurJointLimitU", &conf.rFemurJointLimitU );
-        addParameter( "coxaMaxVel", &conf.coxaMaxVel );
-		addParameter( "tibiaPower", &conf.tibiaPower );
-		addParameter( "tibiaDamp", &conf.tibiaDamping );
-		addParameter( "fTibiaJointLimitD", &conf.fTibiaJointLimitD );
-		addParameter( "fTibiaJointLimitU", &conf.fTibiaJointLimitU );
-		addParameter( "mTibiaJointLimitD", &conf.mTibiaJointLimitD );
-		addParameter( "mTibiaJointLimitU", &conf.mTibiaJointLimitU );
-		addParameter( "rTibiaJointLimitD", &conf.rTibiaJointLimitD );
-		addParameter( "rTibiaJointLimitU", &conf.rTibiaJointLimitU );
-*/
+
     }
 
     DungBot::~DungBot()
@@ -234,25 +234,42 @@ namespace lpzrobots
 					break;
 				case L1:
 				case R1:
-					xPosition = conf.rearDimension[0]*0.1875;
-					yPosition = lr * conf.rearDimension[1]/6;
+					xPosition = conf.rearDimension[0]*0.07;
+					yPosition = lr * conf.rearDimension[1]*0.265;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				case L2:
 				case R2:
-					xPosition = conf.rearDimension[0]*0.5;
-					yPosition = lr * conf.rearDimension[1]/6;
+					xPosition = conf.rearDimension[0]*0.3;
+					yPosition = lr * conf.rearDimension[1]*0.412;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				default:
 					xPosition = 0;
 			}
 
-			Pos pos = Pos(xPosition,yPosition,zPosition);
+			Pos pos = Pos( xPosition, yPosition, zPosition );
 
 		    // Now the rotation. lr2 rotates the four hind legs (PI/2)/2 in Y...
-			legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, -lr2/2, 0) * osg::Matrix::translate(pos) * pose;
+
+
+			if( leg == L0 || leg == R0 )
+			{
+				legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, 0, 0) * osg::Matrix::translate(pos) * pose;
+			}
+			else
+			{
+				legtrunkconnections[leg] = osg::Matrix::rotate(-M_PI/2 , lr, lr2, 0) * osg::Matrix::translate(pos) * pose;
+			}
+
+
+
+
+			//legtrunkconnections[leg] = osg::Matrix::rotate(-M_PI/2 , lr, lr2, 0) * osg::Matrix::translate(pos) * pose;
 		}
+
+
+
 
 		std::vector<Primitive*> tarsusParts;
 
@@ -370,14 +387,15 @@ namespace lpzrobots
 	        //	create motor, overwrite the jointLimit argument with 1.0
 	        //	because it is less obscure and setMinMax makes mistakes
 	        //	otherwise. Parameters are set later
-			/*
-			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
+
+			OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0);
 			legs[leg].tcServo = coxaMotor;
 			servos[ getMotorName( leg, TC ) ] = coxaMotor;
-			*/
+			/*
 			auto coxaMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 			addSensor( coxaMotor );
 			addMotor( coxaMotor );
+			*/
 
 			// create the joint from first to second limb (coxa to femur)
 			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
@@ -387,15 +405,15 @@ namespace lpzrobots
 			//	create motor, overwrite the jointLimit argument with 1.0
 			//	because it is less obscure and setMinMax makes mistakes
 			//	otherwise. Parameters are set later
-			/*
-			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 20.0, 1.0);
+
+			OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0);
 			legs[leg].ctrServo = femurMotor;
 			servos[ getMotorName( leg, CTR ) ] = femurMotor;
-			*/
+			/*
 			auto femurMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 			addSensor( femurMotor );
 			addMotor( femurMotor );
-
+			*/
 			// springy knee joint
 			HingeJoint* l = new HingeJoint(femurThorax, tibia, anchor3, -axis3);
 			l->init(odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1);
@@ -404,15 +422,15 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			/*
-			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 20.0, 1.0);
+
+			OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0);
 			legs[leg].ftiServo = tibiaMotor;
 			servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
-			*/
+			/*
 			auto tibiaMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 			addSensor( tibiaMotor );
 			addMotor( tibiaMotor );
-
+			*/
 			// Foot
 			if( conf.makeFoot ) // toggle foot
 			{
@@ -634,15 +652,15 @@ namespace lpzrobots
 		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 		joints.push_back( hinge );
-
-		auto bodyMotor = std::make_shared<OneAxisServoVel>( odeHandle, hinge, -1.0, 1.0, 20.0, 0.05, 20.0, 1.3 );
+/*
+		auto bodyMotor = std::make_shared<OneAxisServoVel>( odeHandle, hinge, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 		addSensor( bodyMotor );
 		addMotor( bodyMotor );
-
-		/*
+*/
+		OneAxisServo * bodyMotor = new OneAxisServoVel(odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0);
 		servos[DungBotMotorSensor::BJ_m] = bodyMotor;
 		backboneServo = bodyMotor;
-		*/
+
     }
 
     void DungBot::makeHeadFixedJoint(Primitive* head, Primitive* front, const Pos position, const double Y)
@@ -892,28 +910,28 @@ namespace lpzrobots
 
 		// ------------ Leg dimensions --------
 		//conf.coxaLength = 0.3;	// COXA
-		conf.coxaLength = { conf.rearDimension[0]*0.15, conf.rearDimension[0]*0.3, conf.rearDimension[0]*0.45 };
+		conf.coxaLength = { conf.rearDimension[0]*0.177, conf.rearDimension[0]*0.3, conf.rearDimension[0]*0.45 };
 		conf.coxaRadius = 0.02;
 		conf.coxaMass = {
-				98.5*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[0] ),
-				98.5*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[1] ),
-				98.5*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[2] )};
+				9.85*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[0] ),
+				9.85*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[1] ),
+				9.85*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[2] )};
 
 		//conf.femurLength = 0.3;	// FEMUR
-		conf.femurLength = { conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55 };
+		conf.femurLength = { conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55 };
 		conf.femurRadius = 0.02;
 		conf.femurMass = {
-				98.5*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[0] ),
-				98.5*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[1] ),
-				98.5*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[2] )};
+				9.85*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[0] ),
+				9.85*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[1] ),
+				9.85*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[2] )};
 
 		//conf.tibiaLength = 0.3;	// TEBIA
-		conf.tibiaLength = { conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.70 };
+		conf.tibiaLength = { conf.rearDimension[0]*0.679, conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.70 };
 		conf.tibiaRadius = 0.02;
 		conf.tibiaMass = {
-				985*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[0] ),
-				985*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[1] ),
-				985*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[2] )};
+				9.85*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[0] ),
+				9.85*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[1] ),
+				9.85*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[2] )};
 
 		conf.footRange = 0.05;	// FOOT
 		conf.footRadius = 0.02;

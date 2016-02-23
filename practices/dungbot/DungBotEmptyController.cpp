@@ -48,12 +48,13 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 {
 	//stepNoLearning( sensors, sensorNumber, motors, motorNumber );
 	// Update internal time
-	ticks_since_init += 0.01;
+	ticks_since_init++;
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
-		motor[i] = sin( ticks_since_init );
+		motor[i] = sin( 0.01 * ticks_since_init );
 	}
+	//std::cout << 0.001 * ticks_since_init << " and: " << sin( 0.001 * ticks_since_init ) <<std::endl;
 
 }
 
