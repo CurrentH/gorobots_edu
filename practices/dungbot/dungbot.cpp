@@ -255,21 +255,15 @@ namespace lpzrobots
 
 			if( leg == L0 || leg == R0 )
 			{
-				legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, 0, 0) * osg::Matrix::translate(pos) * pose;
+				legtrunkconnections[leg] = osg::Matrix::rotate( M_PI/2 , lr, 0, 0 ) * osg::Matrix::translate(pos) * pose;
 			}
 			else
 			{
-				legtrunkconnections[leg] = osg::Matrix::rotate(-M_PI/2 , lr, lr2, 0) * osg::Matrix::translate(pos) * pose;
+				legtrunkconnections[leg] = osg::Matrix::rotate( -M_PI/2 , lr, lr2, 0 ) * osg::Matrix::translate(pos) * pose;
 			}
-
-
-
 
 			//legtrunkconnections[leg] = osg::Matrix::rotate(-M_PI/2 , lr, lr2, 0) * osg::Matrix::translate(pos) * pose;
 		}
-
-
-
 
 		std::vector<Primitive*> tarsusParts;
 
@@ -289,33 +283,33 @@ namespace lpzrobots
 			osg::Matrix c1 = legtrunkconnections[leg];
 
 			// Coxa placement
-			osg::Matrix coxaCenter = osg::Matrix::translate(0, 0, -conf.coxaLength[i%3] / 2) * c1; //Position of Center of Mass
-			Primitive* coxaThorax = new Capsule(conf.coxaRadius, conf.coxaLength[i%3] );
-			coxaThorax->setTexture("coxa.jpg");
-			coxaThorax->init(odeHandle, conf.coxaMass[i%3], osgHandle);
-			coxaThorax->setPose(coxaCenter);
+			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3] / 2) * c1; //Position of Center of Mass
+			Primitive* coxaThorax = new Capsule( conf.coxaRadius, conf.coxaLength[i%3] );
+			coxaThorax->setTexture( "coxa.jpg");
+			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandle );
+			coxaThorax->setPose( coxaCenter );
 			legs[leg].coxa = coxaThorax;
-			objects.push_back(coxaThorax);
+			objects.push_back( coxaThorax );
 
 			// Femur placement
-			osg::Matrix c2 = osg::Matrix::translate(0, 0, -conf.coxaLength[i%3]/2 ) * coxaCenter;
-			osg::Matrix femurcenter = osg::Matrix::translate(0, 0, -conf.femurLength[i%3] / 2) * c2;
-			Primitive* femurThorax = new Capsule(conf.femurRadius, conf.femurLength[i%3]  );
-			femurThorax->setTexture("femur.jpg");
-			femurThorax->init(odeHandle, conf.femurMass[i%3], osgHandle);
-			femurThorax->setPose(femurcenter);
+			osg::Matrix c2 = osg::Matrix::rotate( M_PI, 0, 1, 0 )*osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * coxaCenter;
+			osg::Matrix femurcenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
+			Primitive* femurThorax = new Capsule( conf.femurRadius, conf.femurLength[i%3]  );
+			femurThorax->setTexture( "femur.jpg" );
+			femurThorax->init( odeHandle, conf.femurMass[i%3], osgHandle );
+			femurThorax->setPose( femurcenter );
 			legs[leg].femur = femurThorax;
-			objects.push_back(femurThorax);
+			objects.push_back( femurThorax );
 
 			// Tibia placement
-			osg::Matrix c3 = osg::Matrix::translate(0, 0, -conf.femurLength[i%3] / 2) * femurcenter;
-			osg::Matrix tibiaCenter = osg::Matrix::translate(0, 0, -conf.tibiaLength[i%3] / 2) * c3;
-			Primitive* tibia = new Capsule(conf.tibiaRadius, conf.tibiaLength[i%3] );
-			tibia->setTexture("tebia.jpg");
-			tibia->init(odeHandle, conf.tibiaMass[i%3], osgHandle);
+			osg::Matrix c3 = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * femurcenter;
+			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
+			Primitive* tibia = new Capsule( conf.tibiaRadius, conf.tibiaLength[i%3] );
+			tibia->setTexture( "tebia.jpg" );
+			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandle );
 			tibia->setPose(tibiaCenter);
 			legs[leg].tibia = tibia;
-			objects.push_back(tibia);
+			objects.push_back( tibia );
 
 			// calculate anchor and axis of the first joint
 			const osg::Vec3 anchor1 = nullpos * c1;
