@@ -367,37 +367,31 @@ namespace lpzrobots
 			HingeJoint* j = new HingeJoint((leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1); // Only L0 and R0 should be attached to front
 			j->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1);
 			joints.push_back(j);
-	        // create motor, overwrite the jointLimit argument with 1.0
-	        // because it is less obscure and setMinMax makes mistakes
-	        // otherwise. Parameters are set later
-
+	        //	create motor, overwrite the jointLimit argument with 1.0
+	        //	because it is less obscure and setMinMax makes mistakes
+	        //	otherwise. Parameters are set later
 			/*
 			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
-			legs[leg].tcServo = servo1;
-			servos[ getMotorName( leg, TC ) ] = servo1;
+			legs[leg].tcServo = coxaMotor;
+			servos[ getMotorName( leg, TC ) ] = coxaMotor;
 			*/
-
 			auto coxaMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
-			//coxaMotor->setBaseName("coxaMotor");
 			addSensor( coxaMotor );
 			addMotor( coxaMotor );
-
 
 			// create the joint from first to second limb (coxa to femur)
 			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
 			k->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1);
 			legs[leg].ctJoint = k;
 			joints.push_back(k);
-	        // create motor, overwrite the jointLimit argument with 1.0
-	        // because it is less obscure and setMinMax makes mistakes
-	        // otherwise. Parameters are set later
-
+			//	create motor, overwrite the jointLimit argument with 1.0
+			//	because it is less obscure and setMinMax makes mistakes
+			//	otherwise. Parameters are set later
 			/*
 			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 20.0, 1.0);
-			legs[leg].ctrServo = servo2;
-			servos[ getMotorName( leg, CTR ) ] = servo2;
+			legs[leg].ctrServo = femurMotor;
+			servos[ getMotorName( leg, CTR ) ] = femurMotor;
 			*/
-
 			auto femurMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 			addSensor( femurMotor );
 			addMotor( femurMotor );
@@ -410,13 +404,11 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-
 			/*
 			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 20.0, 1.0);
-			legs[leg].ftiServo = servo3;
-			servos[ getMotorName( leg, FTI ) ] = servo3;
+			legs[leg].ftiServo = tibiaMotor;
+			servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 			*/
-
 			auto tibiaMotor = std::make_shared<OneAxisServoVel>( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 			addSensor( tibiaMotor );
 			addMotor( tibiaMotor );
@@ -643,9 +635,14 @@ namespace lpzrobots
 		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 		joints.push_back( hinge );
 
-		OneAxisServo* servo = new OneAxisServoVel( odeHandle, hinge, -30, 30, 1000, 0.01, 0, 1.0 );
-		servos[DungBotMotorSensor::BJ_m] = servo;
-		backboneServo = servo;
+		auto bodyMotor = std::make_shared<OneAxisServoVel>( odeHandle, hinge, -1.0, 1.0, 20.0, 0.05, 20.0, 1.3 );
+		addSensor( bodyMotor );
+		addMotor( bodyMotor );
+
+		/*
+		servos[DungBotMotorSensor::BJ_m] = bodyMotor;
+		backboneServo = bodyMotor;
+		*/
     }
 
     void DungBot::makeHeadFixedJoint(Primitive* head, Primitive* front, const Pos position, const double Y)
