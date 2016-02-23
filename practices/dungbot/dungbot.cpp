@@ -182,21 +182,21 @@ namespace lpzrobots
          ***********************************/
 
 		//First we find the pose for the center of the body-part to be made, then we run the functions that creates it.
-    	osg::Matrix rearPos = osg::Matrix::translate( ( -conf.rearDimension[0] / 2 ), 0, 0) * pose;
+    	osg::Matrix rearPos = osg::Matrix::translate( ( conf.rearDimension[0] / 2 ), 0, 0) * pose;
     	auto rear = makeBody( rearPos, conf.massRear, conf.rearDimension );
 
-    	osg::Matrix frontPos = osg::Matrix::translate( ( conf.frontDimension[0] / 2 ), 0, 0) * pose;
+    	osg::Matrix frontPos = osg::Matrix::translate( ( -conf.frontDimension[0] / 2 ), 0, 0) * pose;
 		auto front = makeBody( frontPos, conf.massFront, conf.frontDimension );
 
-		osg::Matrix headPos = osg::Matrix::translate( ( conf.frontDimension[0] ), 0, 0) * pose;
+		osg::Matrix headPos = osg::Matrix::translate( ( -conf.frontDimension[0] ), 0, 0) * pose;
 		auto head = makeHead( headPos, conf.massHead, conf.headDimension );
 
 		// representation of the origin
 		const Pos nullpos(0,0,0);
 
 		//Place the joint between the two body-parts
-		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * frontPos, conf.rearDimension[1] );
-		makeHeadFixedJoint( front, head, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, conf.headDimension[1] );
+		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * frontPos, conf.rearDimension[1] );
+		makeHeadFixedJoint( front, head, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, conf.headDimension[1] );
 	    /************************************
 	     * LEGS
 	     ***********************************/
@@ -206,7 +206,7 @@ namespace lpzrobots
 		created = true;
     }
 
-    void DungBot::makeAllLegs( const Matrix& pose, Primitive* front, Primitive* rear)
+    void DungBot::makeAllLegs( const Matrix& pose, Primitive* rear, Primitive* front)
     {
     	// representation of the origin
     	const Pos nullpos(0,0,0);
@@ -228,19 +228,19 @@ namespace lpzrobots
 			{
 				case L0:
 				case R0:
-					xPosition = conf.frontDimension[0]*0.5;
+					xPosition = -conf.frontDimension[0]*0.5;
 					yPosition = lr * conf.frontDimension[1]/6;
 					zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				case L1:
 				case R1:
-					xPosition = -conf.rearDimension[0]*0.1875;
+					xPosition = conf.rearDimension[0]*0.1875;
 					yPosition = lr * conf.rearDimension[1]/6;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				case L2:
 				case R2:
-					xPosition = -conf.rearDimension[0]*0.5;
+					xPosition = conf.rearDimension[0]*0.5;
 					yPosition = lr * conf.rearDimension[1]/6;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
@@ -251,7 +251,7 @@ namespace lpzrobots
 			Pos pos = Pos(xPosition,yPosition,zPosition);
 
 		    // Now the rotation. lr2 rotates the four hind legs (PI/2)/2 in Y...
-			legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, lr2/2, 0) * osg::Matrix::translate(pos) * pose;
+			legtrunkconnections[leg] = osg::Matrix::rotate(M_PI/2 , lr, -lr2/2, 0) * osg::Matrix::translate(pos) * pose;
 		}
 
 		std::vector<Primitive*> tarsusParts;
@@ -259,8 +259,6 @@ namespace lpzrobots
 	    // create the legs
 	    for (int i = 0; i < LEG_POS_MAX; i++)
 	    {
-	    	std::cout << "TEEST1";
-
 			LegPos leg = LegPos(i);
 
 			//	+1 for R0,R1,R2, -1 for L0,L1,L2
@@ -366,7 +364,7 @@ namespace lpzrobots
 	        }
 
 			// hingeJoint to first limb
-			HingeJoint* j = new HingeJoint((leg == L0 || leg == R0) ? rear : front, coxaThorax, anchor1, -axis1); // Only L0 and R0 should be attached to front
+			HingeJoint* j = new HingeJoint((leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1); // Only L0 and R0 should be attached to front
 			j->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1);
 			joints.push_back(j);
 	        // create motor, overwrite the jointLimit argument with 1.0
