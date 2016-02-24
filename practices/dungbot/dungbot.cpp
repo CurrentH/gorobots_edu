@@ -37,32 +37,7 @@ namespace lpzrobots
     : OdeRobot( odeHandle, osgHandle, name, "2.0" ), conf( conf )
     {
     	created = false;
-/*
-        addParameter( "coxaPower", &conf.coxaPower );
-        addParameter( "femurPower", &conf.femurPower );
-        addParameter( "coxaDamp", &conf.coxaDamping );
-        addParameter( "fCoxaJointLimitF", &conf.fCoxaJointLimitF );
-        addParameter( "fCoxaJointLimitB", &conf.fCoxaJointLimitB );
-        addParameter( "mCoxaJointLimitF", &conf.mCoxaJointLimitF );
-        addParameter( "mCoxaJointLimitB", &conf.mCoxaJointLimitB );
-        addParameter( "rCoxaJointLimitF", &conf.rCoxaJointLimitF );
-        addParameter( "rCoxaJointLimitB", &conf.rCoxaJointLimitB );
-        addParameter( "fFemurJointLimitD", &conf.fFemurJointLimitD );
-        addParameter( "fFemurJointLimitU", &conf.fFemurJointLimitU );
-        addParameter( "mFemurJointLimitD", &conf.mFemurJointLimitD );
-        addParameter( "mFemurJointLimitU", &conf.mFemurJointLimitU );
-        addParameter( "rFemurJointLimitD", &conf.rFemurJointLimitD );
-        addParameter( "rFemurJointLimitU", &conf.rFemurJointLimitU );
-        addParameter( "coxaMaxVel", &conf.coxaMaxVel );
-		addParameter( "tibiaPower", &conf.tibiaPower );
-		addParameter( "tibiaDamp", &conf.tibiaDamping );
-		addParameter( "fTibiaJointLimitD", &conf.fTibiaJointLimitD );
-		addParameter( "fTibiaJointLimitU", &conf.fTibiaJointLimitU );
-		addParameter( "mTibiaJointLimitD", &conf.mTibiaJointLimitD );
-		addParameter( "mTibiaJointLimitU", &conf.mTibiaJointLimitU );
-		addParameter( "rTibiaJointLimitD", &conf.rTibiaJointLimitD );
-		addParameter( "rTibiaJointLimitU", &conf.rTibiaJointLimitU );
-*/
+
     	//	Name the sensors
     	nameSensor(DungBotMotorSensor::TR0_as, "*TR0 angle sensor");
 		nameSensor(DungBotMotorSensor::TR1_as, "*TR1 angle sensor");
@@ -103,7 +78,6 @@ namespace lpzrobots
         nameMotor(DungBotMotorSensor::FL1_m, "FL1 motor");
         nameMotor(DungBotMotorSensor::FL2_m, "FL2 motor");
         nameMotor(DungBotMotorSensor::BJ_m, "BJ motor");
-
     }
 
     DungBot::~DungBot()
@@ -212,7 +186,7 @@ namespace lpzrobots
     	// representation of the origin
     	const Pos nullpos(0,0,0);
 		double xPosition=0, yPosition=0, zPosition=0;
-		std::map<LegPos, osg::Matrix> legtrunkconnections;
+		std::map<LegPos, osg::Matrix> legTrunkConnections;
 
 		// The purpose of this for-loop is to get all the leg-trunk-connections
 		for (int i = 0; i < LEG_POS_MAX; i++) // Run through all of the legs
@@ -222,14 +196,14 @@ namespace lpzrobots
 			// Make the right legs have a negative sign
 			const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
 			// Hind legs
-			const double lr2 = leg==L1 || leg==R1 || leg==L2 || leg==R2;
+			//const double lr2 = leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
 			// create 3d-coordinates for the leg-trunk connection:
 			switch (i)
 			{
 				case L0:
 				case R0:
-					xPosition = -conf.frontDimension[0]*( 1 - 0.1 );
+					xPosition = -conf.frontDimension[0]/2+(sin(45)/sin(90)*conf.coxaLength[0]);
 					yPosition = lr * conf.frontDimension[1]*( 0.25 );
 					zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
 					break;
@@ -251,17 +225,7 @@ namespace lpzrobots
 
 			Pos pos = Pos( xPosition, yPosition, zPosition );
 
-			if( leg == L0 || leg == R0 )
-			{
-				legtrunkconnections[leg] = osg::Matrix::rotate( -M_PI/2 , lr, 0, 0 ) *
-											osg::Matrix::rotate( M_PI/2, 0, -lr, 0 ) *
-											osg::Matrix::translate(pos) * pose;
-			}
-			else
-			{
-				legtrunkconnections[leg] = osg::Matrix::rotate( -M_PI/2 , lr, lr2, 0 ) *
-											osg::Matrix::translate(pos) * pose;
-			}
+			legTrunkConnections[leg] = osg::Matrix::translate(pos) * pose;
 		}
 
 		std::vector<Primitive*> tarsusParts;
@@ -276,21 +240,29 @@ namespace lpzrobots
 	        const double backLegInverse = ( leg == R1 || leg == R2 ) + ( leg == L1 || leg == L2 );
 	        const double frontLeg = ( leg == R0 ) - ( leg == L0 );
 	        const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
-
-			//first Coxa position
-			osg::Matrix c1 = legtrunkconnections[leg];
+	        const double fb = (leg == L0 || leg == R0) - (leg == L1 || leg == L2 || leg == R1 || leg == R2);
+	        const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
+	        //const double frontLegOnly = ( leg == R0 || leg == L0 );
 
 			// Coxa placement
-			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3] / 2) * c1; //Position of Center of Mass
+	        osg::Matrix c1 = osg::Matrix::rotate( -M_PI/4, lr, 0, 0 ) *
+	        					osg::Matrix::rotate( M_PI/2, 0, fb, 0 ) *
+	        					legTrunkConnections[leg];
+			osg::Matrix coxaCenter = osg::Matrix::translate(0,0,-conf.coxaLength[i%3]/2)*c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius, conf.coxaLength[i%3] );
-			coxaThorax->setTexture( "coxa.jpg");
+			coxaThorax->setTexture( "coxa1.jpg");
 			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandle );
 			coxaThorax->setPose( coxaCenter );
 			legs[leg].coxa = coxaThorax;
 			objects.push_back( coxaThorax );
 
 			// Femur placement
-			osg::Matrix c2 = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * coxaCenter;
+			osg::Matrix c2 = osg::Matrix::rotate( M_PI/4, lr, 0, 0 ) *
+								osg::Matrix::rotate( -M_PI/2, 0, fb, 0 ) *
+								osg::Matrix::rotate( M_PI/2, 0, 1, 0 ) *
+								osg::Matrix::rotate( M_PI/2, -frontLeg, 0, 0 ) *
+								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
+								coxaCenter;
 			osg::Matrix femurcenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
 			Primitive* femurThorax = new Capsule( conf.femurRadius, conf.femurLength[i%3]  );
 			femurThorax->setTexture( "femur.jpg" );
@@ -314,20 +286,20 @@ namespace lpzrobots
 	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg ) * c1;
 	        switch (i)
 	        {
-				case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front left
-				break;
-				case 1: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//middle left
-				break;
-				case 2: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //rear left
-				break;
-				case 3: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front right
-				break;
-				case 4: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// middle right
-				break;
-				case 5: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// rear right
-				break;
-				default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;
-				break;
+case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front left
+break;
+case 1: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//middle left
+break;
+case 2: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //rear left
+break;
+case 3: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front right
+break;
+case 4: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// middle right
+break;
+case 5: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// rear right
+break;
+default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;
+break;
 	        }
 
 			// Proceed along the leg (and the respective z-axis) for second limb
@@ -351,7 +323,7 @@ break;
 default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 break;
 			 */
-				default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(M_PI/2,0,0,1)*axis2;
+				default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(M_PI/4,0,0,lr)*axis2;
 				break;
 			}
 
@@ -378,29 +350,31 @@ break;
 
 			//	Torso coxa hinge joint.
 			HingeJoint* j = new HingeJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1 ); // Only L0 and R0 should be attached to front
+			//FixedJoint* j = new FixedJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1 ); // Only L0 and R0 should be attached to front
 			j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+			legs[leg].tcJoint = j;
 			joints.push_back( j );
 			OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
 			legs[leg].tcServo = coxaMotor;
 			servos[ getMotorName( leg, TC ) ] = coxaMotor;
 
 			// Coxa femur hinge joint.
-			HingeJoint* k = new HingeJoint( coxaThorax, femurThorax, anchor2, -axis2 );
+			FixedJoint* k = new FixedJoint( coxaThorax, femurThorax, anchor2 );
 			k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
-			legs[leg].ctJoint = k;
+			//legs[leg].ctJoint = k;
 			joints.push_back( k );
-			OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-			legs[leg].ctrServo = femurMotor;
-			servos[ getMotorName( leg, CTR ) ] = femurMotor;
+			//OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+			//legs[leg].ctrServo = femurMotor;
+			//servos[ getMotorName( leg, CTR ) ] = femurMotor;
 
 			// Femur tibia hinge joint.
-			HingeJoint* l = new HingeJoint( femurThorax, tibia, anchor3, -axis3 );
+			FixedJoint* l = new FixedJoint( femurThorax, tibia, anchor3 );
 			l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
-			legs[leg].ftJoint = l;
+			//legs[leg].ftJoint = l;
 			joints.push_back( l );
-			OneAxisServo * tibiaMotor = new OneAxisServoVel( odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-			legs[leg].ftiServo = tibiaMotor;
-			servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
+			//OneAxisServo * tibiaMotor = new OneAxisServoVel( odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+			//legs[leg].ftiServo = tibiaMotor;
+			//servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 
 			// Foot
 			if( conf.makeFoot ) // toggle foot
@@ -619,33 +593,40 @@ break;
 
     void DungBot::makeHeadHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
+    	/*
     	HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 		joints.push_back( hinge );
 		OneAxisServo * headMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
 		servos[DungBotMotorSensor::HJ_m] = headMotor;
 		headServo = headMotor;
+		*/
+
+    	FixedJoint* fixed = new FixedJoint( frontLimb, rearLimb, position);
+		fixed->init( odeHandle, osgHandle, true, Y * 1.05 );
+		joints.push_back( fixed );
     }
 
     void DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
+    	/*
 		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 		joints.push_back( hinge );
-/*
-		auto bodyMotor = std::make_shared<OneAxisServoVel>( odeHandle, hinge, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
-		addSensor( bodyMotor );
-		addMotor( bodyMotor );
-*/
 		OneAxisServo * bodyMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
 		servos[DungBotMotorSensor::BJ_m] = bodyMotor;
 		backboneServo = bodyMotor;
+		*/
+
+    	FixedJoint* fixed = new FixedJoint( frontLimb, rearLimb, position);
+    	fixed->init( odeHandle, osgHandle, false, Y * 1.05 );
+    	joints.push_back( fixed );
     }
 
     void DungBot::makeHeadFixedJoint(Primitive* head, Primitive* front, const Pos position, const double Y)
     {
 		FixedJoint* fixed = new FixedJoint( head, front, position);
-		fixed->init( odeHandle, osgHandle, true, Y * 1.00 );
+		fixed->init( odeHandle, osgHandle, false, Y * 1.00 );
 		joints.push_back( fixed );
     }
 
@@ -653,7 +634,7 @@ break;
     {
         //HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
     	FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
-        hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
+        hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
         joints.push_back( hinge );
     }
 
@@ -922,30 +903,30 @@ break;
 		 *	Joint Limits
 		 *	Setting the Max, and Min values of each joint.
 		 */
-		conf.backJointLimitD = M_PI / 180 * 45.0;
-		conf.backJointLimitU =	-M_PI / 180 * 45.0;
+		conf.backJointLimitD = M_PI / 180 * 100.0;
+		conf.backJointLimitU =	-M_PI / 180 * 100.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 100.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB = M_PI / 180.0 * 90.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 100.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB = M_PI / 180 * 30.0;		// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 80.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB = M_PI / 180.0 * 50.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -2*M_PI / 180.0 * 180.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB = 2*M_PI / 180.0 * 180.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 180.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB = M_PI / 180 * 180.0;		// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 180.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB = M_PI / 180.0 * 180.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD = M_PI / 180.0 * 110.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 0.0;
-	    conf.mFemurJointLimitD = M_PI / 180.0 * 0.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 80.0;
-	    conf.rFemurJointLimitD = M_PI / 180.0 * 20.0;
+	    conf.fFemurJointLimitD = M_PI / 180.0 * 100.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 100.0;
+	    conf.mFemurJointLimitD = M_PI / 180.0 * 100.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 100.0;
+	    conf.rFemurJointLimitD = M_PI / 180.0 * 100.0;
 	    conf.rFemurJointLimitU = -M_PI / 180.0 * 100.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD = M_PI / 180.0 *0.0;
-	    conf.fTibiaJointLimitU = M_PI / 180.0 *150.0;
+	    conf.fTibiaJointLimitD = M_PI / 180.0 *100.0;
+	    conf.fTibiaJointLimitU = M_PI / 180.0 *100.0;
 	    conf.mTibiaJointLimitD = M_PI / 180.0 *100.0;
-	    conf.mTibiaJointLimitU = M_PI / 180.0 *0.0;
+	    conf.mTibiaJointLimitU = M_PI / 180.0 *100.0;
 	    conf.rTibiaJointLimitD = M_PI / 180.0 *100.0;
-	    conf.rTibiaJointLimitU = M_PI / 180.0 *0.0;
+	    conf.rTibiaJointLimitU = M_PI / 180.0 *100.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness
