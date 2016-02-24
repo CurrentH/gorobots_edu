@@ -151,8 +151,8 @@ namespace lpzrobots
 			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
 			void makeHeadHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
-			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
-			void makeHeadFixedJoint( Primitive*, Primitive*, const Pos, const double );
+			void makeHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
+			void makeFixedJoint( Primitive*, Primitive*, const Pos, const double );
 
 	};
 } //End namespace lpzrobot

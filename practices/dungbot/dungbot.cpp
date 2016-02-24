@@ -171,6 +171,8 @@ namespace lpzrobots
 		//Place the joint between the two body-parts
 		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * frontPos, conf.rearDimension[1] );
 		makeHeadHingeJoint( front, head, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * headPos, conf.headDimension[1] );
+		//makeFixedJoint( front, rear, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, conf.rearDimension[1] );
+		//makeFixedJoint( front, rear, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, conf.headDimension[1] );
 
 	    /************************************
 	     * LEGS
@@ -348,33 +350,59 @@ default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Mat
 break;
 	        }
 
-			//	Torso coxa hinge joint.
-			HingeJoint* j = new HingeJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1 ); // Only L0 and R0 should be attached to front
-			//FixedJoint* j = new FixedJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1 ); // Only L0 and R0 should be attached to front
-			j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
-			legs[leg].tcJoint = j;
-			joints.push_back( j );
-			OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-			legs[leg].tcServo = coxaMotor;
-			servos[ getMotorName( leg, TC ) ] = coxaMotor;
+	        //	Torso coxa hinge joint.
+	        if( conf.testCoxa || conf.testNo )
+	        {
+	        	HingeJoint* j = new HingeJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1 ); // Only L0 and R0 should be attached to front
+				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				legs[leg].tcJoint = j;
+				joints.push_back( j );
+				OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				legs[leg].tcServo = coxaMotor;
+				servos[ getMotorName( leg, TC ) ] = coxaMotor;
+	        }
+	        else
+	        {
+	        	FixedJoint* j = new FixedJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1 ); // Only L0 and R0 should be attached to front
+	        	j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				joints.push_back( j );
+	        }
 
-			// Coxa femur hinge joint.
-			FixedJoint* k = new FixedJoint( coxaThorax, femurThorax, anchor2 );
-			k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
-			//legs[leg].ctJoint = k;
-			joints.push_back( k );
-			//OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-			//legs[leg].ctrServo = femurMotor;
-			//servos[ getMotorName( leg, CTR ) ] = femurMotor;
+	        // Coxa femur hinge joint.
+	        if( conf.testFemur || conf.testNo )
+	        {
+	        	HingeJoint* k = new HingeJoint( coxaThorax, femurThorax, anchor2, -axis2 );
+				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				legs[leg].ctJoint = k;
+				joints.push_back( k );
+				OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				legs[leg].ctrServo = femurMotor;
+				servos[ getMotorName( leg, CTR ) ] = femurMotor;
+	        }
+	        else
+	        {
+	        	FixedJoint* k = new FixedJoint( coxaThorax, femurThorax, anchor2 );
+				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				joints.push_back( k );
+	        }
 
-			// Femur tibia hinge joint.
-			FixedJoint* l = new FixedJoint( femurThorax, tibia, anchor3 );
-			l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
-			//legs[leg].ftJoint = l;
-			joints.push_back( l );
-			//OneAxisServo * tibiaMotor = new OneAxisServoVel( odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-			//legs[leg].ftiServo = tibiaMotor;
-			//servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
+	        // Femur tibia hinge joint.
+	        if( conf.testTibia || conf.testNo )
+	        {
+	        	HingeJoint* l = new HingeJoint( femurThorax, tibia, anchor3, -axis3 );
+				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
+				legs[leg].ftJoint = l;
+				joints.push_back( l );
+				OneAxisServo * tibiaMotor = new OneAxisServoVel( odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				legs[leg].ftiServo = tibiaMotor;
+				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
+	        }
+	        else
+	        {
+	        	FixedJoint* l = new FixedJoint( femurThorax, tibia, anchor3 );
+	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
+	        	joints.push_back( l );
+	        }
 
 			// Foot
 			if( conf.makeFoot ) // toggle foot
@@ -400,7 +428,7 @@ break;
 				objects.push_back(foot);
 
 				//SliderJoint* m = new SliderJoint( tibia, foot, anchor4, axis4 );
-				HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );						//TODO SHOULD BE A SliderJoint and not HingeJoint
+				HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );	//TODO SHOULD BE A SliderJoint and not HingeJoint
 				m->init( odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius, true );
 				legs[leg].footJoint = m;
 				joints.push_back( m );
@@ -470,7 +498,7 @@ break;
 
 				FixedJoint* q = new FixedJoint(foot, tarsus);
 				q->init(odeHandle, osgHandle, false);
-				joints.push_back(k);
+				joints.push_back(q);
 
 				Primitive *section = tarsus;
 
@@ -591,48 +619,53 @@ break;
     	return leg;
     }
 
-    void DungBot::makeHeadHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
-    {
-    	/*
-    	HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
-		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
-		joints.push_back( hinge );
-		OneAxisServo * headMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
-		servos[DungBotMotorSensor::HJ_m] = headMotor;
-		headServo = headMotor;
-		*/
-
-    	FixedJoint* fixed = new FixedJoint( frontLimb, rearLimb, position);
-		fixed->init( odeHandle, osgHandle, true, Y * 1.05 );
-		joints.push_back( fixed );
-    }
-
     void DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
-    	/*
-		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
-		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
-		joints.push_back( hinge );
-		OneAxisServo * bodyMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
-		servos[DungBotMotorSensor::BJ_m] = bodyMotor;
-		backboneServo = bodyMotor;
-		*/
-
-    	FixedJoint* fixed = new FixedJoint( frontLimb, rearLimb, position);
-    	fixed->init( odeHandle, osgHandle, false, Y * 1.05 );
-    	joints.push_back( fixed );
+    	if( conf.testBody || conf.testNo )
+    	{
+    		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
+			hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
+			joints.push_back( hinge );
+			OneAxisServo * bodyMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
+			servos[DungBotMotorSensor::BJ_m] = bodyMotor;
+			backboneServo = bodyMotor;
+    	}
+    	else
+    	{
+    		FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
+    		hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
+			joints.push_back( hinge );
+    	}
     }
 
-    void DungBot::makeHeadFixedJoint(Primitive* head, Primitive* front, const Pos position, const double Y)
+    void DungBot::makeHeadHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
+	{
+    	if( conf.testBody || conf.testNo )
+		{
+			HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
+			hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
+			joints.push_back( hinge );
+			OneAxisServo * headMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
+			servos[DungBotMotorSensor::HJ_m] = headMotor;
+			headServo = headMotor;
+		}
+		else
+		{
+			FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
+			hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
+			joints.push_back( hinge );
+		}
+	}
+
+    void DungBot::makeFixedJoint(Primitive* frontLimb, Primitive* rearLimb, const Pos position, const double Y)
     {
-		FixedJoint* fixed = new FixedJoint( head, front, position);
+		FixedJoint* fixed = new FixedJoint( frontLimb, frontLimb, position);
 		fixed->init( odeHandle, osgHandle, false, Y * 1.00 );
 		joints.push_back( fixed );
     }
 
-    void DungBot::makeLegHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
+    void DungBot::makeHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
-        //HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
     	FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
         hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
         joints.push_back( hinge );
@@ -845,6 +878,15 @@ break;
 	DungBotConf DungBot::getDefaultConf( void )
 	{
 		DungBotConf conf;
+
+		/**
+		 * 	Test of the legs
+		 */
+		conf.testNo = false;	//	If true, then all hinges exist.
+		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
+		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
 
 		/**
 		 * MATHIAS THOR's MASS CALCULATION (c) :D
