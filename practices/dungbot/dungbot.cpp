@@ -141,7 +141,7 @@ namespace lpzrobots
 			{
 				if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
 				{
-					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] -> update();
+					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->update();
 				}
 			}
 		}
@@ -171,9 +171,9 @@ namespace lpzrobots
 
     	std::cout << "FRONT MASS:\t" << conf.massFront << std::endl;
     	std::cout << "REAR MASS:\t" << conf.massRear << std::endl;
-    	std::cout << "COXA MASS:\t" << conf.coxaMass[0] << " " << conf.coxaMass[1] << " "<< conf.coxaMass[2] << " " << std::endl;
-    	std::cout << "FEMUR MASS:\t" << conf.femurMass[0] << " " << conf.femurMass[1] << " "<< conf.femurMass[2] << " " << std::endl;
-    	std::cout << "TIBIA MASS:\t" << conf.tibiaMass[0] << " " << conf.tibiaMass[1] << " "<< conf.tibiaMass[2] << " " << std::endl;
+    	std::cout << "COXA MASS:\t" << conf.coxaMass[0] << " " << conf.coxaMass[1] << " " << conf.coxaMass[2] << " " << std::endl;
+    	std::cout << "FEMUR MASS:\t" << conf.femurMass[0] << " " << conf.femurMass[1] << " " << conf.femurMass[2] << " " << std::endl;
+    	std::cout << "TIBIA MASS:\t" << conf.tibiaMass[0] << " " << conf.tibiaMass[1] << " " << conf.tibiaMass[2] << " " << std::endl;
     	std::cout << "FOOT MASS:\t" << conf.footMass << std::endl;
     	std::cout << "TARUS MASS:\t" << conf.tarusMass << std::endl;
 
@@ -196,12 +196,13 @@ namespace lpzrobots
 
 		//Place the joint between the two body-parts
 		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * frontPos, conf.rearDimension[1] );
-		makeHeadFixedJoint( front, head, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, conf.headDimension[1] );
+		makeHeadHingeJoint( front, head, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * headPos, conf.headDimension[1] );
+
 	    /************************************
 	     * LEGS
 	     ***********************************/
 		/* SE --> http://www.manoonpong.com/paper/2015/SWARM_2015_DungBeetleRobot.pdf */
-		makeAllLegs( pose , rear, front );	//TODO: Edit the order for the front and rear here.
+		makeAllLegs( pose , rear, front );
 
 		created = true;
     }
@@ -221,15 +222,15 @@ namespace lpzrobots
 			// Make the right legs have a negative sign
 			const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
 			// Hind legs
-			const double lr2= leg==L1 || leg==R1 || leg==L2 || leg==R2;
+			const double lr2 = leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
 			// create 3d-coordinates for the leg-trunk connection:
 			switch (i)
 			{
 				case L0:
 				case R0:
-					xPosition = -conf.frontDimension[0]*0.5;
-					yPosition = lr * conf.frontDimension[1]/6;
+					xPosition = -conf.frontDimension[0]*( 1 - 0.1 );
+					yPosition = lr * conf.frontDimension[1]*( 0.25 );
 					zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
 					break;
 				case L1:
@@ -250,19 +251,17 @@ namespace lpzrobots
 
 			Pos pos = Pos( xPosition, yPosition, zPosition );
 
-		    // Now the rotation. lr2 rotates the four hind legs (PI/2)/2 in Y...
-
-
 			if( leg == L0 || leg == R0 )
 			{
-				legtrunkconnections[leg] = osg::Matrix::rotate( M_PI/2 , lr, 0, 0 ) * osg::Matrix::translate(pos) * pose;
+				legtrunkconnections[leg] = osg::Matrix::rotate( -M_PI/2 , lr, 0, 0 ) *
+											osg::Matrix::rotate( M_PI/2, 0, -lr, 0 ) *
+											osg::Matrix::translate(pos) * pose;
 			}
 			else
 			{
-				legtrunkconnections[leg] = osg::Matrix::rotate( -M_PI/2 , lr, lr2, 0 ) * osg::Matrix::translate(pos) * pose;
+				legtrunkconnections[leg] = osg::Matrix::rotate( -M_PI/2 , lr, lr2, 0 ) *
+											osg::Matrix::translate(pos) * pose;
 			}
-
-			//legtrunkconnections[leg] = osg::Matrix::rotate(-M_PI/2 , lr, lr2, 0) * osg::Matrix::translate(pos) * pose;
 		}
 
 		std::vector<Primitive*> tarsusParts;
@@ -273,11 +272,10 @@ namespace lpzrobots
 			LegPos leg = LegPos(i);
 
 			//	+1 for R0,R1,R2, -1 for L0,L1,L2
-	        const double backLeg = (leg == R1 || leg == R2) - (leg == L1 || leg == L2);
-	        const double backLegInverse = (leg == R1 || leg == R2) + (leg == L1 || leg == L2);
-
-	        double frontL = (leg == R0) - (leg == L0);
-	        double frontInverse = (leg == R0) + (leg == L0);
+	        const double backLeg = ( leg == R1 || leg == R2 ) - ( leg == L1 || leg == L2 );
+	        const double backLegInverse = ( leg == R1 || leg == R2 ) + ( leg == L1 || leg == L2 );
+	        const double frontLeg = ( leg == R0 ) - ( leg == L0 );
+	        const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
 
 			//first Coxa position
 			osg::Matrix c1 = legtrunkconnections[leg];
@@ -313,7 +311,7 @@ namespace lpzrobots
 
 			// calculate anchor and axis of the first joint
 			const osg::Vec3 anchor1 = nullpos * c1;
-	        Axis axis1 = Axis(0,0,backLeg+frontL) * c1;
+	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg ) * c1;
 	        switch (i)
 	        {
 				case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front left
@@ -334,7 +332,7 @@ namespace lpzrobots
 
 			// Proceed along the leg (and the respective z-axis) for second limb
 			const osg::Vec3 anchor2 = nullpos * c2;
-			Axis axis2 = Axis(backLeg+frontL,backLegInverse,backLeg) * c2;
+			Axis axis2 = Axis( backLeg + frontLeg, backLegInverse, backLeg) * c2;
 			switch (i)
 			{
 				case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front left
@@ -347,7 +345,7 @@ namespace lpzrobots
 				break;
 				case 4:	axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-100,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2; //middle right
 				break;
-				case 5: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate((M_PI/180*-80),0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2; // rear right
+				case 5: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-80,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2; // rear right
 				break;
 				default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 				break;
@@ -355,7 +353,7 @@ namespace lpzrobots
 
 			//and third
 			const osg::Vec3 anchor3 = nullpos * c3;
-	        Axis axis3 = Axis(backLeg+frontL,backLegInverse-frontInverse,-frontL) * c3;
+	        Axis axis3 = Axis( backLeg + frontLeg, backLegInverse - frontLegInverse, -frontLeg ) * c3;
 	        switch (i)
 	        {
 				case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
@@ -375,14 +373,14 @@ namespace lpzrobots
 	        }
 
 			// hingeJoint to first limb
-			HingeJoint* j = new HingeJoint((leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1); // Only L0 and R0 should be attached to front
-			j->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1);
-			joints.push_back(j);
+			HingeJoint* j = new HingeJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1 ); // Only L0 and R0 should be attached to front
+			j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+			joints.push_back( j );
 	        //	create motor, overwrite the jointLimit argument with 1.0
 	        //	because it is less obscure and setMinMax makes mistakes
 	        //	otherwise. Parameters are set later
 
-			OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0);
+			OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
 			legs[leg].tcServo = coxaMotor;
 			servos[ getMotorName( leg, TC ) ] = coxaMotor;
 			/*
@@ -392,15 +390,15 @@ namespace lpzrobots
 			*/
 
 			// create the joint from first to second limb (coxa to femur)
-			HingeJoint* k = new HingeJoint(coxaThorax, femurThorax, anchor2, -axis2);
-			k->init(odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1);
+			HingeJoint* k = new HingeJoint( coxaThorax, femurThorax, anchor2, -axis2 );
+			k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
 			legs[leg].ctJoint = k;
-			joints.push_back(k);
+			joints.push_back( k );
 			//	create motor, overwrite the jointLimit argument with 1.0
 			//	because it is less obscure and setMinMax makes mistakes
 			//	otherwise. Parameters are set later
 
-			OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0);
+			OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
 			legs[leg].ctrServo = femurMotor;
 			servos[ getMotorName( leg, CTR ) ] = femurMotor;
 			/*
@@ -409,15 +407,15 @@ namespace lpzrobots
 			addMotor( femurMotor );
 			*/
 			// springy knee joint
-			HingeJoint* l = new HingeJoint(femurThorax, tibia, anchor3, -axis3);
-			l->init(odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1);
+			HingeJoint* l = new HingeJoint( femurThorax, tibia, anchor3, -axis3 );
+			l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
 			legs[leg].ftJoint = l;
-			joints.push_back(l);
+			joints.push_back( l );
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
 
-			OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0);
+			OneAxisServo * tibiaMotor = new OneAxisServoVel( odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
 			legs[leg].ftiServo = tibiaMotor;
 			servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 			/*
@@ -641,6 +639,16 @@ namespace lpzrobots
     	return leg;
     }
 
+    void DungBot::makeHeadHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
+    {
+    	HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
+		hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
+		joints.push_back( hinge );
+		OneAxisServo * headMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
+		servos[DungBotMotorSensor::HJ_m] = headMotor;
+		headServo = headMotor;
+    }
+
     void DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
 		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
@@ -651,10 +659,9 @@ namespace lpzrobots
 		addSensor( bodyMotor );
 		addMotor( bodyMotor );
 */
-		OneAxisServo * bodyMotor = new OneAxisServoVel(odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0);
+		OneAxisServo * bodyMotor = new OneAxisServoVel( odeHandle, hinge, -1.0, 1.0,1.0, 0.01, 20.0, 1.0 );
 		servos[DungBotMotorSensor::BJ_m] = bodyMotor;
 		backboneServo = bodyMotor;
-
     }
 
     void DungBot::makeHeadFixedJoint(Primitive* head, Primitive* front, const Pos position, const double Y)
@@ -846,7 +853,6 @@ namespace lpzrobots
 				ctr->setDamping( conf.femurDamping );
 				ctr->setMaxVel( conf.femurMaxVel );
 				//	Min is up, up is negative
-				//ctr->setMinMax( conf.femurJointLimitU, conf.femurJointLimitD ); //TODO: Do we want this in?
 				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
 				if (it->first == L1 || it->first == R1) ctr->setMinMax(conf.mFemurJointLimitU, conf.mFemurJointLimitD);
 				if (it->first == L0 || it->first == R0) ctr->setMinMax(conf.fFemurJointLimitU, conf.fFemurJointLimitD);
@@ -859,7 +865,6 @@ namespace lpzrobots
 				fti->setDamping(conf.tibiaDamping);
 				fti->setMaxVel(conf.tibiaMaxVel);
 				//	Min is up, up is negative
-				//fti->setMinMax(conf.tebiaJointLimitU, conf.tebiaJointLimitD);
 				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
 				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
 				if (it->first == L0 || it->first == R0) fti->setMinMax(conf.fTibiaJointLimitU, conf.fTibiaJointLimitD);

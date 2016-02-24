@@ -52,10 +52,8 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
-		motor[i] = sin( 0.01 * ticks_since_init );
+		//motor[i] = 0;//sin( 0.01 * ticks_since_init );
 	}
-	//std::cout << 0.001 * ticks_since_init << " and: " << sin( 0.001 * ticks_since_init ) <<std::endl;
-
 }
 
 void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* randGen )

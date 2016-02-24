@@ -135,6 +135,7 @@ namespace lpzrobots
 
 			//	For servos
 			OneAxisServo * backboneServo;
+			OneAxisServo * headServo;
 			ServoList passiveServos;
 			MotorMap servos;
 
@@ -148,6 +149,7 @@ namespace lpzrobots
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 			lpzrobots::Primitive* makeHead( const osg::Matrix&, const double, const std::vector<double> );
 			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
+			void makeHeadHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeLegHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeHeadFixedJoint( Primitive*, Primitive*, const Pos, const double );

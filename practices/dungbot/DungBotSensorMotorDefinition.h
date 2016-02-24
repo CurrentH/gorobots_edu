@@ -31,6 +31,7 @@ namespace DungBotMotorSensor
 		FL2_as = 17, //Fibula joint of left hind leg
 
 		BJ_as = 18, //Backbone joint angle
+		HJ_as = 19, //Head joint angle
 
 		R0_s1 = 25,
 		R0_s2 = 26,
@@ -68,7 +69,7 @@ namespace DungBotMotorSensor
 		L2_s4 = 53,
 		L2_s5 = 54,
 
-		DUNGBOT_SENSOR_MAX = 54,
+		DUNGBOT_SENSOR_MAX = 55,
 	};
 
 	enum DungBotMotorNames
@@ -95,9 +96,9 @@ namespace DungBotMotorSensor
 		FL2_m = 17,
 
 		BJ_m = 18,  // Upward (+), Downward (-)
-
+		HJ_m = 19,
 		//Changing according to the maximum motor number
-		DUNGBOT_MOTOR_MAX = 18,
+		DUNGBOT_MOTOR_MAX = 19,
 	};
 }//	Ending namespace DungBot
 #endif
