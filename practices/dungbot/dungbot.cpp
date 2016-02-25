@@ -263,6 +263,7 @@ namespace lpzrobots
 								osg::Matrix::rotate( -M_PI/2, 0, fb, 0 ) *
 								osg::Matrix::rotate( M_PI/2, 0, 1, 0 ) *
 								osg::Matrix::rotate( M_PI/2, -frontLeg, 0, 0 ) *
+								osg::Matrix::rotate( M_PI/7, 0, fb, 0 ) * //Visual
 								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
 								coxaCenter;
 			osg::Matrix femurcenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
@@ -274,7 +275,11 @@ namespace lpzrobots
 			objects.push_back( femurThorax );
 
 			// Tibia placement
-			osg::Matrix c3 = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * femurcenter;
+			osg::Matrix c3 = osg::Matrix::rotate( M_PI/6, 0, -1, 0 ) * //Visual
+								osg::Matrix::rotate( -M_PI/8, backLeg, 0, 0 ) * //Visual
+								osg::Matrix::rotate( M_PI/8, frontLeg, 0, 0 ) * //Visual
+								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
+								femurcenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
 			Primitive* tibia = new Capsule( conf.tibiaRadius, conf.tibiaLength[i%3] );
 			tibia->setTexture( "tebia.jpg" );
@@ -393,7 +398,7 @@ break;
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
-				OneAxisServo * tibiaMotor = new OneAxisServoVel( odeHandle, l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				OneAxisServo * tibiaMotor = new OneAxisServoCentered( l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0, 1.3 );
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
@@ -945,30 +950,30 @@ break;
 		 *	Joint Limits
 		 *	Setting the Max, and Min values of each joint.
 		 */
-		conf.backJointLimitD = M_PI / 180 * 100.0;
-		conf.backJointLimitU =	-M_PI / 180 * 100.0;
+		conf.backJointLimitD = M_PI / 180 * 180.0;
+		conf.backJointLimitU =	-M_PI / 180 * 180.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -2*M_PI / 180.0 * 180.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB = 2*M_PI / 180.0 * 180.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 180.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB = M_PI / 180 * 180.0;		// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 180.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB = M_PI / 180.0 * 180.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 0.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB = M_PI / 180.0 * 0.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 0.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB = M_PI / 180 * 0.0;		// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 0.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB = M_PI / 180.0 * 0.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD = M_PI / 180.0 * 100.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 100.0;
-	    conf.mFemurJointLimitD = M_PI / 180.0 * 100.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 100.0;
-	    conf.rFemurJointLimitD = M_PI / 180.0 * 100.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 100.0;
+	    conf.fFemurJointLimitD = M_PI / 180.0 * 0.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.mFemurJointLimitD = M_PI / 180.0 * 0.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.rFemurJointLimitD = M_PI / 180.0 * 0.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 0.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD = M_PI / 180.0 *100.0;
-	    conf.fTibiaJointLimitU = M_PI / 180.0 *100.0;
-	    conf.mTibiaJointLimitD = M_PI / 180.0 *100.0;
-	    conf.mTibiaJointLimitU = M_PI / 180.0 *100.0;
-	    conf.rTibiaJointLimitD = M_PI / 180.0 *100.0;
-	    conf.rTibiaJointLimitU = M_PI / 180.0 *100.0;
+	    conf.fTibiaJointLimitD = M_PI / 180.0 *0.0;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 *0.0;
+	    conf.mTibiaJointLimitD = M_PI / 180.0 *0.0;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 *0.0;
+	    conf.rTibiaJointLimitD = M_PI / 180.0 *0.0;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 *0.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness
@@ -979,15 +984,15 @@ break;
 		conf.footSpringLimitD = conf.footSpringPreload;
 		conf.footSpringLimitU = conf.footSpringPreload + conf.footRange;
 
-		const double backPower_scale = 3000.0;
-		const double coxaPower_scale = 1000.0;
-		const double springstiffness = 350.0;
+		const double backPower_scale = 30.0;
+		const double coxaPower_scale = 10.0;
+		const double springstiffness = 35.0;
 
-		conf.backPower = backPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength[0] * conf.massRear;
-		conf.coxaPower = coxaPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength[0] * conf.massRear;
+		conf.backPower = 1;//backPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength[0] * conf.massRear;
+		conf.coxaPower = 1;//coxaPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength[0] * conf.massRear;
 		conf.femurPower = conf.coxaPower;
 		conf.tibiaPower = conf.coxaPower;
-		conf.footPower = ( springstiffness * 0.08 / 2.2 ) * conf.massRear / conf.footSpringPreload;
+		conf.footPower = 1;//( springstiffness * 0.08 / 2.2 ) * conf.massRear / conf.footSpringPreload;
 
 		std::cout << "Back power: "<< conf.backPower << std::endl;
 		std::cout << "Coxa power: "<< conf.coxaPower << std::endl;
@@ -1001,11 +1006,11 @@ break;
 		conf.tibiaDamping = 0.01;
 		conf.footDamping = 0.05;
 
-		conf.backMaxVel = 1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel = 1.7 * 1.961 * M_PI;
-		conf.femurMaxVel = 1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel = 1.7 * 1.961 * M_PI;
-		conf.footMaxVel = 1.7 * 1.961 * M_PI;
+		conf.backMaxVel = 1.0;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel = 1.0;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel = 1.0;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel = 1.0;//1.7 * 1.961 * M_PI;
+		conf.footMaxVel = 1.0;//1.7 * 1.961 * M_PI;
 
 		conf.makeFoot = true;		// If true the foot is made
 
