@@ -17,9 +17,11 @@
 #include <selforg/abstractcontroller.h>
 #include <ode_robots/joint.h>
 #include <ode_robots/contactsensor.h>
+#include <assert.h>
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <vector>
 
 class DungBotEmptyController : public AbstractController
 {
@@ -31,8 +33,8 @@ class DungBotEmptyController : public AbstractController
 		virtual int getSensorNumber( void ) const override;
 		virtual int getMotorNumber( void ) const override;
 
-		virtual void step( const sensor* sensors, int sensorNumber, motor* motors, int motorNumber ) override;
-		virtual void stepNoLearning( const sensor* , int sensorNumber, motor* motors, int motorNumber ) override;
+		virtual void step( const sensor*, int, motor*, int ) override;
+		virtual void stepNoLearning( const sensor* , int, motor*, int ) override;
 
 		virtual bool store( FILE* f ) const override;
 		virtual bool restore( FILE* f ) override;
@@ -42,8 +44,11 @@ class DungBotEmptyController : public AbstractController
 		double nMotors;
 		bool initialised;
 		double ticks_since_init;
-		double speedSetpoint;
-		double phaseSetpoint;
+		std::ofstream outputFile;
+
+	private:
+		void collectData( std::vector<double>, std::vector<double> );
+
 };
 
 

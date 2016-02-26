@@ -207,20 +207,20 @@ namespace lpzrobots
 				case R0:
 					xPosition = -conf.frontDimension[0]/2+(sin(45)/sin(90)*conf.coxaLength[0]);
 					yPosition = lr * conf.frontDimension[1]*( 0.25 );
-					zPosition = -(conf.frontDimension[2]/2+0.8*conf.coxaRadius);
+					zPosition = -(conf.frontDimension[2]/2+1.2*conf.coxaRadius);
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.rearDimension[0]*0.07;
 					yPosition = lr * conf.rearDimension[1]*0.265;
-					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
+					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius);
 					break;
 				case L2:
 				case R2:
 					//xPosition = conf.rearDimension[0]*0.3;
 					xPosition = conf.rearDimension[0]*0.35;
 					yPosition = lr * conf.rearDimension[1]*0.412;
-					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
+					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius);
 					break;
 				default:
 					xPosition = 0;
@@ -245,11 +245,14 @@ namespace lpzrobots
 	        const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
 	        const double fb = (leg == L0 || leg == R0) - (leg == L1 || leg == L2 || leg == R1 || leg == R2);
 	        const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
-	        //const double frontLegOnly = ( leg == R0 || leg == L0 );
+	        const double backLegOnly = ( leg == L1 || leg == L2 || leg == R1 || leg == R2 );
+	        const double frontLegOnly = ( leg == R0 || leg == L0 );
+
 
 			// Coxa placement
-	        osg::Matrix c1 = osg::Matrix::rotate( -M_PI/4, lr, 0, 0 ) *
-	        					osg::Matrix::rotate( M_PI/2, 0, fb, 0 ) *
+	        osg::Matrix c1 = osg::Matrix::rotate( -M_PI/2, lr, 0 , 0 ) *
+	        					osg::Matrix::rotate( M_PI/4, 0, 0, backLegOnly*lr ) *
+	        					osg::Matrix::rotate( -M_PI/4, 0, 0, frontLegOnly*lr ) *
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate(0,0,-conf.coxaLength[i%3]/2)*c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius, conf.coxaLength[i%3] );
@@ -260,10 +263,10 @@ namespace lpzrobots
 			objects.push_back( coxaThorax );
 
 			// Femur placement
-			osg::Matrix c2 = osg::Matrix::rotate( M_PI/4, lr, 0, 0 ) *
-								osg::Matrix::rotate( -M_PI/2, 0, fb, 0 ) *
-								osg::Matrix::rotate( M_PI/2, 0, 1, 0 ) *
-								osg::Matrix::rotate( M_PI/2, -frontLeg, 0, 0 ) *
+			osg::Matrix c2 = osg::Matrix::rotate( M_PI/2, lr, 0 , 0 ) *	//Anti
+								osg::Matrix::rotate( -M_PI/4, 0, 0, backLegOnly*lr ) * //Anti
+								osg::Matrix::rotate( M_PI/4, 0, 0, frontLegOnly*lr ) * //Anti
+								osg::Matrix::rotate( M_PI/4, 0, fb, 0 ) *
 								//osg::Matrix::rotate( M_PI/7, 0, fb, 0 ) * //Visual
 								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
 								coxaCenter;
@@ -291,7 +294,7 @@ namespace lpzrobots
 
 			// calculate anchor and axis of the first joint
 			const osg::Vec3 anchor1 = nullpos * c1;
-	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg ) * c1;
+	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg )*c1;
 	        switch (i)
 	        {
 case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front left
@@ -312,45 +315,41 @@ break;
 
 			// Proceed along the leg (and the respective z-axis) for second limb
 			const osg::Vec3 anchor2 = nullpos * c2;
-			Axis axis2 = Axis( backLeg + frontLeg, backLegInverse, backLeg) * c2;
+			Axis axis2 = Axis( backLeg+frontLeg, 0, 0 );
 			switch (i)
 			{
-			/*
 case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front left
 break;
-case 1: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-100,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2;	//middle left
+case 1: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 break;
-case 2: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180,0,1,0)*osg::Matrix::rotate(M_PI/180*30+M_PI/2,0,0,1)*axis2;	//rear left
+case 2: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 break;
 case 3: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front right
 break;
-case 4:	axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-100,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2; //middle right
+case 4:	axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 break;
-case 5: axis2=osg::Matrix::rotate(M_PI/180,1,0,0)*osg::Matrix::rotate(M_PI/180*-80,0,1,0)*osg::Matrix::rotate(-(M_PI/180*30+M_PI/2),0,0,1)*axis2; // rear right
+case 5: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 break;
 default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
 break;
-			 */
-				default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(M_PI/4,0,0,lr)*axis2;
-				break;
 			}
 
 			//and third
 			const osg::Vec3 anchor3 = nullpos * c3;
-	        Axis axis3 = Axis( backLeg + frontLeg, backLegInverse - frontLegInverse, -frontLeg ) * c3;
+	        Axis axis3 = Axis( backLeg+frontLeg, 0, 0 );
 	        switch (i)
 	        {
 case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
 break;
-case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
+case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
 break;
-case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left
+case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left
 break;
 case 3: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //front right
 break;
-case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-50,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  //middle right
+case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  //middle right
 break;
-case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(M_PI/180*-30,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear right
+case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear right
 break;
 default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
 break;
@@ -364,7 +363,7 @@ break;
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
 				//OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-				OneAxisServo * coxaMotor = new OneAxisServo( j, -1.0, 1.0, 1.0, 0.2, 10.0, 1.3, true );
+				OneAxisServo * coxaMotor = new OneAxisServo( j, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
 	        }
@@ -383,7 +382,7 @@ break;
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
 				//OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
-				OneAxisServo * femurMotor = new OneAxisServo( k, -1.0, 1.0, 1.0, 0.2, 10.0, 1.3, true );
+				OneAxisServo * femurMotor = new OneAxisServo( k, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -402,7 +401,7 @@ break;
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
 				//OneAxisServo * tibiaMotor = new OneAxisServoCentered( l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0, 1.3 );
-				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 10.0, 1.3, true );
+				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
@@ -893,8 +892,8 @@ break;
 		 */
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		/**
@@ -954,26 +953,26 @@ break;
 		conf.backJointLimitU =	-M_PI / 180 * 180.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 10.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB =  M_PI / 180.0 * 10.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 10.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 10.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 10.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 10.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 2.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB =  M_PI / 180.0 * 2.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 2.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 2.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 2.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 2.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD =  M_PI / 180.0 * 10.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 10.0;
-	    conf.mFemurJointLimitD =  M_PI / 180.0 * 10.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 10.0;
-	    conf.rFemurJointLimitD =  M_PI / 180.0 * 10.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 10.0;
+	    conf.fFemurJointLimitD =  M_PI / 180.0 * 2.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.mFemurJointLimitD =  M_PI / 180.0 * 2.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.rFemurJointLimitD =  M_PI / 180.0 * 2.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 0.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 10.0;
-	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 10.0;
-	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 10.0;
-	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 10.0;
-	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 10.0;
-	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 10.0;
+	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 2.0;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 2.0;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 2.0;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 0.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness
