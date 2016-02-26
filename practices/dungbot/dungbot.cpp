@@ -217,7 +217,8 @@ namespace lpzrobots
 					break;
 				case L2:
 				case R2:
-					xPosition = conf.rearDimension[0]*0.3;
+					//xPosition = conf.rearDimension[0]*0.3;
+					xPosition = conf.rearDimension[0]*0.35;
 					yPosition = lr * conf.rearDimension[1]*0.412;
 					zPosition = -(conf.rearDimension[2]/2+0.8*conf.coxaRadius);
 					break;
@@ -263,7 +264,7 @@ namespace lpzrobots
 								osg::Matrix::rotate( -M_PI/2, 0, fb, 0 ) *
 								osg::Matrix::rotate( M_PI/2, 0, 1, 0 ) *
 								osg::Matrix::rotate( M_PI/2, -frontLeg, 0, 0 ) *
-								osg::Matrix::rotate( M_PI/7, 0, fb, 0 ) * //Visual
+								//osg::Matrix::rotate( M_PI/7, 0, fb, 0 ) * //Visual
 								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
 								coxaCenter;
 			osg::Matrix femurcenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
@@ -275,9 +276,9 @@ namespace lpzrobots
 			objects.push_back( femurThorax );
 
 			// Tibia placement
-			osg::Matrix c3 = osg::Matrix::rotate( M_PI/6, 0, -1, 0 ) * //Visual
-								osg::Matrix::rotate( -M_PI/8, backLeg, 0, 0 ) * //Visual
-								osg::Matrix::rotate( M_PI/8, frontLeg, 0, 0 ) * //Visual
+			osg::Matrix c3 = //osg::Matrix::rotate( M_PI/6, 0, -1, 0 ) * //Visual
+								//osg::Matrix::rotate( -M_PI/8, backLeg, 0, 0 ) * //Visual
+								//osg::Matrix::rotate( M_PI/8, frontLeg, 0, 0 ) * //Visual
 								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
 								femurcenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
@@ -362,7 +363,8 @@ break;
 				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
-				OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				//OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				OneAxisServo * coxaMotor = new OneAxisServo( j, -1.0, 1.0, 1.0, 0.2, 10.0, 1.3, true );
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
 	        }
@@ -380,7 +382,8 @@ break;
 				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
-				OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				//OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
+				OneAxisServo * femurMotor = new OneAxisServo( k, -1.0, 1.0, 1.0, 0.2, 10.0, 1.3, true );
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -398,7 +401,8 @@ break;
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
-				OneAxisServo * tibiaMotor = new OneAxisServoCentered( l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0, 1.3 );
+				//OneAxisServo * tibiaMotor = new OneAxisServoCentered( l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0, 1.3 );
+				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 10.0, 1.3, true );
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
@@ -823,16 +827,6 @@ break;
 	    //	We set all parameters here
 	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
-			Spring * const footspring = it->second.footSpring;
-			if( footspring )
-			{
-				footspring->setPower(conf.footPower);
-				footspring->setDamping(conf.footDamping);
-				footspring->setMaxVel(conf.footMaxVel);
-				//	Min is up, Max is down.
-				footspring->setMinMax(conf.footSpringLimitD, conf.footSpringLimitU);
-			}
-
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
 			{
@@ -851,9 +845,9 @@ break;
 				ctr->setDamping( conf.femurDamping );
 				ctr->setMaxVel( conf.femurMaxVel );
 				//	Min is up, up is negative
-				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
-				if (it->first == L1 || it->first == R1) ctr->setMinMax(conf.mFemurJointLimitU, conf.mFemurJointLimitD);
-				if (it->first == L0 || it->first == R0) ctr->setMinMax(conf.fFemurJointLimitU, conf.fFemurJointLimitD);
+				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitD, conf.rFemurJointLimitU);
+				if (it->first == L1 || it->first == R1) ctr->setMinMax(conf.rFemurJointLimitD, conf.mFemurJointLimitU);
+				if (it->first == L0 || it->first == R0) ctr->setMinMax(conf.rFemurJointLimitD, conf.fFemurJointLimitU);
 			}
 
 			OneAxisServo * fti = it->second.ftiServo;
@@ -863,9 +857,19 @@ break;
 				fti->setDamping(conf.tibiaDamping);
 				fti->setMaxVel(conf.tibiaMaxVel);
 				//	Min is up, up is negative
-				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
-				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
-				if (it->first == L0 || it->first == R0) fti->setMinMax(conf.fTibiaJointLimitU, conf.fTibiaJointLimitD);
+				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitD, conf.rTibiaJointLimitU);
+				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitD, conf.mTibiaJointLimitU);
+				if (it->first == L0 || it->first == R0) fti->setMinMax(conf.fTibiaJointLimitD, conf.fTibiaJointLimitU);
+			}
+
+			Spring * const footspring = it->second.footSpring;
+			if( footspring )
+			{
+				footspring->setPower(conf.footPower);
+				footspring->setDamping(conf.footDamping);
+				footspring->setMaxVel(conf.footMaxVel);
+				//	Min is up, Max is down.
+				footspring->setMinMax(conf.footSpringLimitD, conf.footSpringLimitU);
 			}
 		}
 
@@ -889,9 +893,9 @@ break;
 		 */
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
-		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
+		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		/**
 		 * MATHIAS THOR's MASS CALCULATION (c) :D
@@ -904,18 +908,16 @@ break;
 		 */
 
 		//	----------- Body dimensions -------
-		conf.size = 0.0; //	Should be 0.43, but this increases the foot length retardedly.
 		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
 		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
 		conf.headDimension 	= { conf.frontDimension[0]*0.57, conf.frontDimension[0]*0.57, conf.rearDimension[2]*1 };
 
-		//const double density = 3.0 / ( 0.43 * 0.07 * 0.065 );
-		conf.massFront = 0.01; //conf.frontDimension[0] * conf.frontDimension[1] * conf.frontDimension[2] * density;
-		conf.massRear = 0.01; //conf.rearDimension[0] * conf.rearDimension[1] * conf.rearDimension[2] * density;
-		conf.massHead = 0.01; //M_PI * conf.headDimension[0] * conf.headDimension[0] * conf.headDimension[2] * density;
+		//TODO:Set these after trip to Kiel
+		conf.massFront = 0.01;
+		conf.massRear = 0.01;
+		conf.massHead = 0.01;
 
 		// ------------ Leg dimensions --------
-		//conf.coxaLength = 0.3;	// COXA
 		conf.coxaLength = { conf.rearDimension[0]*0.177, conf.rearDimension[0]*0.3, conf.rearDimension[0]*0.45 };
 		conf.coxaRadius = 0.02;
 		conf.coxaMass = {
@@ -923,7 +925,6 @@ break;
 				9.85*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[1] ),
 				9.85*M_PI*conf.coxaRadius*conf.coxaRadius*( (4/3)*conf.coxaRadius + conf.coxaLength[2] )};
 
-		//conf.femurLength = 0.3;	// FEMUR
 		conf.femurLength = { conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55 };
 		conf.femurRadius = 0.02;
 		conf.femurMass = {
@@ -931,7 +932,6 @@ break;
 				9.85*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[1] ),
 				9.85*M_PI*conf.femurRadius*conf.femurRadius*( (4/3)*conf.femurRadius + conf.femurLength[2] )};
 
-		//conf.tibiaLength = 0.3;	// TEBIA
 		conf.tibiaLength = { conf.rearDimension[0]*0.679, conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.70 };
 		conf.tibiaRadius = 0.02;
 		conf.tibiaMass = {
@@ -939,7 +939,7 @@ break;
 				9.85*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[1] ),
 				9.85*M_PI*conf.tibiaRadius*conf.tibiaRadius*( (4/3)*conf.tibiaRadius + conf.tibiaLength[2] )};
 
-		conf.footRange = 0.05;	// FOOT
+		conf.footRange = 0.05;
 		conf.footRadius = 0.02;
 		conf.footMass = 0.09;
 		conf.footSpringPreload = 0.0;
@@ -954,26 +954,26 @@ break;
 		conf.backJointLimitU =	-M_PI / 180 * 180.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 0.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB = M_PI / 180.0 * 0.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 0.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB = M_PI / 180 * 0.0;		// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 0.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB = M_PI / 180.0 * 0.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 10.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB =  M_PI / 180.0 * 10.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 10.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 10.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 10.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 10.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD = M_PI / 180.0 * 0.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 0.0;
-	    conf.mFemurJointLimitD = M_PI / 180.0 * 0.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 0.0;
-	    conf.rFemurJointLimitD = M_PI / 180.0 * 0.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 0.0;
+	    conf.fFemurJointLimitD =  M_PI / 180.0 * 10.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 10.0;
+	    conf.mFemurJointLimitD =  M_PI / 180.0 * 10.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 10.0;
+	    conf.rFemurJointLimitD =  M_PI / 180.0 * 10.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 10.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD = M_PI / 180.0 *0.0;
-	    conf.fTibiaJointLimitU = -M_PI / 180.0 *0.0;
-	    conf.mTibiaJointLimitD = M_PI / 180.0 *0.0;
-	    conf.mTibiaJointLimitU = -M_PI / 180.0 *0.0;
-	    conf.rTibiaJointLimitD = M_PI / 180.0 *0.0;
-	    conf.rTibiaJointLimitU = -M_PI / 180.0 *0.0;
+	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 10.0;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 10.0;
+	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 10.0;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 10.0;
+	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 10.0;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 10.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness

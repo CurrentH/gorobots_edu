@@ -46,13 +46,37 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
 {
-	//stepNoLearning( sensors, sensorNumber, motors, motorNumber );
-	// Update internal time
+	//	Update internal time
 	ticks_since_init++;
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
-		motor[i] = 0;//sin( 0.001 * ticks_since_init );
+
+		//motor[i] = 0;
+		motor[i] = sin( 0.001 * ticks_since_init );
+
+		if( int(ticks_since_init)%50 == 0 )
+		{
+			std::cout << "------------------------------------------------------------------" << std::endl;
+
+			std::cout << "Coxa:  " << motor[0] << " " << motor[1] << " " << motor[2] << " "
+									<< motor[3] << " " << motor[4] << " " << motor[5] << std::endl;
+			std::cout << "Femur: " << motor[6] << " " << motor[7] << " " << motor[8] << " "
+									<< motor[9] << " " << motor[10] << " " << motor[11] << std::endl;
+			std::cout << "Tibia: " << motor[12] << " " << motor[13] << " " << motor[14] << " "
+									<< motor[15] << " " << motor[16] << " " << motor[17] << std::endl;
+			std::cout << "Coxa:  " << sensor[0] << " " << sensor[1] << " " << sensor[2] << " "
+									<< sensor[3] << " " << sensor[4] << " " << sensor[5] << std::endl;
+			std::cout << "Femur: " << sensor[6] << " " << sensor[7] << " " << sensor[8] << " "
+									<< sensor[9] << " " << sensor[10] << " " << sensor[11] << std::endl;
+			std::cout << "Tibia: " << sensor[12] << " " << sensor[13] << " " << sensor[14] << " "
+									<< sensor[15] << " " << sensor[16] << " " << sensor[17] << std::endl;
+
+			std::cout << "------------------------------------------------------------------" << std::endl;
+		}
+
+
+
 	}
 
 }
