@@ -17,6 +17,7 @@ namespace lpzrobots
 	{
 		//	Used for tests of the legs
 		bool testNo;
+		bool testHead;
 		bool testBody;
 		bool testCoxa;
 		bool testFemur;
