@@ -42,14 +42,9 @@ namespace lpzrobots
 		std::vector<double> tibiaLength;
 		double tibiaRadius;
 		std::vector<double> tibiaMass;
-		double footRange;
-		double footRadius;
-		double footMass;
-		double footSpringPreload;
-		double footSpringLimitD;
-		double footSpringLimitU;
-		double tarusMass;
-		bool   makeFoot;
+		double tarsusMass;
+		double tarsusLength;
+		double tarsusRadius;
 
 		//	Motor settings
 		double backPower;
