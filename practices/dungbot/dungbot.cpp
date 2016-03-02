@@ -416,142 +416,110 @@ break;
 	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
 	        	joints.push_back( l );
 	        }
-			// Foot
-			if( true ) // toggle foot
+
+	        // New: tarsus
+			Primitive *tarsus;
+			double angle = M_PI/12;
+
+			double radius = conf.tarsusRadius/2; // was conf.footRadius/3
+			double length = conf.tarsusLength;
+			double mass = conf.tarsusMass/10;
+			tarsus = new Capsule( radius,length );
+			tarsus->setTexture("tarsus.jpg");
+			tarsus->init(odeHandle, mass, osgHandle);
+
+			osg::Matrix m6;
+			osg::Matrix m5 = 	osg::Matrix::rotate(-angle,i%2==0 ? -1 : 1,0,0) *
+								osg::Matrix::translate(0,0,-length/2) *
+								tibiaCenter;
+
+			double angleTarsus=0;
+
+			//	Rotate manually tarsus here
+			switch (i)
+			{	//TODO:	See if the rotations of the Tarsus is correct
+				case 0: angleTarsus=0;	//front left
+				break;
+				case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20;	//middle left
+				break;
+				case 2: angleTarsus=0;	//rear left ok
+				break;
+				case 3: angleTarsus=(M_PI/180)*20;	//front right
+				break;
+				case 4: angleTarsus=(M_PI/180)*140;	// middle right
+				break;
+				case 5: angleTarsus=-(M_PI/180)*290;	// rear right ok
+				break;
+				default: angleTarsus=0;
+				break;
+			}
+
+			if( i < 2 )
 			{
-/*osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 - conf.footRange ) * tibiaCenter;
-osg::Matrix footCenter = osg::Matrix::translate( 0, 0, -conf.footSpringPreload ) * c4;
+				m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
+			}
+			else if( i > 3 )
+			{
+				m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
+			}
+			else
+			{
+				m6 = m5;
+			}
+			m6 = osg::Matrix::rotate(0,1,0,0) *osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(angleTarsus,0,0,1)* osg::Matrix::translate(0,0,-length/2) * m6 ;
 
-const osg::Vec3 anchor4 = nullpos * footCenter;
-const Axis axis4 = Axis(0, 0, -1) * c4;
+			std::cout << "leg number     " << i << std::endl;
 
-OdeHandle my_odeHandle = odeHandle;
+			tarsus->setPose(m6);
+			tarsusParts.push_back(tarsus);
+			objects.push_back(tarsus);
 
-// set the foot to use rubberFeet
-const Substance FootSubstance( 3.0, 0.0, 500.0, 0.1 );
-my_odeHandle.substance = FootSubstance;
+			FixedJoint* q = new FixedJoint(tibia, tarsus);
+			q->init(odeHandle, osgHandle, false);
+			joints.push_back(q);
 
-Primitive* foot;
-foot = new Capsule( conf.footRadius, conf.footRange );
-foot->setTexture( "foot.jpg" );
-foot->init(my_odeHandle, conf.footMass, osgHandle);
-foot->setPose(footCenter);
-legs[leg].foot = foot;
-objects.push_back(foot);
+			Primitive *section = tarsus;
 
-//SliderJoint* m = new SliderJoint( tibia, foot, anchor4, axis4 );
-HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );	//TODO SHOULD BE A SliderJoint and not HingeJoint
-m->init( odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius, true );
-legs[leg].footJoint = m;
-joints.push_back( m );
-*/
-/** parameters are set later */
-/*
-Spring* spring = new Spring( m, -1, 1, 1, 0.05, 1, 0, 1 );
-legs[leg].footSpring = spring;
-passiveServos.push_back( spring );
-odeHandle.addIgnoredPair( femurThorax, foot );
-				*/
-				// New: tarsus
-				Primitive *tarsus;
-				double angle = M_PI/12;
+			for( int j = 1; j < 6; j++ )
+			{
+				 double lengthS = length/1.9;
+				 double radiusS = radius/1.5;
+				 section = new Capsule( radiusS, lengthS );
+				 section->setTexture( "tarsus.jpg" );
+				 section->init( odeHandle, mass, osgHandle );
 
-				tarsus = new Capsule( conf.tarsusRadius,conf.tarsusLength );
-				tarsus->setTexture("tarsus.jpg");
-				tarsus->init(odeHandle, conf.tarsusMass, osgHandle);
+				 osg::Matrix m7;
 
-				osg::Matrix m6;
-				osg::Matrix m5 = 	osg::Matrix::rotate( -angle, i%2==0 ? -1 : 1, 0, 0 ) *
-									osg::Matrix::translate( 0, 0, -conf.tibiaLength[i]/2 ) *
-									tibiaCenter;
-
-				double angleTarsus=0;
-
-				//	Rotate manually tarsus here
-				switch (i)
-				{	//TODO:	See if the rotations of the Tarsus is correct
-					case 0: angleTarsus=0;	//front left
-					break;
-					case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20;	//middle left
-					break;
-					case 2: angleTarsus=0;	//rear left ok
-					break;
-					case 3: angleTarsus=(M_PI/180)*20;	//front right
-					break;
-					case 4: angleTarsus=(M_PI/180)*140;	// middle right
-					break;
-					case 5: angleTarsus=-(M_PI/180)*290;	// rear right ok
-					break;
-					default: angleTarsus=0;
-					break;
-				}
-
-				if( i < 2 )
-				{
-					m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
-				}
-				else if( i > 3 )
-				{
-					m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
-				}
-				else
-				{
-					m6 = m5;
-				}
-				m6 = osg::Matrix::rotate(0,1,0,0) *osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(angleTarsus,0,0,1)* osg::Matrix::translate(0,0,-conf.tarsusLength/2) * m6 ;
-
-				std::cout << "leg number     " << i << std::endl;
-
-				tarsus->setPose(m6);
-				tarsusParts.push_back(tarsus);
-				objects.push_back(tarsus);
-
-				FixedJoint* q = new FixedJoint(tibia, tarsus);
-				q->init(odeHandle, osgHandle, false);
-				joints.push_back(q);
-
-				Primitive *section = tarsus;
-
-				for( int j = 1; j < 6; j++ )
-				{
-					 double lengthS = conf.tarsusLength/1.9;
-					 double radiusS = conf.tarsusRadius/1.5;
-					 section = new Capsule( radiusS, lengthS );
-					 section->setTexture( "tarsus.jpg" );
-					 section->init( odeHandle, conf.tarsusMass, osgHandle );
-
-					 osg::Matrix m7;
-
-					 if( i < 2 )
-					 {
-						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-								osg::Matrix::translate(0,0,-conf.tarsusLength/2) *
-								m6;
-					 }
-					 else if(i > 3)
-					 {
-						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-								osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-								osg::Matrix::translate(0,0,-conf.tarsusLength/2) *
-								m6;
-					 }
-					 else
-					 {
-						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-								osg::Matrix::translate(0,0,-conf.tarsusLength/2) *
-								m6;
-					 }
-					 section->setPose(m7);
-					 objects.push_back(section);
-					 tarsusParts.push_back(section);
+				 if( i < 2 )
+				 {
+					 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+							osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
+							osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+							osg::Matrix::translate(0,0,-length/2) *
+							m6;
+				 }
+				 else if(i > 3)
+				 {
+					 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+							osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
+							osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+							osg::Matrix::translate(0,0,-length/2) *
+							m6;
+				 }
+				 else
+				 {
+					 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+							osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+							osg::Matrix::translate(0,0,-length/2) *
+							m6;
+				 }
+				 section->setPose(m7);
+				 objects.push_back(section);
+				 tarsusParts.push_back(section);
 
 				 if( j == 1 )
 				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,conf.tarsusLength/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
 					 // servo used as a spring
@@ -563,7 +531,7 @@ odeHandle.addIgnoredPair( femurThorax, foot );
 				 }
 				 else if( j == 2 )
 				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,conf.tarsusLength/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
 					 // servo used as a spring
@@ -575,7 +543,7 @@ odeHandle.addIgnoredPair( femurThorax, foot );
 				 }
 				 else
 				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,conf.tarsusLength/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
 					 // servo used as a spring
@@ -588,13 +556,12 @@ odeHandle.addIgnoredPair( femurThorax, foot );
 
 				 m6 = m7;
 
-				 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
-				 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
-				 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
-				}
+				tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
+				tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
+				tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
 			}
-			tarsusParts.clear();
-	    }
+		}
+		tarsusParts.clear();
     }
 
     lpzrobots::Primitive* DungBot::makeBody( const Matrix& pose, const double mass, const std::vector<double> dimension )
