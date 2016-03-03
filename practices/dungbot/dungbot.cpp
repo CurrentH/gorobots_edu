@@ -93,7 +93,8 @@ namespace lpzrobots
             in the third position.
         **/
 
-        osg::Matrix initialPose = pose * osg::Matrix::translate(0, 0, conf.rearDimension[2]+conf.coxaRadius*1.2);
+    	//TODO: Find a proper beginning pose.
+        osg::Matrix initialPose = pose * osg::Matrix::translate(0, 0, conf.rearDimension[2]+conf.coxaRadius[0]*1.2);
         create( initialPose );
     }
 
@@ -215,20 +216,20 @@ namespace lpzrobots
 				case R0:
 					xPosition = -conf.frontDimension[0]/2+(sin(45)/sin(90)*conf.coxaLength[0]);
 					yPosition = lr * conf.frontDimension[1]*( 0.25 );
-					zPosition = -(conf.frontDimension[2]/2+1.2*conf.coxaRadius);
+					zPosition = -(conf.frontDimension[2]/2+1.2*conf.coxaRadius[i%3]);
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.rearDimension[0]*0.07;
 					yPosition = lr * conf.rearDimension[1]*0.265;
-					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius);
+					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius[i%3]);
 					break;
 				case L2:
 				case R2:
 					//xPosition = conf.rearDimension[0]*0.3;
 					xPosition = conf.rearDimension[0]*0.35;
 					yPosition = lr * conf.rearDimension[1]*0.412;
-					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius);
+					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius[i%3]);
 					break;
 				default:
 					xPosition = 0;
@@ -247,15 +248,15 @@ namespace lpzrobots
 			LegPos leg = LegPos(i);
 
 			//	+1 for R0,R1,R2, -1 for L0,L1,L2
-	        const double backLeg = ( leg == R1 || leg == R2 ) - ( leg == L1 || leg == L2 );
-	        const double backLegInverse = ( leg == R1 || leg == R2 ) + ( leg == L1 || leg == L2 );
+
+	        //const double backLegInverse = ( leg == R1 || leg == R2 ) + ( leg == L1 || leg == L2 );
+			//const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
+			const double backLeg = ( leg == R1 || leg == R2 ) - ( leg == L1 || leg == L2 );
 	        const double frontLeg = ( leg == R0 ) - ( leg == L0 );
-	        const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
+	        const double backLegOnly = ( leg == L1 || leg == L2 || leg == R1 || leg == R2 );
+			const double frontLegOnly = ( leg == R0 || leg == L0 );
 	        const double fb = (leg == L0 || leg == R0) - (leg == L1 || leg == L2 || leg == R1 || leg == R2);
 	        const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
-	        const double backLegOnly = ( leg == L1 || leg == L2 || leg == R1 || leg == R2 );
-	        const double frontLegOnly = ( leg == R0 || leg == L0 );
-
 
 			// Coxa placement
 	        osg::Matrix c1 = osg::Matrix::rotate( -M_PI/2, lr, 0 , 0 ) *
@@ -263,7 +264,7 @@ namespace lpzrobots
 	        					osg::Matrix::rotate( -M_PI/4, 0, 0, frontLegOnly*lr ) *
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate(0,0,-conf.coxaLength[i%3]/2)*c1; //Position of Center of Mass
-			Primitive* coxaThorax = new Capsule( conf.coxaRadius, conf.coxaLength[i%3] );
+			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
 			coxaThorax->setTexture( "coxa1.jpg");
 			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandle );
 			coxaThorax->setPose( coxaCenter );
@@ -279,7 +280,7 @@ namespace lpzrobots
 								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
 								coxaCenter;
 			osg::Matrix femurcenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
-			Primitive* femurThorax = new Capsule( conf.femurRadius, conf.femurLength[i%3]  );
+			Primitive* femurThorax = new Capsule( conf.femurRadius[i%3], conf.femurLength[i%3]  );
 			femurThorax->setTexture( "femur.jpg" );
 			femurThorax->init( odeHandle, conf.femurMass[i%3], osgHandle );
 			femurThorax->setPose( femurcenter );
@@ -293,7 +294,7 @@ namespace lpzrobots
 								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
 								femurcenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
-			Primitive* tibia = new Capsule( conf.tibiaRadius, conf.tibiaLength[i%3] );
+			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
 			tibia->setTexture( "tebia.jpg" );
 			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandle );
 			tibia->setPose( tibiaCenter );
@@ -367,7 +368,7 @@ break;
 	        if( conf.testCoxa || conf.testNo )
 	        {
 	        	HingeJoint* j = new HingeJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1 ); // Only L0 and R0 should be attached to front
-				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
 				//OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
@@ -378,7 +379,7 @@ break;
 	        else
 	        {
 	        	FixedJoint* j = new FixedJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1 ); // Only L0 and R0 should be attached to front
-	        	j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+	        	j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				joints.push_back( j );
 	        }
 
@@ -386,7 +387,7 @@ break;
 	        if( conf.testFemur || conf.testNo )
 	        {
 	        	HingeJoint* k = new HingeJoint( coxaThorax, femurThorax, anchor2, -axis2 );
-				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
 				//OneAxisServo * femurMotor = new OneAxisServoVel( odeHandle, k, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0 );
@@ -397,7 +398,7 @@ break;
 	        else
 	        {
 	        	FixedJoint* k = new FixedJoint( coxaThorax, femurThorax, anchor2 );
-				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius * 3.1 );
+				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				joints.push_back( k );
 	        }
 
@@ -405,7 +406,7 @@ break;
 	        if( conf.testTibia || conf.testNo )
 	        {
 	        	HingeJoint* l = new HingeJoint( femurThorax, tibia, anchor3, -axis3 );
-				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
+				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
 				//OneAxisServo * tibiaMotor = new OneAxisServoCentered( l, -1.0, 1.0, 1.0, 0.01, 20.0, 1.0, 1.3 );
@@ -416,7 +417,7 @@ break;
 	        else
 	        {
 	        	FixedJoint* l = new FixedJoint( femurThorax, tibia, anchor3 );
-	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius * 3.1 );
+	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius[i%3] * 3.1 );
 	        	joints.push_back( l );
 	        }
 
@@ -425,8 +426,8 @@ break;
 				Primitive *tarsus;
 				double angle = M_PI/12;
 
-				double radius = conf.tarsusRadius/2; // was conf.footRadius/3
-				double length = conf.tarsusLength;
+				double radius = conf.tarsusRadius[i%3]/2; // was conf.footRadius/3
+				double length = conf.tarsusLength[i%3];
 				double mass = conf.tarsusMass/10;
 				tarsus = new Capsule( 1,1 ); //TODO
 				tarsus->setTexture("tarsus.jpg");
@@ -571,6 +572,18 @@ break;
 	    }
     }
 
+    lpzrobots::Primitive* DungBot::makeHead( const osg::Matrix& pose, const double mass, const std::vector<double> dimension )
+    {
+    	lpzrobots::Primitive* head = new Box( dimension[0], dimension[1], dimension[2] );
+    	//lpzrobots::Primitive* head = new Cylinder( dimension[2], dimension[0] );
+    	head->setTexture( "body.jpg" );
+    	head->init( odeHandle, mass, osgHandle );
+    	head->setPose( pose );
+    	objects.push_back( head );
+
+    	return head;
+    }
+
     lpzrobots::Primitive* DungBot::makeBody( const Matrix& pose, const double mass, const std::vector<double> dimension )
     {
         // Allocate object
@@ -655,22 +668,6 @@ break;
     	FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
         hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
         joints.push_back( hinge );
-    }
-
-    lpzrobots::Primitive* DungBot::makeHead( const osg::Matrix& pose, const double mass, const std::vector<double> dimension )
-    {
-    	// Allocate object
-    	lpzrobots::Primitive* head = new Cylinder( dimension[2], dimension[0] );
-    	// Set texture from Image library
-    	head->setTexture( "body.jpg" );
-    	// Initialize the primitive
-    	head->init( odeHandle, mass, osgHandle );
-    	// Set pose
-    	head->setPose( pose );
-    	// Add to objects
-    	objects.push_back( head );
-
-    	return head;
     }
 
 	void DungBot::nameMotor( const int motorNumber, const char* name )
@@ -818,7 +815,7 @@ break;
 			}
 
 			OneAxisServo * ctr = it->second.ctrServo;
-			if (ctr)
+			if(ctr)
 			{
 				ctr->setPower( conf.femurPower );
 				ctr->setDamping( conf.femurDamping );
@@ -830,7 +827,7 @@ break;
 			}
 
 			OneAxisServo * fti = it->second.ftiServo;
-			if ( fti )
+			if( fti )
 			{
 				fti->setPower(conf.tibiaPower);
 				fti->setDamping(conf.tibiaDamping);
@@ -844,7 +841,7 @@ break;
 
 	   std::cout << "Before BackboneServo setParam" << std::endl;
 
-		if (backboneServo && (conf.testBody || conf.testNo ))
+		if( backboneServo && (conf.testBody || conf.testNo ) )
 		{
 			backboneServo->setPower(conf.backPower);
 			backboneServo->setDamping(conf.backDamping);
@@ -867,7 +864,7 @@ break;
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
@@ -882,79 +879,113 @@ break;
 		 */
 
 		//	----------- Body dimensions -------
-		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
-		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
+		/*
 		conf.headDimension 	= { conf.frontDimension[0]*0.57, conf.frontDimension[0]*0.57, conf.rearDimension[2]*1 };
+		conf.frontDimension = { conf.rearDimension[0]*0.5, conf.rearDimension[1]*0.83, conf.rearDimension[2]*1 };
+		conf.rearDimension 	= { 0.65, 0.65, 0.2 };	// Length and Width should be equal
+		*/
 
-		//TODO:Set these after trip to Kiel
-		double totalMass = 106.402;
+		double totalLength = 3.75+9.111+10.324;
+		conf.headDimension 	= { 4.568/totalLength, 3.75/totalLength, 0.2 };
+		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 0.2 };
+		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 0.2 };	// Length and Width should be equal
+
+		double totalMass = 106.402/10;
 		conf.massHead = 14.826/totalMass;
 		conf.massFront = 23.823/totalMass;
 		conf.massRear = 30.439/totalMass;
 
-
 		// ------------ Leg dimensions --------
-		conf.coxaLength = { conf.rearDimension[0]*0.177, conf.rearDimension[0]*0.3, conf.rearDimension[0]*0.45 };
-		conf.coxaRadius = 0.02;
-		conf.coxaMass = { 1.2979/totalMass,
+		//	Coxa
+		conf.coxaLength = {
+							2.46037/totalLength,
+							2.11888/totalLength,
+							4.05514/totalLength };
+		conf.coxaRadius = {
+							1.65197/totalLength/4,
+							1.65227/totalLength/4,
+							1.63748/totalLength/4 };
+		conf.coxaMass = {
+							1.2979/totalMass,
 							1.5078/totalMass,
 							3.0317/totalMass };
-
-		conf.femurLength = { conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.55, conf.rearDimension[0]*0.55 };
-		conf.femurRadius = 0.02;
-		conf.femurMass = { 2.8817/totalMass,
+		//	Femur
+		conf.femurLength = {
+							3.24472/totalLength,
+							4.23025/totalLength,
+							4.63394/totalLength };
+		conf.femurRadius = {
+							1.87084/totalLength/4,
+							2.00444/totalLength/4,
+							2.41763/totalLength/4 };
+		conf.femurMass = {
+							2.8817/totalMass,
 							2.2400/totalMass,
 							2.6258/totalMass };
-
-		conf.tibiaLength = { conf.rearDimension[0]*0.679, conf.rearDimension[0]*0.50, conf.rearDimension[0]*0.70 };
-		conf.tibiaRadius = 0.02;
-		conf.tibiaMass = { 1.5269/totalMass,
+		//	Tibia
+		conf.tibiaLength = {
+							4.68943/totalLength,
+							3.72093/totalLength,
+							5.54793/totalLength };
+		conf.tibiaRadius = {
+							1.04005/totalLength/4,
+							0.917478/totalLength/4,
+							0.924187/totalLength/4 };
+		conf.tibiaMass = {
+							1.5269/totalMass,
 							1.3660/totalMass,
 							2.1793/totalMass };
 
 		std::cout << "Total mass: " << 14.826/totalMass+23.823/totalMass+30.439/totalMass+2*(1.2979/totalMass+1.5078/totalMass+3.0317/totalMass+2.8817/totalMass+2.2400/totalMass+2.6258/totalMass+1.5269/totalMass+1.3660/totalMass+2.1793/totalMass) << std::endl;
 
-		conf.tarsusMass = 0.001;
-		conf.tarsusLength = 0.001;
-		conf.tarsusRadius = 0.001;
+		//	Tarsus
+		conf.tarsusLength ={
+							3.4765/totalLength,
+							3.00413/totalLength,
+							3.94887/totalLength };
+		conf.tarsusRadius = {
+							0.250162/totalLength/4,
+							0.247163/totalLength/4,
+							0.25316/totalLength/4 };
+		conf.tarsusMass = 0.001;	//TODO: Find a proper mass for the tarsus
 
 		/**
 		 *	Joint Limits
 		 *	Setting the Max, and Min values of each joint.
 		 */
-		conf.backJointLimitD = M_PI / 180 * 5.0;
-		conf.backJointLimitU =	-M_PI / 180 * 5.0;
+		conf.backJointLimitD = M_PI / 180 * 25.0;
+		conf.backJointLimitU =	-M_PI / 180 * 25.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB =  M_PI / 180.0 * 5.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 5.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 5.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB =  M_PI / 180.0 * 25.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 25.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 25.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.mFemurJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.rFemurJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.fFemurJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.mFemurJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.rFemurJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 25.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 25.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness
 		 */
 
-		conf.backPower 	= 8;
-		conf.coxaPower 	= 8;
-		conf.femurPower = 8;
-		conf.tibiaPower = 8;
+		conf.backPower 	= 1.5;
+		conf.coxaPower 	= 1;
+		conf.femurPower = 1;
+		conf.tibiaPower = 1;
 
 		conf.backDamping 	= 0.0;
 		conf.coxaDamping 	= 0.0;

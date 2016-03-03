@@ -34,17 +34,17 @@ namespace lpzrobots
 
 		//	Legs
 		std::vector<double> coxaLength;
-		double coxaRadius;
+		std::vector<double> coxaRadius;
 		std::vector<double> coxaMass;
 		std::vector<double> femurLength;
-		double femurRadius;
+		std::vector<double> femurRadius;
 		std::vector<double> femurMass;
 		std::vector<double> tibiaLength;
-		double tibiaRadius;
+		std::vector<double> tibiaRadius;
 		std::vector<double> tibiaMass;
 		double tarsusMass;
-		double tarsusLength;
-		double tarsusRadius;
+		std::vector<double> tarsusLength;
+		std::vector<double> tarsusRadius;
 
 		//	Motor settings
 		double backPower;
