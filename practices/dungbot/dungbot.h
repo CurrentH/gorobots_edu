@@ -130,7 +130,7 @@ namespace lpzrobots
 			typedef std::vector< OneAxisServo* > ServoList;
 
 			//	For legs
-			std::vector< std::shared_ptr< OneAxisServo > > tarsussprings;
+			//std::vector< std::shared_ptr< OneAxisServo > > tarsussprings;
 			LegMap legs;
 
 			//	For servos
@@ -140,7 +140,7 @@ namespace lpzrobots
 			MotorMap servos;
 
 			//	For tarsus contact
-			TarsusContactMap tarsusContactSensors;
+			//TarsusContactMap tarsusContactSensors;
 
 		private:
 		//	Private methods

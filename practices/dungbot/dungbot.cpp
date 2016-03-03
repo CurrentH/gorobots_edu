@@ -113,10 +113,11 @@ namespace lpzrobots
 		{
 			for( int j = 1; j < 6; j++ ) //TODO: Find out if j should be = 0 instead of 1.
 			{
-				if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+				/*if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
 				{
 					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->update();
 				}
+				*/ //TODO
 			}
 		}
     }
@@ -129,10 +130,12 @@ namespace lpzrobots
 		{
 			for( int j = 1; j < 6; j++ )
 			{
+				/*
 				if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
 				{
 					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->sense( globalData );
 				}
+				*/ //TODO
 			}
 		}
     }
@@ -181,7 +184,7 @@ namespace lpzrobots
 		 ***********************************/
 		std::cout << "test2" << std::endl;
 
-		//setParam("dummy", 0); // apply all parameters.
+		setParam("dummy", 0); // apply all parameters.
 
 		std::cout << "test1" << std::endl;
 
@@ -418,150 +421,154 @@ break;
 	        }
 
 	        // New: tarsus
-			Primitive *tarsus;
-			double angle = M_PI/12;
+	        if(false){
+				Primitive *tarsus;
+				double angle = M_PI/12;
 
-			double radius = conf.tarsusRadius/2; // was conf.footRadius/3
-			double length = conf.tarsusLength;
-			double mass = conf.tarsusMass/10;
-			tarsus = new Capsule( radius,length );
-			tarsus->setTexture("tarsus.jpg");
-			tarsus->init(odeHandle, mass, osgHandle);
+				double radius = conf.tarsusRadius/2; // was conf.footRadius/3
+				double length = conf.tarsusLength;
+				double mass = conf.tarsusMass/10;
+				tarsus = new Capsule( 1,1 ); //TODO
+				tarsus->setTexture("tarsus.jpg");
+				tarsus->init(odeHandle, mass, osgHandle);
 
-			osg::Matrix m6;
-			osg::Matrix m5 = 	osg::Matrix::rotate(-angle,i%2==0 ? -1 : 1,0,0) *
+				osg::Matrix m6;
+				osg::Matrix m5 = 	osg::Matrix::rotate(-angle,i%2==0 ? -1 : 1,0,0) *
+									osg::Matrix::translate(0,0,-length/2) *
+									tibiaCenter;
+
+				double angleTarsus=0;
+
+				//	Rotate manually tarsus here
+				switch (i)
+				{	//TODO:	See if the rotations of the Tarsus is correct
+					case 0: angleTarsus=0;	//front left
+					break;
+					case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20;	//middle left
+					break;
+					case 2: angleTarsus=0;	//rear left ok
+					break;
+					case 3: angleTarsus=(M_PI/180)*20;	//front right
+					break;
+					case 4: angleTarsus=(M_PI/180)*140;	// middle right
+					break;
+					case 5: angleTarsus=-(M_PI/180)*290;	// rear right ok
+					break;
+					default: angleTarsus=0;
+					break;
+				}
+
+				if( i < 2 )
+				{
+					m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
+				}
+				else if( i > 3 )
+				{
+					m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
+				}
+				else
+				{
+					m6 = m5;
+				}
+				m6 = osg::Matrix::rotate(0,1,0,0) *osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(angleTarsus,0,0,1)* osg::Matrix::translate(0,0,-length/2) * m6 ;
+
+				std::cout << "leg number     " << i << std::endl;
+
+				tarsus->setPose(m6);
+				tarsusParts.push_back(tarsus);
+				objects.push_back(tarsus);
+
+				FixedJoint* q = new FixedJoint(tibia, tarsus);
+				q->init(odeHandle, osgHandle, false);
+				joints.push_back(q);
+
+
+				/*Primitive *section = tarsus;
+
+				for( int j = 1; j < 6; j++ )
+				{
+					 double lengthS = length/1.9;
+					 double radiusS = radius/1.5;
+					 section = new Capsule( radiusS, lengthS );
+					 section->setTexture( "tarsus.jpg" );
+					 section->init( odeHandle, mass, osgHandle );
+
+					 osg::Matrix m7;
+
+					 if( i < 2 )
+					 {
+						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
 								osg::Matrix::translate(0,0,-length/2) *
-								tibiaCenter;
+								m6;
+					 }
+					 else if(i > 3)
+					 {
+						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+								osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+								osg::Matrix::translate(0,0,-length/2) *
+								m6;
+					 }
+					 else
+					 {
+						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
+								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
+								osg::Matrix::translate(0,0,-length/2) *
+								m6;
+					 }
+					 section->setPose(m7);
+					 objects.push_back(section);
+					 tarsusParts.push_back(section);
 
-			double angleTarsus=0;
+					 if( j == 1 )
+					 {
+						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
-			//	Rotate manually tarsus here
-			switch (i)
-			{	//TODO:	See if the rotations of the Tarsus is correct
-				case 0: angleTarsus=0;	//front left
-				break;
-				case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20;	//middle left
-				break;
-				case 2: angleTarsus=0;	//rear left ok
-				break;
-				case 3: angleTarsus=(M_PI/180)*20;	//front right
-				break;
-				case 4: angleTarsus=(M_PI/180)*140;	// middle right
-				break;
-				case 5: angleTarsus=-(M_PI/180)*290;	// rear right ok
-				break;
-				default: angleTarsus=0;
-				break;
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+						 joints.push_back(k);
+						 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+						 tarsussprings.push_back(servo);
+						 addMotor(spring);
+					 }
+					 else if( j == 2 )
+					 {
+						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+						 joints.push_back(k);
+						 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+						 tarsussprings.push_back(servo);
+						 addMotor(spring);
+					 }
+					 else
+					 {
+						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // parameters are set later
+						 joints.push_back( k );
+						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
+						 tarsussprings.push_back( servo );
+						 addMotor( spring );
+					 }
+
+
+					 m6 = m7;
+
+					tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
+					tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
+					tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
+				}*/
 			}
-
-			if( i < 2 )
-			{
-				m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
-			}
-			else if( i > 3 )
-			{
-				m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
-			}
-			else
-			{
-				m6 = m5;
-			}
-			m6 = osg::Matrix::rotate(0,1,0,0) *osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(angleTarsus,0,0,1)* osg::Matrix::translate(0,0,-length/2) * m6 ;
-
-			std::cout << "leg number     " << i << std::endl;
-
-			tarsus->setPose(m6);
-			tarsusParts.push_back(tarsus);
-			objects.push_back(tarsus);
-
-			FixedJoint* q = new FixedJoint(tibia, tarsus);
-			q->init(odeHandle, osgHandle, false);
-			joints.push_back(q);
-
-			Primitive *section = tarsus;
-
-			for( int j = 1; j < 6; j++ )
-			{
-				 double lengthS = length/1.9;
-				 double radiusS = radius/1.5;
-				 section = new Capsule( radiusS, lengthS );
-				 section->setTexture( "tarsus.jpg" );
-				 section->init( odeHandle, mass, osgHandle );
-
-				 osg::Matrix m7;
-
-				 if( i < 2 )
-				 {
-					 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-							osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
-							osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-							osg::Matrix::translate(0,0,-length/2) *
-							m6;
-				 }
-				 else if(i > 3)
-				 {
-					 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-							osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
-							osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-							osg::Matrix::translate(0,0,-length/2) *
-							m6;
-				 }
-				 else
-				 {
-					 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-							osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-							osg::Matrix::translate(0,0,-length/2) *
-							m6;
-				 }
-				 section->setPose(m7);
-				 objects.push_back(section);
-				 tarsusParts.push_back(section);
-
-				 if( j == 1 )
-				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
-
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
-					 joints.push_back(k);
-					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 tarsussprings.push_back(servo);
-					 addMotor(spring);
-				 }
-				 else if( j == 2 )
-				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
-
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
-					 joints.push_back(k);
-					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 tarsussprings.push_back(servo);
-					 addMotor(spring);
-				 }
-				 else
-				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
-
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // parameters are set later
-					 joints.push_back( k );
-					 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
-					 tarsussprings.push_back( servo );
-					 addMotor( spring );
-				 }
-
-				 m6 = m7;
-
-				tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
-				tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
-				tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
-			}
-		}
-		tarsusParts.clear();
+			tarsusParts.clear();
+	    }
     }
 
     lpzrobots::Primitive* DungBot::makeBody( const Matrix& pose, const double mass, const std::vector<double> dimension )
@@ -718,6 +725,7 @@ break;
 		sensors[DungBotMotorSensor::FL2_as] = servos[DungBotMotorSensor::FL2_m] ? -servos[DungBotMotorSensor::FL2_m]->get() : 0;
 		sensors[DungBotMotorSensor::BJ_as] = servos[DungBotMotorSensor::BJ_m] ? -servos[DungBotMotorSensor::BJ_m]->get() : 0;
 
+		/*
 		sensors[DungBotMotorSensor::L0_s1] = tarsusContactSensors[std::make_pair(L0,1)]->get();
 		sensors[DungBotMotorSensor::L0_s2] = tarsusContactSensors[std::make_pair(L0,2)]->get();
 		sensors[DungBotMotorSensor::L0_s3] = tarsusContactSensors[std::make_pair(L0,3)]->get();
@@ -753,6 +761,7 @@ break;
 		sensors[DungBotMotorSensor::R2_s3] = tarsusContactSensors[std::make_pair(R2,3)]->get();
 		sensors[DungBotMotorSensor::R2_s4] = tarsusContactSensors[std::make_pair(R2,4)]->get();
 		sensors[DungBotMotorSensor::R2_s5] = tarsusContactSensors[std::make_pair(R2,5)]->get();
+		*/
 
 		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
 	}
@@ -794,11 +803,8 @@ break;
 	{
 	    bool rv = Configurable::setParam(key, val);
 
-	    std::cout << "test4" << std::endl;
-
-
 	    //	We set all parameters here
-	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
+	   for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
@@ -836,9 +842,9 @@ break;
 			}
 		}
 
-	    std::cout << "test5" << std::endl;
+	   std::cout << "Before BackboneServo setParam" << std::endl;
 
-		if (backboneServo)
+		if (backboneServo && (conf.testBody || conf.testNo ))
 		{
 			backboneServo->setPower(conf.backPower);
 			backboneServo->setDamping(conf.backDamping);
@@ -846,7 +852,7 @@ break;
 			backboneServo->setMinMax(conf.backJointLimitU, conf.backJointLimitD);
 		}
 
-		std::cout << "test6" << std::endl;
+		std::cout << "After BackboneServo setParam" << std::endl;
 
 		return rv;
 	}
@@ -862,8 +868,8 @@ break;
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
 		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
-		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
+		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		/**
 		 * MATHIAS THOR's MASS CALCULATION (c) :D
@@ -916,59 +922,49 @@ break;
 		 *	Joint Limits
 		 *	Setting the Max, and Min values of each joint.
 		 */
-		conf.backJointLimitD = M_PI / 180 * 180.0;
-		conf.backJointLimitU =	-M_PI / 180 * 180.0;
+		conf.backJointLimitD = M_PI / 180 * 5.0;
+		conf.backJointLimitU =	-M_PI / 180 * 5.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 40.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB =  M_PI / 180.0 * 40.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 40.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 40.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 40.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 40.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB =  M_PI / 180.0 * 5.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 5.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 5.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD =  M_PI / 180.0 * 20.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 20.0;
-	    conf.mFemurJointLimitD =  M_PI / 180.0 * 20.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 20.0;
-	    conf.rFemurJointLimitD =  M_PI / 180.0 * 20.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 20.0;
+	    conf.fFemurJointLimitD =  M_PI / 180.0 * 5.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.mFemurJointLimitD =  M_PI / 180.0 * 5.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.rFemurJointLimitD =  M_PI / 180.0 * 5.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 5.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 20.0;
-	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 20.0;
-	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 20.0;
-	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 20.0;
-	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 20.0;
-	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 20.0;
+	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 5.0;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 5.0;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 5.0;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 5.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness
 		 */
 
-		const double backPower_scale = 30.0;
-		const double coxaPower_scale = 10.0;
-		const double springstiffness = 35.0;
+		conf.backPower 	= 8;
+		conf.coxaPower 	= 8;
+		conf.femurPower = 8;
+		conf.tibiaPower = 8;
 
-		conf.backPower = backPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength[0] * conf.massRear;
-		conf.coxaPower = coxaPower_scale * (1.962 / (0.035 * 2.2)) * conf.coxaLength[0] * conf.massRear;
-		conf.femurPower = conf.coxaPower;
-		conf.tibiaPower = conf.coxaPower;
+		conf.backDamping 	= 0.0;
+		conf.coxaDamping 	= 0.0;
+		conf.femurDamping 	= 0.0;
+		conf.tibiaDamping 	= 0.0;
 
-		std::cout << "Back power: "<< conf.backPower << std::endl;
-		std::cout << "Coxa power: "<< conf.coxaPower << std::endl;
-		std::cout << "Femur power: "<< conf.femurPower << std::endl;
-		std::cout << "Tibia power: "<< conf.backPower << std::endl;
-		std::cout << "Foot power: "<< conf.tibiaPower << std::endl;
-
-		conf.backDamping = 0.0;
-		conf.coxaDamping = 0.01;
-		conf.femurDamping = 0.01;
-		conf.tibiaDamping = 0.01;
-
-		conf.backMaxVel = 1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel = 1.7 * 1.961 * M_PI;
-		conf.femurMaxVel = 1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel = 1.7 * 1.961 * M_PI;
+		conf.backMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
 
 		return conf;
 	}

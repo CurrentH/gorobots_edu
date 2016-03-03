@@ -48,7 +48,7 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
 		//motor[i] = 0;
-		motor[i] = sin( 0.001 * ticks_since_init );
+		motor[i] = sin( 0.0001 * ticks_since_init );
 
 		motorInput.push_back( motor[i] );
 		sensorOutput.push_back( sensor[i] );
