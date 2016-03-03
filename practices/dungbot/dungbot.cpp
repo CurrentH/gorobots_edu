@@ -864,11 +864,11 @@ break;
 		/**
 		 * 	Test of the legs
 		 */
-		conf.testNo = false;	//	If true, then all hinges exist.
+		conf.testNo = true;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
 		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		/**
@@ -922,49 +922,50 @@ break;
 		 *	Joint Limits
 		 *	Setting the Max, and Min values of each joint.
 		 */
-		conf.backJointLimitD = M_PI / 180 * 5.0;
-		conf.backJointLimitU =	-M_PI / 180 * 5.0;
+		conf.backJointLimitD = M_PI / 180 * 45.0;
+		conf.backJointLimitU =	-M_PI / 180 * 0.0;
 
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB =  M_PI / 180.0 * 5.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 5.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 5.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 5.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB =  M_PI / 180.0 * 25.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 25.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 25.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 	    //	CT JOINT
-	    conf.fFemurJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.mFemurJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.rFemurJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.fFemurJointLimitD =  M_PI / 180.0 * 0.0;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.mFemurJointLimitD =  M_PI / 180.0 * 0.0;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.rFemurJointLimitD =  M_PI / 180.0 * 0.0;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * 25.0;
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 5.0;
-	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 5.0;
-	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 5.0;
+	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 25.0;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 25.0;
 
 		/**
 		 * 	Power of the motors, and joint stiffness
 		 */
 
-		conf.backPower 	= 8;
-		conf.coxaPower 	= 8;
-		conf.femurPower = 8;
-		conf.tibiaPower = 8;
+		conf.backPower 	= 1.5;
+		conf.coxaPower 	= 1;	// This number does not really affect the movement
+		conf.femurPower = 1;
+		conf.tibiaPower = 1;
 
 		conf.backDamping 	= 0.0;
 		conf.coxaDamping 	= 0.0;
 		conf.femurDamping 	= 0.0;
 		conf.tibiaDamping 	= 0.0;
 
-		conf.backMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 0.1;//1.7 * 1.961 * M_PI;
+		// Does the following have any effect?
+		conf.backMaxVel 	= 0;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel 	= 0;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel 	= 0;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel 	= 0;//1.7 * 1.961 * M_PI;
 
 		return conf;
 	}
