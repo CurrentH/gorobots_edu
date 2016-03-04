@@ -140,7 +140,7 @@ namespace lpzrobots
 			MotorMap servos;
 
 			//	For tarsus contact
-			//TarsusContactMap tarsusContactSensors;
+			TarsusContactMap tarsusContactSensors;
 
 		private:
 		//	Private methods

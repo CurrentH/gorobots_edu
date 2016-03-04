@@ -114,11 +114,13 @@ namespace lpzrobots
 		{
 			for( int j = 1; j < 6; j++ ) //TODO: Find out if j should be = 0 instead of 1.
 			{
-				/*if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+				if( conf.testTarsusSensor )
 				{
-					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->update();
+					if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+					{
+						tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->update();
+					}
 				}
-				*/ //TODO
 			}
 		}
     }
@@ -131,12 +133,13 @@ namespace lpzrobots
 		{
 			for( int j = 1; j < 6; j++ )
 			{
-				/*
-				if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+				if( conf.testTarsusSensor )
 				{
-					tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->sense( globalData );
+					if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
+					{
+						tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->sense( globalData );
+					}
 				}
-				*/ //TODO
 			}
 		}
     }
@@ -300,19 +303,19 @@ namespace lpzrobots
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;
 			objects.push_back( tibia );
-/*
+
 			//	Tarsus placement
-			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3]) *
+			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
 								tibiaCenter;
-			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -conf.tarsusLength[i%3] / 2 ) * c4;
-			Primitive* tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] );
+			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -conf.tarsusLength[i%3] / 5 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
+			Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
 			tarsus->setTexture( "tarsus.jpg" );
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
-			tarsus->setPose( tibiaCenter );
-			//legs[leg].tarsus = tarsus;
+			tarsus->setPose( tarsusCenter );
+			tarsusParts.push_back( tarsus );
 			objects.push_back( tarsus );
-*/
-			// calculate anchor and axis of the first joint
+
+			//	Calculate anchor and axis of the first joint
 			const osg::Vec3 anchor1 = nullpos * c1;
 	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg )*c1;
 	        switch (i)
@@ -333,7 +336,7 @@ default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Ma
 break;
 	        }
 
-			// Proceed along the leg (and the respective z-axis) for second limb
+			//	Proceed along the leg (and the respective z-axis) for second limb
 			const osg::Vec3 anchor2 = nullpos * c2;
 			Axis axis2 = Axis( backLeg+frontLeg, 0, 0 );
 			switch (i)
@@ -354,7 +357,7 @@ default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Ma
 break;
 			}
 
-			//and third
+			//	And third
 			const osg::Vec3 anchor3 = nullpos * c3;
 	        Axis axis3 = Axis( backLeg+frontLeg, 0, 0 );
 	        switch (i)
@@ -374,6 +377,11 @@ break;
 default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
 break;
 	        }
+
+	        //	And fourth
+	        const osg::Vec3 anchor4 = nullpos * c4;
+	        Axis axis4 = Axis( 0, 0, -1 ); //TODO:Find why this is -1, and not backLeg+frontLeg.
+
 
 	        //	Torso coxa hinge joint.
 	        if( conf.testCoxa || conf.testNo )
@@ -428,68 +436,50 @@ break;
 	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius[i%3] * 3.1 );
 	        	joints.push_back( l );
 	        }
-/*
+
 	        //	Tibia tarsus fixed joint.
-	        FixedJoint* q = new FixedJoint( tibia, tarsus, anchor4 );
-			//q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 10.1 );
-	        q->init( odeHandle, osgHandle, true, conf.tarsusRadius[i%3] * 15.1 );
-			joints.push_back( q );
-*/
+	        FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
+			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
+			joints.push_back(q);
 
 	        // Foot
 			if( true ) // toggle foot
 			{
-				/*
-				osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * tibiaCenter;
-				osg::Matrix footCenter = osg::Matrix::translate( 0, 0, 0 ) * c4;
-
-				const osg::Vec3 anchor4 = nullpos * footCenter;
-				const Axis axis4 = Axis(0, 0, -1) * c4;
-
-				OdeHandle my_odeHandle = odeHandle;
-
-				// set the foot to use rubberFeet
-				const Substance FootSubstance( 3.0, 0.0, 500.0, 0.1 );
-				my_odeHandle.substance = FootSubstance;
-
-				Primitive* foot;
-				foot = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] );
-				foot->setTexture( "foot.jpg" );
-				foot->init(my_odeHandle, conf.tarsusMass, osgHandle);
-				foot->setPose(footCenter);
-				legs[leg].tarsus = foot;
-				objects.push_back(foot);
-
-				//SliderJoint* m = new SliderJoint( tibia, foot, anchor4, axis4 );
-				HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );	//TODO SHOULD BE A SliderJoint and not HingeJoint
-				m->init( odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius[i%3], true );
-				legs[leg].footJoint = m;
-				joints.push_back( m );
-
-				// parameters are set later
-				Spring* spring = new Spring( m, -1, 1, 1, 0.05, 1, 0, 1 );
-				legs[leg].tarsusSpring = spring;
-				passiveServos.push_back( spring );
-				odeHandle.addIgnoredPair( femurThorax, foot );
-				*/
-
+/*
+osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * tibiaCenter;
+osg::Matrix footCenter = osg::Matrix::translate( 0, 0, 0 ) * c4;
+const osg::Vec3 anchor4 = nullpos * footCenter;
+const Axis axis4 = Axis(0, 0, -1) * c4;
+OdeHandle my_odeHandle = odeHandle;
+// set the foot to use rubberFeet
+const Substance FootSubstance( 3.0, 0.0, 500.0, 0.1 );
+my_odeHandle.substance = FootSubstance;
+Primitive* foot;
+foot = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] );
+foot->setTexture( "foot.jpg" );
+foot->init(my_odeHandle, conf.tarsusMass, osgHandle);
+foot->setPose(footCenter);
+legs[leg].tarsus = foot;
+objects.push_back(foot);
+//SliderJoint* m = new SliderJoint( tibia, foot, anchor4, axis4 );
+HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );	//TODO SHOULD BE A SliderJoint and not HingeJoint
+m->init( odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius[i%3], true );
+legs[leg].footJoint = m;
+joints.push_back( m );
+// parameters are set later
+Spring* spring = new Spring( m, -1, 1, 1, 0.05, 1, 0, 1 );
+legs[leg].tarsusSpring = spring;
+passiveServos.push_back( spring );
+odeHandle.addIgnoredPair( femurThorax, foot );
+*/
+				/**
+				 * 	Creating the small sections for the tarsus
+				 */
 				// New: tarsus
-				osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) * tibiaCenter;
-				osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c4;
-
-				const osg::Vec3 anchor4 = nullpos * tarsusCenter;
-				const Axis axis4 = Axis(0, 0, -1) * c4;
-
-
-				Primitive *tarsus;
 				double angle = M_PI/12;
-
-				double radius = conf.tarsusRadius[i%3]/2; // was conf.footRadius/3
-				double length = conf.tarsusLength[i%3];
+				double radius = conf.tarsusRadius[i%3]/2;
+				double length = conf.tarsusLength[i%3]/5;
 				double mass = conf.tarsusMass/10;
-				tarsus = new Capsule( radius,length );
-				tarsus->setTexture("tarsus.jpg");
-				tarsus->init(odeHandle, mass, osgHandle);
 
 				osg::Matrix m6;
 				osg::Matrix m5 = 	osg::Matrix::rotate(-angle,i%2==0 ? -1 : 1,0,0) *
@@ -529,20 +519,14 @@ break;
 				{
 					m6 = m5;
 				}
-				m6 = osg::Matrix::rotate(0,1,0,0) *osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(angleTarsus,0,0,1)* osg::Matrix::translate(0,0,-length/2) * m6 ;
+				m6 = osg::Matrix::rotate(0,1,0,0) *
+						osg::Matrix::rotate(0,0,1,0) *
+						osg::Matrix::rotate(angleTarsus,0,0,1) *
+						osg::Matrix::translate(0,0,-length/2) * m6 ;
 
 				std::cout << "leg number     " << i << std::endl;
 
-				tarsus->setPose(c4);
-				tarsusParts.push_back(tarsus);
-				objects.push_back(tarsus);
-
-				FixedJoint* q = new FixedJoint(tibia, tarsus);
-				q->init(odeHandle, osgHandle, true);
-				joints.push_back(q);
-
 				Primitive *section = tarsus;
-
 				for( int j = 1; j < 6; j++ )
 				{
 					 double lengthS = length/1.9;
@@ -580,49 +564,50 @@ break;
 					 objects.push_back(section);
 					 tarsusParts.push_back(section);
 
-				 if( j == 1 )
-				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+					 if( j == 1 )
+					 {
+						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
-					 joints.push_back(k);
-					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 tarsussprings.push_back(servo);
-					 addMotor(spring);
-				 }
-				 else if( j == 2 )
-				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+						 joints.push_back(k);
+						 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+						 tarsussprings.push_back(servo);
+						 addMotor(spring);
+					 }
+					 else if( j == 2 )
+					 {
+						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
-					 joints.push_back(k);
-					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 tarsussprings.push_back(servo);
-					 addMotor(spring);
-				 }
-				 else
-				 {
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-					 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+						 joints.push_back(k);
+						 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+						 tarsussprings.push_back(servo);
+						 addMotor(spring);
+					 }
+					 else
+					 {
+						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
+						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
 
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // parameters are set later
-					 joints.push_back( k );
-					 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
-					 tarsussprings.push_back( servo );
-					 addMotor( spring );
-				 }
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // parameters are set later
+						 joints.push_back( k );
+						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
+						 tarsussprings.push_back( servo );
+						 addMotor( spring );
+					 }
 
-				 m6 = m7;
-/*
-				 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
-				 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
-				 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
-*/
+					 m6 = m7;
+					 if( conf.testTarsusSensor )
+					 {
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
+					 }
 				}
 			}
 			tarsusParts.clear();
@@ -779,43 +764,44 @@ break;
 		sensors[DungBotMotorSensor::FL2_as] = servos[DungBotMotorSensor::FL2_m] ? -servos[DungBotMotorSensor::FL2_m]->get() : 0;
 		sensors[DungBotMotorSensor::BJ_as] = servos[DungBotMotorSensor::BJ_m] ? -servos[DungBotMotorSensor::BJ_m]->get() : 0;
 
-		/*
-		sensors[DungBotMotorSensor::L0_s1] = tarsusContactSensors[std::make_pair(L0,1)]->get();
-		sensors[DungBotMotorSensor::L0_s2] = tarsusContactSensors[std::make_pair(L0,2)]->get();
-		sensors[DungBotMotorSensor::L0_s3] = tarsusContactSensors[std::make_pair(L0,3)]->get();
-		sensors[DungBotMotorSensor::L0_s4] = tarsusContactSensors[std::make_pair(L0,4)]->get();
-		sensors[DungBotMotorSensor::L0_s5] = tarsusContactSensors[std::make_pair(L0,5)]->get();
+		if( conf.testTarsusSensor )
+		{
+			sensors[DungBotMotorSensor::L0_s1] = tarsusContactSensors[std::make_pair(L0,1)]->get();
+			sensors[DungBotMotorSensor::L0_s2] = tarsusContactSensors[std::make_pair(L0,2)]->get();
+			sensors[DungBotMotorSensor::L0_s3] = tarsusContactSensors[std::make_pair(L0,3)]->get();
+			sensors[DungBotMotorSensor::L0_s4] = tarsusContactSensors[std::make_pair(L0,4)]->get();
+			sensors[DungBotMotorSensor::L0_s5] = tarsusContactSensors[std::make_pair(L0,5)]->get();
 
-		sensors[DungBotMotorSensor::R0_s1] = tarsusContactSensors[std::make_pair(R0,1)]->get();
-		sensors[DungBotMotorSensor::R0_s2] = tarsusContactSensors[std::make_pair(R0,2)]->get();
-		sensors[DungBotMotorSensor::R0_s3] = tarsusContactSensors[std::make_pair(R0,3)]->get();
-		sensors[DungBotMotorSensor::R0_s4] = tarsusContactSensors[std::make_pair(R0,4)]->get();
-		sensors[DungBotMotorSensor::R0_s5] = tarsusContactSensors[std::make_pair(R0,5)]->get();
+			sensors[DungBotMotorSensor::R0_s1] = tarsusContactSensors[std::make_pair(R0,1)]->get();
+			sensors[DungBotMotorSensor::R0_s2] = tarsusContactSensors[std::make_pair(R0,2)]->get();
+			sensors[DungBotMotorSensor::R0_s3] = tarsusContactSensors[std::make_pair(R0,3)]->get();
+			sensors[DungBotMotorSensor::R0_s4] = tarsusContactSensors[std::make_pair(R0,4)]->get();
+			sensors[DungBotMotorSensor::R0_s5] = tarsusContactSensors[std::make_pair(R0,5)]->get();
 
-		sensors[DungBotMotorSensor::L1_s1] = tarsusContactSensors[std::make_pair(L1,1)]->get();
-		sensors[DungBotMotorSensor::L1_s2] = tarsusContactSensors[std::make_pair(L1,2)]->get();
-		sensors[DungBotMotorSensor::L1_s3] = tarsusContactSensors[std::make_pair(L1,3)]->get();
-		sensors[DungBotMotorSensor::L1_s4] = tarsusContactSensors[std::make_pair(L1,4)]->get();
-		sensors[DungBotMotorSensor::L1_s5] = tarsusContactSensors[std::make_pair(L1,5)]->get();
+			sensors[DungBotMotorSensor::L1_s1] = tarsusContactSensors[std::make_pair(L1,1)]->get();
+			sensors[DungBotMotorSensor::L1_s2] = tarsusContactSensors[std::make_pair(L1,2)]->get();
+			sensors[DungBotMotorSensor::L1_s3] = tarsusContactSensors[std::make_pair(L1,3)]->get();
+			sensors[DungBotMotorSensor::L1_s4] = tarsusContactSensors[std::make_pair(L1,4)]->get();
+			sensors[DungBotMotorSensor::L1_s5] = tarsusContactSensors[std::make_pair(L1,5)]->get();
 
-		sensors[DungBotMotorSensor::R1_s1] = tarsusContactSensors[std::make_pair(R1,1)]->get();
-		sensors[DungBotMotorSensor::R1_s2] = tarsusContactSensors[std::make_pair(R1,2)]->get();
-		sensors[DungBotMotorSensor::R1_s3] = tarsusContactSensors[std::make_pair(R1,3)]->get();
-		sensors[DungBotMotorSensor::R1_s4] = tarsusContactSensors[std::make_pair(R1,4)]->get();
-		sensors[DungBotMotorSensor::R1_s5] = tarsusContactSensors[std::make_pair(R1,5)]->get();
+			sensors[DungBotMotorSensor::R1_s1] = tarsusContactSensors[std::make_pair(R1,1)]->get();
+			sensors[DungBotMotorSensor::R1_s2] = tarsusContactSensors[std::make_pair(R1,2)]->get();
+			sensors[DungBotMotorSensor::R1_s3] = tarsusContactSensors[std::make_pair(R1,3)]->get();
+			sensors[DungBotMotorSensor::R1_s4] = tarsusContactSensors[std::make_pair(R1,4)]->get();
+			sensors[DungBotMotorSensor::R1_s5] = tarsusContactSensors[std::make_pair(R1,5)]->get();
 
-		sensors[DungBotMotorSensor::L2_s1] = tarsusContactSensors[std::make_pair(L2,1)]->get();
-		sensors[DungBotMotorSensor::L2_s2] = tarsusContactSensors[std::make_pair(L2,2)]->get();
-		sensors[DungBotMotorSensor::L2_s3] = tarsusContactSensors[std::make_pair(L2,3)]->get();
-		sensors[DungBotMotorSensor::L2_s4] = tarsusContactSensors[std::make_pair(L2,4)]->get();
-		sensors[DungBotMotorSensor::L2_s5] = tarsusContactSensors[std::make_pair(L2,5)]->get();
+			sensors[DungBotMotorSensor::L2_s1] = tarsusContactSensors[std::make_pair(L2,1)]->get();
+			sensors[DungBotMotorSensor::L2_s2] = tarsusContactSensors[std::make_pair(L2,2)]->get();
+			sensors[DungBotMotorSensor::L2_s3] = tarsusContactSensors[std::make_pair(L2,3)]->get();
+			sensors[DungBotMotorSensor::L2_s4] = tarsusContactSensors[std::make_pair(L2,4)]->get();
+			sensors[DungBotMotorSensor::L2_s5] = tarsusContactSensors[std::make_pair(L2,5)]->get();
 
-		sensors[DungBotMotorSensor::R2_s1] = tarsusContactSensors[std::make_pair(R2,1)]->get();
-		sensors[DungBotMotorSensor::R2_s2] = tarsusContactSensors[std::make_pair(R2,2)]->get();
-		sensors[DungBotMotorSensor::R2_s3] = tarsusContactSensors[std::make_pair(R2,3)]->get();
-		sensors[DungBotMotorSensor::R2_s4] = tarsusContactSensors[std::make_pair(R2,4)]->get();
-		sensors[DungBotMotorSensor::R2_s5] = tarsusContactSensors[std::make_pair(R2,5)]->get();
-		*/
+			sensors[DungBotMotorSensor::R2_s1] = tarsusContactSensors[std::make_pair(R2,1)]->get();
+			sensors[DungBotMotorSensor::R2_s2] = tarsusContactSensors[std::make_pair(R2,2)]->get();
+			sensors[DungBotMotorSensor::R2_s3] = tarsusContactSensors[std::make_pair(R2,3)]->get();
+			sensors[DungBotMotorSensor::R2_s4] = tarsusContactSensors[std::make_pair(R2,4)]->get();
+			sensors[DungBotMotorSensor::R2_s5] = tarsusContactSensors[std::make_pair(R2,5)]->get();
+		}
 
 		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
 	}
@@ -914,6 +900,8 @@ break;
 	DungBotConf DungBot::getDefaultConf( void )
 	{
 		DungBotConf conf;
+
+		conf.testTarsusSensor = false;
 
 		/**
 		 * 	Test of the legs
