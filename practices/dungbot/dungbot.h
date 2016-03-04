@@ -106,12 +106,12 @@ namespace lpzrobots
 				OneAxisServo * tcServo;
 				OneAxisServo * ctrServo;
 				OneAxisServo * ftiServo;
-				Spring * footSpring;
+				Spring * tarsusSpring;
 				Primitive * shoulder;
 				Primitive * coxa;
 				Primitive * femur; 	//Called second in AmosII
 				Primitive * tibia;
-				Primitive * foot;
+				Primitive * tarsus;
 			};
 
 		protected:
@@ -130,7 +130,7 @@ namespace lpzrobots
 			typedef std::vector< OneAxisServo* > ServoList;
 
 			//	For legs
-			//std::vector< std::shared_ptr< OneAxisServo > > tarsussprings;
+			std::vector< std::shared_ptr< OneAxisServo > > tarsussprings;
 			LegMap legs;
 
 			//	For servos
