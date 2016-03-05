@@ -380,8 +380,6 @@ break;
 
 	        //	And fourth
 	        const osg::Vec3 anchor4 = nullpos * c4;
-	        Axis axis4 = Axis( 0, 0, -1 ); //TODO:Find why this is -1, and not backLeg+frontLeg.
-
 
 	        //	Torso coxa hinge joint.
 	        if( conf.testCoxa || conf.testNo )
@@ -445,167 +443,50 @@ break;
 	        // Foot
 			if( true ) // toggle foot
 			{
-/*
-osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * tibiaCenter;
-osg::Matrix footCenter = osg::Matrix::translate( 0, 0, 0 ) * c4;
-const osg::Vec3 anchor4 = nullpos * footCenter;
-const Axis axis4 = Axis(0, 0, -1) * c4;
-OdeHandle my_odeHandle = odeHandle;
-// set the foot to use rubberFeet
-const Substance FootSubstance( 3.0, 0.0, 500.0, 0.1 );
-my_odeHandle.substance = FootSubstance;
-Primitive* foot;
-foot = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] );
-foot->setTexture( "foot.jpg" );
-foot->init(my_odeHandle, conf.tarsusMass, osgHandle);
-foot->setPose(footCenter);
-legs[leg].tarsus = foot;
-objects.push_back(foot);
-//SliderJoint* m = new SliderJoint( tibia, foot, anchor4, axis4 );
-HingeJoint* m = new HingeJoint( tibia, foot, anchor4, axis4 );	//TODO SHOULD BE A SliderJoint and not HingeJoint
-m->init( odeHandle, osgHandle.changeColor( "joint" ), true, conf.tibiaRadius[i%3], true );
-legs[leg].footJoint = m;
-joints.push_back( m );
-// parameters are set later
-Spring* spring = new Spring( m, -1, 1, 1, 0.05, 1, 0, 1 );
-legs[leg].tarsusSpring = spring;
-passiveServos.push_back( spring );
-odeHandle.addIgnoredPair( femurThorax, foot );
-*/
 				/**
 				 * 	Creating the small sections for the tarsus
 				 */
 				// New: tarsus
 				double angle = M_PI/12;
 				double radius = conf.tarsusRadius[i%3]/2;
-				double length = conf.tarsusLength[i%3]/5;
-				double mass = conf.tarsusMass/10;
-
-				osg::Matrix m6;
-				osg::Matrix m5 = 	osg::Matrix::rotate(-angle,i%2==0 ? -1 : 1,0,0) *
-									osg::Matrix::translate(0,0,-length/2) *
-									tarsusCenter;
-
-				double angleTarsus=0;
-
-				//	Rotate manually tarsus here
-				switch (i)
-				{	//TODO:	See if the rotations of the Tarsus is correct
-					case 0: angleTarsus=0;	//front left
-					break;
-					case 1: angleTarsus=(M_PI/180)*300+M_PI+(M_PI/180)*20;	//middle left
-					break;
-					case 2: angleTarsus=0;	//rear left ok
-					break;
-					case 3: angleTarsus=(M_PI/180)*20;	//front right
-					break;
-					case 4: angleTarsus=(M_PI/180)*140;	// middle right
-					break;
-					case 5: angleTarsus=-(M_PI/180)*290;	// rear right ok
-					break;
-					default: angleTarsus=0;
-					break;
-				}
-
-				if( i < 2 )
-				{
-					m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * m5;
-				}
-				else if( i > 3 )
-				{
-					m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * m5;
-				}
-				else
-				{
-					m6 = m5;
-				}
-				m6 = osg::Matrix::rotate(0,1,0,0) *
-						osg::Matrix::rotate(0,0,1,0) *
-						osg::Matrix::rotate(angleTarsus,0,0,1) *
-						osg::Matrix::translate(0,0,-length/2) * m6 ;
+				double partLength = conf.tarsusLength[i%3]/5;
+				double mass = conf.tarsusMass/5;
 
 				std::cout << "leg number     " << i << std::endl;
 
 				Primitive *section = tarsus;
+				osg::Matrix m6 = tarsusCenter;
 				for( int j = 1; j < 6; j++ )
 				{
-					 double lengthS = length/1.9;
-					 double radiusS = radius/1.5;
-					 section = new Capsule( radiusS, lengthS );
+					 section = new Capsule( radius, partLength );
 					 section->setTexture( "tarsus.jpg" );
 					 section->init( odeHandle, mass, osgHandle );
 
-					 osg::Matrix m7;
+					 // The Front legs need special handle in order to turn the same way as the hind legs
+					 if(i == 0 || i == 3){
+						 m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * osg::Matrix::translate(0,0,-partLength)*m6;
+					 } else {
+						 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * osg::Matrix::translate(0,0,-partLength)*m6;
+					 }
 
-					 if( i < 2 )
-					 {
-						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-								osg::Matrix::translate(0,0,-length/2) *
-								m6;
-					 }
-					 else if(i > 3)
-					 {
-						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-								osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-								osg::Matrix::translate(0,0,-length/2) *
-								m6;
-					 }
-					 else
-					 {
-						 m7 =	osg::Matrix::translate(0,0,-lengthS/2) *
-								osg::Matrix::rotate(i%2==0 ? angle : -angle,1,0,0) *
-								osg::Matrix::translate(0,0,-length/2) *
-								m6;
-					 }
-					 section->setPose(m7);
+					 section->setPose(m6);
 					 objects.push_back(section);
 					 tarsusParts.push_back(section);
 
-					 if( j == 1 )
-					 {
-						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,partLength/3) * m6, Axis(0,0,0) * m6);
+					 k->init(odeHandle, osgHandle, true, partLength/5 * 2.1);
 
-						 // servo used as a spring
-						 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
-						 joints.push_back(k);
-						 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-						 tarsussprings.push_back(servo);
-						 addMotor(spring);
-					 }
-					 else if( j == 2 )
-					 {
-						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
+					 // servo used as a spring
+					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.0); // TODO WHAT SHOULD THESE BE? x
+					 joints.push_back(k);
+					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
+					 tarsussprings.push_back(servo);
+					 addMotor(spring);
 
-						 // servo used as a spring
-						 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
-						 joints.push_back(k);
-						 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-						 tarsussprings.push_back(servo);
-						 addMotor(spring);
-					 }
-					 else
-					 {
-						 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,length/3) * m7, Axis(i%2==0 ? -1 : 1,0,0) * m7);
-						 k->init(odeHandle, osgHandle, true, lengthS/16 * 2.1);
-
-						 // servo used as a spring
-						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // parameters are set later
-						 joints.push_back( k );
-						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
-						 tarsussprings.push_back( servo );
-						 addMotor( spring );
-					 }
-
-					 m6 = m7;
 					 if( conf.testTarsusSensor )
 					 {
-						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radiusS, false, true, Color(1,9,3));
-						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * lengthS));
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radius, false, true, Color(1,9,3));
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * partLength));
 						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
 					 }
 				}
@@ -925,8 +806,8 @@ odeHandle.addIgnoredPair( femurThorax, foot );
 
 		//	----------- Body dimensions -------
 		double totalLength = 3.75+9.111+10.324;
-		conf.headDimension 	= { 4.568/totalLength, 3.75/totalLength, 0.15 };
-		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 0.15 };
+		conf.headDimension 	= { 4.568/totalLength, 3.75/totalLength, 0.1 };
+		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 0.125 };
 		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 0.15 };	// Length and Width should be equal
 
 		double totalMass = 106.402/10;
