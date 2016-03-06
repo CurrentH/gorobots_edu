@@ -186,7 +186,7 @@ namespace lpzrobots
 		/************************************
 		 * 	Set all the parameters
 		 ***********************************/
-		setParam("dummy", 0); // apply all parameters.
+		setParam( "dummy", 0 ); // apply all parameters.
 
 		created = true;
     }
@@ -309,28 +309,28 @@ namespace lpzrobots
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
 			tarsus->setPose( tarsusCenter );
 			legs[leg].tarsus = tarsus;
-			tarsusParts.push_back( tarsus );
 			objects.push_back( tarsus );
+			tarsusParts.push_back( tarsus );
 
 			//	Calculate anchor and axis of the first joint
 			const osg::Vec3 anchor1 = nullpos * c1;
 	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg )*c1;
 	        switch (i)
 	        {
-case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front left
-break;
-case 1: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//middle left
-break;
-case 2: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //rear left
-break;
-case 3: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front right
-break;
-case 4: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// middle right
-break;
-case 5: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// rear right
-break;
-default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;
-break;
+				case 0: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front left
+				break;
+				case 1: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//middle left
+				break;
+				case 2: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1; //rear left
+				break;
+				case 3: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	//front right
+				break;
+				case 4: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// middle right
+				break;
+				case 5: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;	// rear right
+				break;
+				default: axis1=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis1;
+				break;
 	        }
 
 			//	Proceed along the leg (and the respective z-axis) for second limb
@@ -338,20 +338,20 @@ break;
 			Axis axis2 = Axis( backLeg+frontLeg, 0, 0 );
 			switch (i)
 			{
-case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front left
-break;
-case 1: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
-break;
-case 2: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
-break;
-case 3: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front right
-break;
-case 4:	axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
-break;
-case 5: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
-break;
-default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
-break;
+				case 0: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front left
+				break;
+				case 1: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
+				break;
+				case 2: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
+				break;
+				case 3: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;	//front right
+				break;
+				case 4:	axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
+				break;
+				case 5: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
+				break;
+				default: axis2=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis2;
+				break;
 			}
 
 			//	And third
@@ -359,20 +359,20 @@ break;
 	        Axis axis3 = Axis( backLeg+frontLeg, 0, 0 );
 	        switch (i)
 	        {
-case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
-break;
-case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
-break;
-case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left
-break;
-case 3: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //front right
-break;
-case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  //middle right
-break;
-case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear right
-break;
-default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
-break;
+				case 0: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//front left
+				break;
+				case 1: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;//middle left
+				break;
+				case 2: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear left
+				break;
+				case 3: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //front right
+				break;
+				case 4: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;  //middle right
+				break;
+				case 5: axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3; //rear right
+				break;
+				default:axis3=osg::Matrix::rotate(0,1,0,0)*osg::Matrix::rotate(0,0,1,0)*osg::Matrix::rotate(0,0,0,1)*axis3;
+				break;
 	        }
 
 	        //	And fourth
@@ -460,6 +460,7 @@ break;
 
 				Primitive *section = tarsus;
 				osg::Matrix m6 = tarsusCenter;
+
 				for( int j = 1; j < 6; j++ )
 				{
 					 section = new Capsule( radius, partLength );
@@ -484,10 +485,10 @@ break;
 					 {
 						 HingeJoint* k = new HingeJoint( tarsusParts[j-1], tarsusParts[j], Pos(0,0,partLength/3) * m6, Axis(0,0,0) * m6 );
 						 k->init( odeHandle, osgHandle, true, partLength/5 * 2.1 );
+						 joints.push_back( k );
 
 						 // servo used as a spring
-						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // TODO WHAT SHOULD THESE BE? x
-						 joints.push_back( k );
+						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 );
 						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
 						 tarsussprings.push_back( servo );
 						 addMotor( spring );
@@ -496,10 +497,10 @@ break;
 					 {
 						 HingeJoint* k = new HingeJoint( tarsusParts[j-1], tarsusParts[j], Pos(0,0,partLength/3) * m6, Axis(0,0,0) * m6 );
 						 k->init( odeHandle, osgHandle, true, partLength/5 * 2.1 );
+						 joints.push_back( k );
 
 						 // servo used as a spring
-						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.05 ); // TODO WHAT SHOULD THESE BE? x
-						 joints.push_back( k );
+						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.05 );
 						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
 						 tarsussprings.push_back( servo );
 						 addMotor( spring );
