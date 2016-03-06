@@ -186,11 +186,7 @@ namespace lpzrobots
 		/************************************
 		 * 	Set all the parameters
 		 ***********************************/
-		std::cout << "test2" << std::endl;
-
 		setParam("dummy", 0); // apply all parameters.
-
-		std::cout << "test1" << std::endl;
 
 		created = true;
     }
@@ -312,6 +308,7 @@ namespace lpzrobots
 			tarsus->setTexture( "tarsus.jpg" );
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
 			tarsus->setPose( tarsusCenter );
+			legs[leg].tarsus = tarsus;
 			tarsusParts.push_back( tarsus );
 			objects.push_back( tarsus );
 
@@ -440,8 +437,15 @@ break;
 			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
 			joints.push_back(q);
 
-	        // Foot
-			if( true ) // toggle foot
+/*
+//TODO:Properly not needed. This was the foot spring. Does not work, since q is a fixed joint.
+			Spring * spring = new Spring( q, -1, 1, 1, 0.05, 1, 0, 1 );
+			legs[leg].tarsusSpring = spring;
+			passiveServos.push_back( spring );
+*/
+
+	        // Tarsus
+			if( true ) // Toggle tarsus
 			{
 				/**
 				 * 	Creating the small sections for the tarsus
@@ -463,25 +467,43 @@ break;
 					 section->init( odeHandle, mass, osgHandle );
 
 					 // The Front legs need special handle in order to turn the same way as the hind legs
-					 if(i == 0 || i == 3){
-						 m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * osg::Matrix::translate(0,0,-partLength)*m6;
-					 } else {
-						 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * osg::Matrix::translate(0,0,-partLength)*m6;
+					 if( i%3 == 0 )
+					 {
+						 m6 = osg::Matrix::rotate(i%2==0 ? -angle : angle,0,i%2==0 ? -1 : 1,0) * osg::Matrix::translate(0,0,-partLength) * m6;
+					 }
+					 else
+					 {
+						 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) * osg::Matrix::translate(0,0,-partLength) * m6;
 					 }
 
-					 section->setPose(m6);
-					 objects.push_back(section);
-					 tarsusParts.push_back(section);
+					 section->setPose( m6 );
+					 objects.push_back( section );
+					 tarsusParts.push_back( section );
 
-					 HingeJoint* k = new HingeJoint(tarsusParts[j-1], tarsusParts[j], Pos(0,0,partLength/3) * m6, Axis(0,0,0) * m6);
-					 k->init(odeHandle, osgHandle, true, partLength/5 * 2.1);
+					 if( j == 1 || j == 2 )
+					 {
+						 HingeJoint* k = new HingeJoint( tarsusParts[j-1], tarsusParts[j], Pos(0,0,partLength/3) * m6, Axis(0,0,0) * m6 );
+						 k->init( odeHandle, osgHandle, true, partLength/5 * 2.1 );
 
-					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.0); // TODO WHAT SHOULD THESE BE? x
-					 joints.push_back(k);
-					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
-					 tarsussprings.push_back(servo);
-					 addMotor(spring);
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.01 ); // TODO WHAT SHOULD THESE BE? x
+						 joints.push_back( k );
+						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
+						 tarsussprings.push_back( servo );
+						 addMotor( spring );
+					 }
+					 else
+					 {
+						 HingeJoint* k = new HingeJoint( tarsusParts[j-1], tarsusParts[j], Pos(0,0,partLength/3) * m6, Axis(0,0,0) * m6 );
+						 k->init( odeHandle, osgHandle, true, partLength/5 * 2.1 );
+
+						 // servo used as a spring
+						 auto servo = std::make_shared<OneAxisServoVel>( odeHandle, k, -1, 1, 1, 0.05 ); // TODO WHAT SHOULD THESE BE? x
+						 joints.push_back( k );
+						 auto spring = std::make_shared<ConstantMotor>( servo, 0.0 );
+						 tarsussprings.push_back( servo );
+						 addMotor( spring );
+					 }
 
 					 if( conf.testTarsusSensor )
 					 {
@@ -725,8 +747,19 @@ break;
 	    bool rv = Configurable::setParam(key, val);
 
 	    //	We set all parameters here
-	   for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
+	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
+			std::cout << "setParam: Before tarsus" << std::endl;
+			Spring * const tarsusSpring = it->second.tarsusSpring;
+			if( tarsusSpring )
+			{
+				std::cout << "TEST TEST TEST" << std::endl;
+				tarsusSpring->setPower( conf.tarsusPower );
+				tarsusSpring->setDamping( conf.tarsusDamping );
+				tarsusSpring->setPower( conf.tarsusMaxVel );
+			}
+			std::cout << "setParam: After tarsus" << std::endl;
+
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
 			{
@@ -903,9 +936,9 @@ break;
 		 */
 
 		conf.backPower 	= 1.5;
-		conf.coxaPower 	= 1;
-		conf.femurPower = 1;
-		conf.tibiaPower = 1;
+		conf.coxaPower 	= 1.0;
+		conf.femurPower = 1.0;
+		conf.tibiaPower = 1.0;
 
 		conf.backDamping 	= 0.0;
 		conf.coxaDamping 	= 0.0;
@@ -913,10 +946,14 @@ break;
 		conf.tibiaDamping 	= 0.0;
 
 		// Does the following have any effect?
-		conf.backMaxVel 	= 0;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 0;//1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 0;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 0;//1.7 * 1.961 * M_PI;
+		conf.backMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
+
+		conf.tarsusPower = 1.0;
+		conf.tarsusDamping = 0.0;
+		conf.tarsusMaxVel = 0.0;
 
 		return conf;
 	}

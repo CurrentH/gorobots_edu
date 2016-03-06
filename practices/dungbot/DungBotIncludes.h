@@ -64,6 +64,11 @@ namespace lpzrobots
 		double tibiaMaxVel;
 		double footMaxVel;
 
+
+		double tarsusPower;
+		double tarsusDamping;
+		double tarsusMaxVel;
+
 		//	Joint limits
 		double backJointLimitD;
 		double backJointLimitU;
