@@ -79,7 +79,7 @@ namespace lpzrobots
 	{
 		// Instantiate robot
 		DungBotConf conf = DungBot::getDefaultConf();
-		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );	//TODO: Leon: osg = world, ode = physics?
+		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );
 		robot->place( Pos( 0.0, 0.0, 1.5 ) ); // CONTROLS THE HEIGHT
 
 		// Instantiate controller

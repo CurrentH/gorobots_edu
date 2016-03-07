@@ -100,8 +100,8 @@ namespace lpzrobots
 			{
 				Leg();
 				HingeJoint * tcJoint;
-				HingeJoint * ctJoint;	//Called ctrJoint in AmosII
-				HingeJoint * ftJoint;	//Called ftiJoing in AmosII
+				HingeJoint * ctJoint;
+				HingeJoint * ftJoint;
 				/*Slider*/Joint * footJoint;
 				OneAxisServo * tcServo;
 				OneAxisServo * ctrServo;
