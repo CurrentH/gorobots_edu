@@ -93,7 +93,6 @@ namespace lpzrobots
             in the third position.
         **/
 
-    	//TODO: Find a proper beginning pose.
         osg::Matrix initialPose = pose * osg::Matrix::translate(0, 0, conf.rearDimension[2]+conf.coxaRadius[0]*1.2);
         create( initialPose );
     }
@@ -113,7 +112,7 @@ namespace lpzrobots
 
     	for( int i = 0; i < LEG_POS_MAX; i++ )
 		{
-			for( int j = 1; j < 6; j++ ) //TODO: Find out if j should be = 0 instead of 1.
+			for( int j = 1; j < 6; j++ )
 			{
 				if( conf.testTarsusSensor )
 				{
@@ -211,27 +210,28 @@ namespace lpzrobots
 			//const double lr2 = leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
 			// create 3d-coordinates for the leg-trunk connection:
+			double tempScale = conf.scale;//TODO: Fix scale
 			switch (i)
 			{
 				case L0:
 				case R0:
-					xPosition = -conf.frontDimension[0]/2+(sin(45)/sin(90)*conf.coxaLength[0]);
-					yPosition = lr * conf.frontDimension[1]*( 0.25 );
-					zPosition = -(conf.frontDimension[2]/2+1.2*conf.coxaRadius[i%3]);
+					xPosition = conf.coxaRadius[1]-2.8689/tempScale;
+					yPosition = lr * 2.5409/tempScale;
+					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale;
 					break;
 				case L1:
 				case R1:
-					xPosition = conf.rearDimension[0]*0.07;
-					yPosition = lr * conf.rearDimension[1]*0.265;
-					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius[i%3]);
+					xPosition = conf.coxaRadius[1]+0/tempScale;
+					yPosition = lr * 2.5883/tempScale;
+					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale;
 					break;
 				case L2:
 				case R2:
-					//xPosition = conf.rearDimension[0]*0.3;
-					xPosition = conf.rearDimension[0]*0.35;
-					yPosition = lr * conf.rearDimension[1]*0.412;
-					zPosition = -(conf.rearDimension[2]/2+1.2*conf.coxaRadius[i%3]);
+					xPosition = conf.coxaRadius[1]+3.1666/tempScale;
+					yPosition = lr * 4.7496/tempScale;
+					zPosition = -conf.rearDimension[2]/2 + 0/tempScale;
 					break;
+
 				default:
 					xPosition = 0;
 			}
@@ -253,14 +253,22 @@ namespace lpzrobots
 	        //const double backLegInverse = ( leg == R1 || leg == R2 ) + ( leg == L1 || leg == L2 );
 			//const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
 			//const double backLegOnly = ( leg == L1 || leg == L2 || leg == R1 || leg == R2 );
-			//const double frontLegOnly = ( leg == R0 || leg == L0 );
 			//const double fb = (leg == L0 || leg == R0) - (leg == L1 || leg == L2 || leg == R1 || leg == R2);
+			const double frontLegOnly = ( leg == R0 || leg == L0 );
+			const double middleLegOnly = ( leg == R1 || leg == L1 );
+			const double hindLegOnly = ( leg == R2 || leg == L2 );
 			const double backLeg = ( leg == R1 || leg == R2 ) - ( leg == L1 || leg == L2 );
 	        const double frontLeg = ( leg == R0 ) - ( leg == L0 );
 	        const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
 
 			//	Coxa placement
-	        osg::Matrix c1 = osg::Matrix::rotate( -M_PI/4, lr, 0 , 0 ) *
+	        osg::Matrix c1 = osg::Matrix::rotate( M_PI/180*(180+95.7143), lr*hindLegOnly, 0 , 0 ) *
+								osg::Matrix::rotate( M_PI/180*(180+110.4237), lr*middleLegOnly, 0 , 0 ) *
+								osg::Matrix::rotate( M_PI/180*(180+112.5464), lr*frontLegOnly, 0 , 0 ) *
+
+								osg::Matrix::rotate( M_PI/180*(-90+64.6293), 0, 0 , 0*hindLegOnly ) *
+								osg::Matrix::rotate( M_PI/180*(-90+56.2446), 0, 0 , 0*middleLegOnly ) *
+								osg::Matrix::rotate( M_PI/180*(-90+65.3676), 0, 0 , 0*frontLegOnly ) *
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
@@ -740,9 +748,10 @@ namespace lpzrobots
 
 		//	----------- Body dimensions -------
 		double totalLength = 3.75+9.111+10.324;
-		conf.headDimension 	= { 4.568/totalLength, 3.75/totalLength, 0.1 };
-		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 0.125 };
-		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 0.15 };	// Length and Width should be equal
+		conf.scale = totalLength;
+		conf.headDimension 	= { 4.568/totalLength, 3.75/totalLength, 1.75/totalLength};
+		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 3.5/totalLength };
+		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 3.5/totalLength };
 
 		double totalMass = 106.402/10;
 		conf.massHead = 14.826/totalMass;

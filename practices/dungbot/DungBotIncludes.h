@@ -29,6 +29,7 @@ namespace lpzrobots
 		double massRear;
 		double massHead;
 		double size;
+		double scale;
 		std::vector<double> headDimension;
 		std::vector<double> frontDimension;
 		std::vector<double> rearDimension;
