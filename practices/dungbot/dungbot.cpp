@@ -210,7 +210,7 @@ namespace lpzrobots
 			//const double lr2 = leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
 			// create 3d-coordinates for the leg-trunk connection:
-			double tempScale = conf.scale;//TODO: Fix scale
+			double tempScale = conf.scale;
 			switch (i)
 			{
 				case L0:
@@ -266,9 +266,9 @@ namespace lpzrobots
 								osg::Matrix::rotate( M_PI/180*(180+110.4237), lr*middleLegOnly, 0 , 0 ) *
 								osg::Matrix::rotate( M_PI/180*(180+112.5464), lr*frontLegOnly, 0 , 0 ) *
 
-								osg::Matrix::rotate( M_PI/180*(-90+64.6293), 0, 0 , 0*hindLegOnly ) *
-								osg::Matrix::rotate( M_PI/180*(-90+56.2446), 0, 0 , 0*middleLegOnly ) *
-								osg::Matrix::rotate( M_PI/180*(-90+65.3676), 0, 0 , 0*frontLegOnly ) *
+								osg::Matrix::rotate( M_PI/180*(90-64.6293), 0, 0 , lr*hindLegOnly ) *
+								osg::Matrix::rotate( M_PI/180*(90-56.2446), 0, 0 , lr*middleLegOnly ) *
+								osg::Matrix::rotate( M_PI/180*(90-65.3676), 0, 0 , lr*frontLegOnly ) *
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
