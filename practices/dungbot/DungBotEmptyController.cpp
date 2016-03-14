@@ -39,8 +39,8 @@ double DungBotEmptyController::PID( double targetPosition, double actualPosition
 	//TODO MAKE ALL THE MOTOR TO servoVel
 	//TODO MAKE A DEADBAND FOR WHEN ACCEPT A POSITION AND TURN OF THE MOTOR
 
-	double Kp, Ki, Kd; 												//TODO find values for these
-	double error[17], integral[17], derivative[17], errorlast[17];  //TODO these needs to be saved somewhere else, so that they keeps their value.
+	double Kp, Ki, Kd; 												//TODO find values for these (MATLAB or MATHEMATICA)
+	double error[17], integral[17], derivative[17], errorlast[17];  //TODO these needs to be saved somewhere else, so that they keep their value.
 	double maxOutput = 100; 										//TODO find a value for this (it should just be maxVel?)
 
 	errorlast[motorNumber] = error[motorNumber];
@@ -77,8 +77,10 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 			motor[i] = -0.5;
 			//motor[i] = sin( 0.01 * ticks_since_init );
 
+			if(writeOutput){
 			motorInput.push_back( motor[i] );
 			sensorOutput.push_back( sensor[i] );
+			}
 		}
 
 		if( int(ticks_since_init)%200 == 0 )
