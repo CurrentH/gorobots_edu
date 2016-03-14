@@ -48,6 +48,7 @@ class DungBotEmptyController : public AbstractController
 
 	private:
 		void collectData( std::vector<double>, std::vector<double> );
+		bool writeOutput = false;
 
 };
 

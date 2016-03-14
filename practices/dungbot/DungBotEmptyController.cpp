@@ -29,7 +29,9 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name )
 
 DungBotEmptyController::~DungBotEmptyController()
 {
+	if(writeOutput){
 	outputFile.close();
+	}
 }
 
 void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
@@ -54,7 +56,7 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 		sensorOutput.push_back( sensor[i] );
 	}
 
-	/*if( int(ticks_since_init)%200 == 0 )
+	if( int(ticks_since_init)%200 == 0 && writeOutput)
 	{
 		std::cout << "------------------------------------------------------------------" << std::endl;
 
@@ -74,7 +76,7 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 		std::cout << "------------------------------------------------------------------" << std::endl;
 
 		collectData( motorInput, sensorOutput );
-	}*/
+	}
 
 
 }
@@ -82,7 +84,7 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 void DungBotEmptyController::collectData( std::vector<double> motorInput, std::vector<double> sensorOutput )
 {
 	// Output
-	if( outputFile.is_open() )
+	if( outputFile.is_open() && writeOutput)
 	{
 		outputFile << ticks_since_init;
 		for( int i = 0; i < motorInput.size(); i++ )
@@ -106,7 +108,9 @@ void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* r
 	nSensors = sensorNumber;
 	nMotors = motorNumber;
 
+	if(writeOutput){
 	outputFile.open( "output.csv", std::ios::app );
+	}
 
 	initialised = true;
 }
