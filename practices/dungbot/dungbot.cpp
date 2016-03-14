@@ -742,8 +742,8 @@ namespace lpzrobots
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
 
 		//	----------- Body dimensions -------
@@ -820,36 +820,57 @@ namespace lpzrobots
 		conf.backJointLimitD = M_PI / 180 * 45.0;
 		conf.backJointLimitU =	-M_PI / 180 * 0.0;
 
+		double rotationScale = 0.9;
+
+		double coxaFront = 95.7878*rotationScale;
+		double coxaMiddle = 116.1153*rotationScale;
+		double coxaHind = 160.8514*rotationScale;
+		double A = 60;
+		double B = 45;
+		double C = 50;
+
 		//	TC JOINT
-		conf.fCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-		conf.fCoxaJointLimitB =  M_PI / 180.0 * 25.0;	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
-	    conf.mCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
-	    conf.mCoxaJointLimitB =  M_PI / 180.0 * 25.0;	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
-	    conf.rCoxaJointLimitF = -M_PI / 180.0 * 25.0;	// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
-	    conf.rCoxaJointLimitB =  M_PI / 180.0 * 25.0;	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+		conf.fCoxaJointLimitF = -M_PI / 180.0 * A;				// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+		conf.fCoxaJointLimitB =  M_PI / 180.0 * (coxaFront-A);	//-70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+	    conf.mCoxaJointLimitF = -M_PI / 180.0 * B;				// 60 deg; forward (-) MAX --> normal walking range 30 deg MAX
+	    conf.mCoxaJointLimitB =  M_PI / 180.0 * (coxaMiddle-B);	// 60 deg; backward (+) MIN --> normal walking range -40 deg MIN
+	    conf.rCoxaJointLimitF = -M_PI / 180.0 * C;				// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
+	    conf.rCoxaJointLimitB =  M_PI / 180.0 * (coxaHind-C);	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
+
+	    double femur = 90*rotationScale;
+	    A = 10;
+	    B = 10;
+	    C = 10;
+
 	    //	CT JOINT
-	    conf.fFemurJointLimitD =  M_PI / 180.0 * 0.0;
-	    conf.fFemurJointLimitU = -M_PI / 180.0 * 25.0;
-	    conf.mFemurJointLimitD =  M_PI / 180.0 * 0.0;
-	    conf.mFemurJointLimitU = -M_PI / 180.0 * 25.0;
-	    conf.rFemurJointLimitD =  M_PI / 180.0 * 0.0;
-	    conf.rFemurJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.fFemurJointLimitD =  M_PI / 180.0 * A;
+	    conf.fFemurJointLimitU = -M_PI / 180.0 * ( femur-A );
+	    conf.mFemurJointLimitD =  M_PI / 180.0 * B;
+	    conf.mFemurJointLimitU = -M_PI / 180.0 * ( femur-B );
+	    conf.rFemurJointLimitD =  M_PI / 180.0 * C;
+	    conf.rFemurJointLimitU = -M_PI / 180.0 * ( femur-C );
+
+	    double tibia = 170*rotationScale;
+		A = 70;
+		B = 70;
+		C = 70;
+
 	    //	FT JOINT
-	    conf.fTibiaJointLimitD =  M_PI / 180.0 * 25.0;
-	    conf.fTibiaJointLimitU = -M_PI / 180.0 * 25.0;
-	    conf.mTibiaJointLimitD =  M_PI / 180.0 * 25.0;
-	    conf.mTibiaJointLimitU = -M_PI / 180.0 * 25.0;
-	    conf.rTibiaJointLimitD =  M_PI / 180.0 * 25.0;
-	    conf.rTibiaJointLimitU = -M_PI / 180.0 * 25.0;
+	    conf.fTibiaJointLimitD =  M_PI / 180.0 * A;
+	    conf.fTibiaJointLimitU = -M_PI / 180.0 * ( tibia-A );
+	    conf.mTibiaJointLimitD =  M_PI / 180.0 * B;
+	    conf.mTibiaJointLimitU = -M_PI / 180.0 * ( tibia-B );
+	    conf.rTibiaJointLimitD =  M_PI / 180.0 * C;
+	    conf.rTibiaJointLimitU = -M_PI / 180.0 * ( tibia-C );
 
 		/**
 		 * 	Power of the motors, and joint stiffness
 		 */
 
-		conf.backPower 	= 1.5;
-		conf.coxaPower 	= 1.0;
-		conf.femurPower = 1.0;
-		conf.tibiaPower = 1.0;
+		conf.backPower 	= 2.5;
+		conf.coxaPower 	= 2.0;
+		conf.femurPower = 2.0;
+		conf.tibiaPower = 2.0;
 
 		conf.backDamping 	= 0.0;
 		conf.coxaDamping 	= 0.0;
