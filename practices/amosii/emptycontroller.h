@@ -88,9 +88,9 @@ class EmptyController : public AbstractController {
       // generate motor commands
 
       // right rear coxa (knee) forward-backward joint (back is positive)
-      y_[TR2_m] = 0; // TC  joint (forward-backward movements), e.g., y_[TR2_m] = 1 (move forward), -1 (move backward)
-      y_[CR2_m] = 0; // CTr joint (up-down movements), e.g., y_[CR2_m] = 1 (move up), -1 (move down)
-      y_[FR2_m] = 0; // FTi joint (extension-flexion movements), e.g., y_[CR2_m] = 1 (extension), -1 (flexion)
+      y_[TR2_m] = 1; // TC  joint (forward-backward movements), e.g., y_[TR2_m] = 1 (move forward), -1 (move backward)
+      y_[CR2_m] = 1; // CTr joint (up-down movements), e.g., y_[CR2_m] = 1 (move up), -1 (move down)
+      y_[FR2_m] = 1; // FTi joint (extension-flexion movements), e.g., y_[CR2_m] = 1 (extension), -1 (flexion)
 
       //left rear
       y_[TL2_m] = 0;
