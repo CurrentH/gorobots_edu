@@ -168,7 +168,7 @@ namespace lpzrobots
     	osg::Matrix frontPos = osg::Matrix::translate( ( -conf.frontDimension[0] / 2 ), 0, (-conf.rearDimension[2]/2+conf.frontDimension[2]/2)) * pose;
 		auto front = makeBody( frontPos, conf.massFront, conf.frontDimension );
 
-		osg::Matrix headPos = osg::Matrix::translate( ( -conf.frontDimension[0] ), 0, (-conf.frontDimension[2]/2+conf.headDimension[2]/2)) * pose;
+		osg::Matrix headPos = osg::Matrix::translate( ( -conf.frontDimension[0] - conf.headDimension[0]/2 ), 0, (-conf.rearDimension[2]/2+conf.headDimension[2]/2)) * pose;
 		auto head = makeHead( headPos, conf.massHead, conf.headDimension );
 
 		//	Representation of the origin
@@ -750,7 +750,7 @@ namespace lpzrobots
 		//TODO Measure the correct height.
 		double totalLength = 3.75+9.111+10.324;
 		conf.scale = totalLength;
-		conf.headDimension 	= { 4.568/totalLength, 3.75/totalLength, 1.75/totalLength};
+		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 1.75/totalLength};
 		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 2.75/totalLength };
 		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 3.5/totalLength };
 
