@@ -54,7 +54,7 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 		sensorOutput.push_back( sensor[i] );
 	}
 
-	if( int(ticks_since_init)%200 == 0 )
+	/*if( int(ticks_since_init)%200 == 0 )
 	{
 		std::cout << "------------------------------------------------------------------" << std::endl;
 
@@ -74,7 +74,7 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 		std::cout << "------------------------------------------------------------------" << std::endl;
 
 		collectData( motorInput, sensorOutput );
-	}
+	}*/
 
 
 }

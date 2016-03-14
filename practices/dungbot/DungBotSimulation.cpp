@@ -60,7 +60,7 @@ namespace lpzrobots
 	void DungBotSimulation::start( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global )
 	{
 		// Configure environment
-		setCameraHomePos( Pos( -5, 5, 2 ),  Pos( -135, -8.5, 0 ) );
+		setCameraHomePos(Pos(-2.85247, 2.68423, 2.9186),  Pos(-131.376, -16.7443, 0));
 
 		global.odeConfig.setParam( "controlinterval", 1 ); //TODO: Leon: Controlinterval?
 		global.odeConfig.setParam( "simstepsize", 0.01 );
@@ -80,7 +80,7 @@ namespace lpzrobots
 		// Instantiate robot
 		DungBotConf conf = DungBot::getDefaultConf();
 		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );
-		robot->place( Pos( 0.0, 0.0, 1.5 ) ); // CONTROLS THE HEIGHT
+		robot->place( Pos( 0.0, 0.0, 1 ) ); // CONTROLS THE HEIGHT
 
 		// Instantiate controller
 		controller = new DungBotEmptyController( "DungBotEmptyController" );
@@ -150,9 +150,11 @@ namespace lpzrobots
 	void DungBotSimulation::addPlayground( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global)
 	{
 		// implement playground here.
-	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.2, 0.3));
+	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(5, 0.2, 0.5),1);
 	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
-	    playground->setPosition( osg::Vec3( 0, 0, .0 ) );
+	    playground->setGroundColor(Color(0.372, 0.737, 0.360));  //http://doc.instantreality.org/tools/color_calculator/
+	    playground->setColor(Color(0.737, 0.647, 0.360));
+	    playground->setPosition( osg::Vec3( 0, 0, .2 ) );
 	    global.obstacles.push_back( playground );
 	}
 
