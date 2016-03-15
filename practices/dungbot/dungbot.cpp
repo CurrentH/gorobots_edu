@@ -181,7 +181,6 @@ namespace lpzrobots
 	    /************************************
 	     * Make all the legs
 	     ***********************************/
-		std::cout << "test3" << std::endl;
 		makeAllLegs( pose , rear, front );
 
 		/************************************
@@ -194,12 +193,12 @@ namespace lpzrobots
 
     void DungBot::makeAllLegs( const Matrix& pose, Primitive* rear, Primitive* front)
     {
-    	// representation of the origin
+    	//	Representation of the origin
     	const Pos nullpos(0,0,0);
 		double xPosition=0, yPosition=0, zPosition=0;
 		std::map<LegPos, osg::Matrix> legTrunkConnections;
 
-		// The purpose of this for-loop is to get all the leg-trunk-connections
+		//	The purpose of this for-loop is to get all the leg-trunk-connections
 		for (int i = 0; i < LEG_POS_MAX; i++) // Run through all of the legs
 		{
 			LegPos leg = LegPos(i);	// Give a value to leg (0-6), then if (leg == 'something') is true = 1
@@ -216,19 +215,19 @@ namespace lpzrobots
 				case L0:
 				case R0:
 					xPosition = conf.coxaRadius[1]-2.8689/tempScale;
-					yPosition = lr * 2.5409/tempScale;
+					yPosition = lr * 2.5409/tempScale +0.5*lr;
 					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale + 1;
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.coxaRadius[1]+0/tempScale;
-					yPosition = lr * 2.5883/tempScale;
+					yPosition = lr * 2.5883/tempScale +0.5*lr;
 					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale + 1;
 					break;
 				case L2:
 				case R2:
 					xPosition = conf.coxaRadius[1]+3.1666/tempScale;
-					yPosition = lr * 4.7496/tempScale;
+					yPosition = lr * 4.7496/tempScale +0.5*lr;
 					zPosition = -conf.rearDimension[2]/2 + 0/tempScale + 1;
 					break;
 
@@ -243,7 +242,7 @@ namespace lpzrobots
 
 		std::vector<Primitive*> tarsusParts;
 
-	    // create the legs
+	    //	Create the legs
 	    for (int i = 0; i < LEG_POS_MAX; i++)
 	    {
 			LegPos leg = LegPos(i);
@@ -333,7 +332,8 @@ namespace lpzrobots
 				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
-				OneAxisServo * coxaMotor = new OneAxisServo( j, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
+				OneAxisServo * coxaMotor = new OneAxisServo( j, -1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, true );
+				//OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
 	        }
@@ -351,7 +351,7 @@ namespace lpzrobots
 				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
-				OneAxisServo * femurMotor = new OneAxisServo( k, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
+				OneAxisServo * femurMotor = new OneAxisServo( k, -1.0, 1.0, 1.0, 0.2, 1.0, 10.0, 1.3, true );
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -369,7 +369,7 @@ namespace lpzrobots
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
-				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
+				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 1.0, 10.0, 1.3, true );
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
@@ -489,7 +489,7 @@ namespace lpzrobots
     		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 			hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 			joints.push_back( hinge );
-			OneAxisServo * bodyMotor = new OneAxisServo( hinge, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
+			OneAxisServo * bodyMotor = new OneAxisServo( hinge, -1.0, 1.0, 1.0, 0.2, 1, 10.0, 1.3, true );
 			servos[DungBotMotorSensor::BJ_m] = bodyMotor;
 			backboneServo = bodyMotor;
     	}
@@ -508,7 +508,7 @@ namespace lpzrobots
 			HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 			hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 			joints.push_back( hinge );
-			OneAxisServo * headMotor = new OneAxisServo( hinge, -1.0, 1.0, 1.0, 0.2, 2, 10.0, 1.3, true );
+			OneAxisServo * headMotor = new OneAxisServo( hinge, -1.0, 1.0, 1.0, 0.2, 1, 10.0, 1.3, true );
 			servos[DungBotMotorSensor::HJ_m] = headMotor;
 			headServo = headMotor;
 		}
@@ -668,7 +668,7 @@ namespace lpzrobots
 	    //	We set all parameters here
 	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
-			std::cout << "setParam: Before tarsus" << std::endl;
+	    	//TODO: Anything to do here? Does this even work...
 			Spring * const tarsusSpring = it->second.tarsusSpring;
 			if( tarsusSpring )
 			{
@@ -677,7 +677,6 @@ namespace lpzrobots
 				tarsusSpring->setDamping( conf.tarsusDamping );
 				tarsusSpring->setPower( conf.tarsusMaxVel );
 			}
-			std::cout << "setParam: After tarsus" << std::endl;
 
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
@@ -866,23 +865,21 @@ namespace lpzrobots
 		/**
 		 * 	Power of the motors, and joint stiffness
 		 */
-
 		conf.backPower 	= 0.5;
-		conf.coxaPower 	= 50;
-		cout << conf.coxaPower << endl;
+		conf.coxaPower 	= 3.0;
 		conf.femurPower = conf.coxaPower;
 		conf.tibiaPower = conf.coxaPower;
 
-		conf.backDamping 	= 0.0;
-		conf.coxaDamping 	= 0.0;
-		conf.femurDamping 	= 0.0;
-		conf.tibiaDamping 	= 0.0;
+		conf.backDamping 	= 0.5;
+		conf.coxaDamping 	= 0.5;
+		conf.femurDamping 	= 0.5;
+		conf.tibiaDamping 	= 0.5;
 
 		// Does the following have any effect?
 		conf.backMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
 
 		conf.tarsusPower = 1.0;
 		conf.tarsusDamping = 0.0;
