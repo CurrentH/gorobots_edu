@@ -215,20 +215,20 @@ namespace lpzrobots
 				case L0:
 				case R0:
 					xPosition = conf.coxaRadius[1]-2.8689/tempScale;
-					yPosition = lr * 2.5409/tempScale +0.5*lr;
-					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale + 1;
+					yPosition = lr * 2.5409/tempScale;// +0.5*lr;
+					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale;// + 1;
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.coxaRadius[1]+0/tempScale;
-					yPosition = lr * 2.5883/tempScale +0.5*lr;
-					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale + 1;
+					yPosition = lr * 2.5883/tempScale;// +0.5*lr;
+					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale;// + 1;
 					break;
 				case L2:
 				case R2:
 					xPosition = conf.coxaRadius[1]+3.1666/tempScale;
-					yPosition = lr * 4.7496/tempScale +0.5*lr;
-					zPosition = -conf.rearDimension[2]/2 + 0/tempScale + 1;
+					yPosition = lr * 4.7496/tempScale;// +0.5*lr;
+					zPosition = -conf.rearDimension[2]/2 + 0/tempScale;// + 1;
 					break;
 
 				default:
@@ -742,8 +742,8 @@ namespace lpzrobots
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
 		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
-		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
+		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		//	----------- Body dimensions -------
 		//TODO Measure the correct height.
@@ -837,9 +837,9 @@ namespace lpzrobots
 	    conf.rCoxaJointLimitB =  M_PI / 180.0 * (coxaHind-C);	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 
 	    double femur = 90*rotationScale;
-	    A = 70;
-	    B = 70;
-	    C = 70;
+	    A = 0;
+	    B = 0;
+	    C = 0;
 
 	    //	CT JOINT
 	    conf.fFemurJointLimitD =  M_PI / 180.0 * A;
@@ -850,9 +850,9 @@ namespace lpzrobots
 	    conf.rFemurJointLimitU = -M_PI / 180.0 * ( femur-C );
 
 	    double tibia = 170*rotationScale;
-		A = 70;
-		B = 70;
-		C = 70;
+		A = 180;
+		B = 180;
+		C = 180;
 
 	    //	FT JOINT
 	    conf.fTibiaJointLimitD =  M_PI / 180.0 * A;
@@ -867,13 +867,13 @@ namespace lpzrobots
 		 */
 		conf.backPower 	= 0.5;
 		conf.coxaPower 	= 3.0;
-		conf.femurPower = conf.coxaPower;
-		conf.tibiaPower = conf.coxaPower;
+		conf.femurPower = 2.0;
+		conf.tibiaPower = 2.0;
 
 		conf.backDamping 	= 0.5;
 		conf.coxaDamping 	= 0.5;
-		conf.femurDamping 	= 0.5;
-		conf.tibiaDamping 	= 0.5;
+		conf.femurDamping 	= 0.3;
+		conf.tibiaDamping 	= 0.3;
 
 		// Does the following have any effect?
 		conf.backMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;

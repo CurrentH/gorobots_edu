@@ -52,15 +52,7 @@ class DungBotEmptyController : public AbstractController
 
 		bool writeOutput = false;
 
-		double output = 0.0;
-		double Kp;
-		double Ki;
-		double Kd; 														//TODO find values for these (MATLAB or MATHEMATICA)
-		double error[ DungBotMotorSensor::DUNGBOT_MOTOR_MAX ],
-				integral[ DungBotMotorSensor::DUNGBOT_MOTOR_MAX ],
-				derivative[ DungBotMotorSensor::DUNGBOT_MOTOR_MAX ],
-				errorlast[ DungBotMotorSensor::DUNGBOT_MOTOR_MAX ];  	//TODO these needs to be saved somewhere else, so that they keep their value.
-		double maxOutput; 												//TODO find a value for this (it should just be maxVel?)
+		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
 };
 
 

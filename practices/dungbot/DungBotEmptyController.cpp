@@ -26,10 +26,14 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name )
 	nSensors = 0;
 	nMotors = 0;
 
-	Kp = 1;
-	Ki = 0.0;
-	Kd = 0.0;
-	maxOutput = 10;
+	state[0][0] = 0.7; state[1][0] = 0.5; state[2][0] = -0.8; state[3][0] = 0.7; state[4][0] = 0.5; state[5][0] = -0.8;
+	state[0][1] = 0.7; state[1][1] = 0.5; state[2][1] = -0.8; state[3][1] = 0.7; state[4][1] = 0.5; state[5][1] = -0.8;
+
+	state[6][0] = 0.7; state[7][0] = 0.8; state[8][0] = 0.7; state[9][0] = 0.7; state[10][0] = 0.8; state[11][0] = 0.7;
+	state[6][1] = 0.7; state[7][1] = 0.8; state[8][1] = 0.7; state[9][1] = 0.7; state[10][1] = 0.8; state[11][1] = 0.7;
+
+	state[12][0] = -1.0; state[13][0] = -1.0; state[14][0] = -1.0; state[15][0] = -1.0; state[16][0] = -1.0; state[17][0] = -1.0;
+	state[12][1] = 1.0; state[13][1] = 1.0; state[14][1] = 1.0; state[15][1] = 1.0; state[16][1] = 1.0; state[17][1] = 1.0;
 }
 
 DungBotEmptyController::~DungBotEmptyController()
@@ -39,6 +43,7 @@ DungBotEmptyController::~DungBotEmptyController()
 	}
 }
 
+/*
 double DungBotEmptyController::PID( double targetPosition, double actualPosition, int motorNumber, double deltaT )
 {
 	//TODO MAKE ALL THE MOTOR TO servoVel
@@ -67,6 +72,7 @@ double DungBotEmptyController::PID( double targetPosition, double actualPosition
 
 	return output;
 }
+*/
 
 void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
 {
@@ -78,19 +84,57 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
 
-	if( int(ticks_since_init)%6000 == 0 )
-	{
-		output = 0.00;
-	}
-	else if( int(ticks_since_init)%3000 == 0 )
-	{
-		output = -0.00;
-	}
-
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
+		if( i >= 0 && i < 6)
+		{
+			if( int(ticks_since_init)%2000 == 0 )
+			{
+				if( i%2 == 0 )
+				{
+					motor[i] = state[i][0];
+				}
+				else
+				{
+					motor[i] = state[i][0];
+				}
 
-		motor[i] = 0.9;
+			}
+			else if( int(ticks_since_init)%1000 == 0 )
+			{
+				if( i%2 == 0 )
+				{
+					motor[i] = state[i][1];
+				}
+				else
+				{
+					motor[i] = state[i][1];
+				}
+			}
+		}
+		if( i >= 6 && i < 12 )
+		{
+			if( int(ticks_since_init)%2000 == 0 )
+			{
+				motor[i] = state[i][0];
+			}
+			else if( int(ticks_since_init)%1000 == 0 )
+			{
+				motor[i] = state[i][1];
+			}
+		}
+		if( i >= 12 && i < 18 )
+		{
+			if( int(ticks_since_init)%2000 == 0 )
+			{
+				motor[i] = -state[i][0];
+			}
+			else if( int(ticks_since_init)%1000 == 0 )
+			{
+				motor[i] = state[i][1];
+			}
+		}
+		//motor[i] = 0.9;
 		//motor[i] = sin( 0.01 * ticks_since_init );
 		//motor[i] = PID( output, sensor[i], i, ticks_since_init );
 		//motor[i] = PID( sin( 0.01 * ticks_since_init ), sensor[i], i, ticks_since_init );
@@ -131,7 +175,6 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
 {
 	stepNoLearning(sensor, sensorNumber, motor, motorNumber);
-
 }
 
 void DungBotEmptyController::collectData( std::vector<double> motorInput, std::vector<double> sensorOutput )
