@@ -25,13 +25,13 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name )
 
 	nSensors = 0;
 	nMotors = 0;
-
+	//	Coxa
 	state[0][0] = 0.7; state[1][0] = 0.5; state[2][0] = -0.8; state[3][0] = 0.7; state[4][0] = 0.5; state[5][0] = -0.8;
 	state[0][1] = 0.7; state[1][1] = 0.5; state[2][1] = -0.8; state[3][1] = 0.7; state[4][1] = 0.5; state[5][1] = -0.8;
-
+	//	Femur
 	state[6][0] = 0.7; state[7][0] = 0.8; state[8][0] = 0.7; state[9][0] = 0.7; state[10][0] = 0.8; state[11][0] = 0.7;
 	state[6][1] = 0.7; state[7][1] = 0.8; state[8][1] = 0.7; state[9][1] = 0.7; state[10][1] = 0.8; state[11][1] = 0.7;
-
+	//	Tibia
 	state[12][0] = -1.0; state[13][0] = -1.0; state[14][0] = -1.0; state[15][0] = -1.0; state[16][0] = -1.0; state[17][0] = -1.0;
 	state[12][1] = 1.0; state[13][1] = 1.0; state[14][1] = 1.0; state[15][1] = 1.0; state[16][1] = 1.0; state[17][1] = 1.0;
 }
@@ -83,6 +83,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	ticks_since_init++;
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
+	double movement = 0.7;
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
@@ -92,11 +93,11 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 			{
 				if( i%2 == 0 )
 				{
-					motor[i] = state[i][0];
+					motor[i] = movement;//state[i][0];
 				}
 				else
 				{
-					motor[i] = state[i][0];
+					motor[i] = movement;//state[i][0];
 				}
 
 			}
@@ -104,34 +105,34 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 			{
 				if( i%2 == 0 )
 				{
-					motor[i] = state[i][1];
+					motor[i] = -movement;//state[i][1];
 				}
 				else
 				{
-					motor[i] = state[i][1];
+					motor[i] = -movement;//state[i][1];
 				}
 			}
 		}
-		if( i >= 6 && i < 12 )
+		if( i >= 6 && i < 12 ) //FEMUR
 		{
 			if( int(ticks_since_init)%2000 == 0 )
 			{
-				motor[i] = state[i][0];
+				motor[i] = movement;//state[i][1];
 			}
 			else if( int(ticks_since_init)%1000 == 0 )
 			{
-				motor[i] = state[i][1];
+				motor[i] = movement;//state[i][1];
 			}
 		}
 		if( i >= 12 && i < 18 )
 		{
 			if( int(ticks_since_init)%2000 == 0 )
 			{
-				motor[i] = -state[i][0];
+				motor[i] = -movement/2;//state[i][1];
 			}
 			else if( int(ticks_since_init)%1000 == 0 )
 			{
-				motor[i] = state[i][1];
+				motor[i] = movement;//state[i][1];
 			}
 		}
 		//motor[i] = 0.9;

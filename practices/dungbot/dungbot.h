@@ -148,7 +148,7 @@ namespace lpzrobots
 			lpzrobots::Primitive* makeLegPart( const osg::Matrix&, const double , const double, const double );
 			lpzrobots::Primitive* makeFoot( const osg::Matrix& );
 			lpzrobots::Primitive* makeHead( const osg::Matrix&, const double, const std::vector<double> );
-			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* );
+			void makeAllLegs( const osg::Matrix& pose, Primitive*, Primitive* , Primitive*);
 			void makeHeadHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeBodyHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );
 			void makeHingeJoint( Primitive*, Primitive*, const Pos, Axis, const double );

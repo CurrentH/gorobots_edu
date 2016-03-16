@@ -181,7 +181,7 @@ namespace lpzrobots
 	    /************************************
 	     * Make all the legs
 	     ***********************************/
-		makeAllLegs( pose , rear, front );
+		makeAllLegs( pose , rear, front , head);
 
 		/************************************
 		 * 	Set all the parameters
@@ -191,7 +191,7 @@ namespace lpzrobots
 		created = true;
     }
 
-    void DungBot::makeAllLegs( const Matrix& pose, Primitive* rear, Primitive* front)
+    void DungBot::makeAllLegs( const Matrix& pose, Primitive* rear, Primitive* front, Primitive* head)
     {
     	//	Representation of the origin
     	const Pos nullpos(0,0,0);
@@ -264,22 +264,22 @@ namespace lpzrobots
 	        osg::Matrix c1 = osg::Matrix::rotate( M_PI/180*(180+95.7143), lr*hindLegOnly, 0 , 0 ) *
 								osg::Matrix::rotate( M_PI/180*(180+110.4237), lr*middleLegOnly, 0 , 0 ) *
 								osg::Matrix::rotate( M_PI/180*(180+112.5464), lr*frontLegOnly, 0 , 0 ) *
-
 								osg::Matrix::rotate( M_PI/180*(90-64.6293), 0, 0 , lr*hindLegOnly ) *
 								osg::Matrix::rotate( M_PI/180*(90-56.2446), 0, 0 , lr*middleLegOnly ) *
 								osg::Matrix::rotate( M_PI/180*(90-65.3676), 0, 0 , lr*frontLegOnly ) *
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
-			coxaThorax->setTexture( "coxa1.jpg");
+			coxaThorax->setTexture( "coxa1.jpg" );
 			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandle );
 			coxaThorax->setPose( coxaCenter );
 			legs[leg].coxa = coxaThorax;
 			objects.push_back( coxaThorax );
 
 			//	Femur placement
-			osg::Matrix c2 = osg::Matrix::rotate( M_PI/2, lr, 0 , 0 ) *
-								osg::Matrix::rotate( -M_PI/2, 0, 1, 0 ) *
+			osg::Matrix c2 = osg::Matrix::rotate( M_PI/2, 0, 0, lr ) *
+								osg::Matrix::rotate( M_PI/180*120, lr, 0, 0 ) *
+
 								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
 								coxaCenter;
 			osg::Matrix femurCenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
@@ -288,10 +288,14 @@ namespace lpzrobots
 			femurThorax->init( odeHandle, conf.femurMass[i%3], osgHandle );
 			femurThorax->setPose( femurCenter );
 			legs[leg].femur = femurThorax;
+			odeHandle.addIgnoredPair(femurThorax, front);
+			odeHandle.addIgnoredPair(femurThorax, rear);
+			odeHandle.addIgnoredPair(femurThorax, front);
 			objects.push_back( femurThorax );
 
 			//	Tibia placement
-			osg::Matrix c3 = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
+			osg::Matrix c3 = osg::Matrix::rotate( M_PI/180*85, 0, 1, 0 ) *
+								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
 								femurCenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
 			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
@@ -304,7 +308,7 @@ namespace lpzrobots
 			//	Tarsus placement
 			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
 								tibiaCenter;
-			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -conf.tarsusLength[i%3] / 5 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
+			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
 			Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
 			tarsus->setTexture( "tarsus.jpg" );
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
@@ -318,10 +322,10 @@ namespace lpzrobots
 	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg )*c1;
 
 			const osg::Vec3 anchor2 = nullpos * c2;
-			Axis axis2 = Axis( backLeg+frontLeg, 0, 0 );
+			Axis axis2 = Axis( 0, 1, 0 )*c2;
 
 			const osg::Vec3 anchor3 = nullpos * c3;
-	        Axis axis3 = Axis( backLeg+frontLeg, 0, 0 );
+	        Axis axis3 = Axis( 0, 1, 0 )*c3;
 
 	        const osg::Vec3 anchor4 = nullpos * c4;
 
@@ -668,22 +672,25 @@ namespace lpzrobots
 	    //	We set all parameters here
 	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
-	    	//TODO: Anything to do here? Does this even work...
 			Spring * const tarsusSpring = it->second.tarsusSpring;
 			if( tarsusSpring )
 			{
-				std::cout << "TEST TEST TEST" << std::endl;
-				tarsusSpring->setPower( conf.tarsusPower );
-				tarsusSpring->setDamping( conf.tarsusDamping );
+				tarsusSpring->setPower( conf.tarsus_Kp );
+				tarsusSpring->setDamping( conf.tarsus_Kd );
+				tarsusSpring->setIntegration( conf.tarsus_Ki );
+
 				tarsusSpring->setPower( conf.tarsusMaxVel );
 			}
 
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
 			{
-				tc->setPower(conf.coxaPower);
-				tc->setDamping(conf.coxaDamping);
+				tc->setPower( conf.coxa_Kp );
+				tc->setDamping( conf.coxa_Kd );
+				tc->setIntegration( conf.coxa_Ki );
+
 				tc->setMaxVel(conf.coxaMaxVel);
+				;
 				if (it->first == L2 || it->first == R2) tc->setMinMax(conf.rCoxaJointLimitF, conf.rCoxaJointLimitB);
 				if (it->first == L1 || it->first == R1) tc->setMinMax(conf.mCoxaJointLimitF, conf.mCoxaJointLimitB);
 				if (it->first == L0 || it->first == R0) tc->setMinMax(conf.fCoxaJointLimitF, conf.fCoxaJointLimitB);
@@ -692,8 +699,10 @@ namespace lpzrobots
 			OneAxisServo * ctr = it->second.ctrServo;
 			if(ctr)
 			{
-				ctr->setPower( conf.femurPower );
-				ctr->setDamping( conf.femurDamping );
+				ctr->setPower( conf.femur_Kp );
+				ctr->setDamping( conf.femur_Kd );
+				ctr->setIntegration( conf.femur_Ki );
+
 				ctr->setMaxVel( conf.femurMaxVel );
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
@@ -704,9 +713,11 @@ namespace lpzrobots
 			OneAxisServo * fti = it->second.ftiServo;
 			if( fti )
 			{
-				fti->setPower(conf.tibiaPower);
-				fti->setDamping(conf.tibiaDamping);
-				fti->setMaxVel(conf.tibiaMaxVel);
+				fti->setPower( conf.tibia_Kp );
+				fti->setDamping( conf.tibia_Kd );
+				fti->setIntegration( conf.tibia_Ki );
+
+				fti->setMaxVel( conf.tibiaMaxVel );
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
 				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
@@ -714,17 +725,15 @@ namespace lpzrobots
 			}
 		}
 
-	   std::cout << "Before BackboneServo setParam" << std::endl;
-
 		if( backboneServo && (conf.testBody || conf.testNo ) )
 		{
-			backboneServo->setPower(conf.backPower);
-			backboneServo->setDamping(conf.backDamping);
-			backboneServo->setMaxVel(conf.backMaxVel);
-			backboneServo->setMinMax(conf.backJointLimitU, conf.backJointLimitD);
-		}
+			backboneServo->setPower( conf.back_Kp );
+			backboneServo->setDamping( conf.back_Kd );
+			backboneServo->setIntegration( conf.back_Ki );
 
-		std::cout << "After BackboneServo setParam" << std::endl;
+			backboneServo->setMaxVel( conf.backMaxVel );
+			backboneServo->setMinMax( conf.backJointLimitU, conf.backJointLimitD );
+		}
 
 		return rv;
 	}
@@ -749,9 +758,9 @@ namespace lpzrobots
 		//TODO Measure the correct height.
 		double totalLength = 3.75+9.111+10.324;
 		conf.scale = totalLength;
-		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 1.75/totalLength};
-		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 2.75/totalLength };
-		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 3.5/totalLength };
+		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 2/totalLength};
+		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 2.25/totalLength };
+		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 2.5/totalLength };
 
 		double totalMass = 106.402/10;
 		conf.massHead = 14.826/totalMass;
@@ -810,12 +819,10 @@ namespace lpzrobots
 							0.250162/totalLength/2,
 							0.247163/totalLength/2,
 							0.25316/totalLength/2 };
-		conf.tarsusMass = 0.01;	//TODO: Find a proper mass for the tarsus
+		conf.tarsusMass = 0.01;							//TODO: Find a proper mass for the tarsus
 
-		/**
-		 *	Joint Limits
-		 *	Setting the Max, and Min values of each joint.
-		 */
+
+		//Joint Limits
 		conf.backJointLimitD = M_PI / 180 * 45.0;
 		conf.backJointLimitU =	-M_PI / 180 * 0.0;
 
@@ -824,9 +831,9 @@ namespace lpzrobots
 		double coxaFront = 95.7878*rotationScale;
 		double coxaMiddle = 116.1153*rotationScale;
 		double coxaHind = 160.8514*rotationScale;
-		double A = 60;
-		double B = 55;
-		double C = 70;
+		double A = 80;
+		double B = 50;
+		double C = 50;
 
 		//	TC JOINT
 		conf.fCoxaJointLimitF = -M_PI / 180.0 * A;				// 70 deg; forward (-) MAX --> normal walking range 60 deg MAX
@@ -837,9 +844,9 @@ namespace lpzrobots
 	    conf.rCoxaJointLimitB =  M_PI / 180.0 * (coxaHind-C);	// 70 deg; backward (+) MIN --> normal walking range -10 deg MIN
 
 	    double femur = 90*rotationScale;
-	    A = 0;
-	    B = 0;
-	    C = 0;
+	    A = 30;
+	    B = 30;
+	    C = 30;
 
 	    //	CT JOINT
 	    conf.fFemurJointLimitD =  M_PI / 180.0 * A;
@@ -850,9 +857,9 @@ namespace lpzrobots
 	    conf.rFemurJointLimitU = -M_PI / 180.0 * ( femur-C );
 
 	    double tibia = 170*rotationScale;
-		A = 180;
-		B = 180;
-		C = 180;
+		A = 85;
+		B = 85;
+		C = 85;
 
 	    //	FT JOINT
 	    conf.fTibiaJointLimitD =  M_PI / 180.0 * A;
@@ -862,28 +869,32 @@ namespace lpzrobots
 	    conf.rTibiaJointLimitD =  M_PI / 180.0 * C;
 	    conf.rTibiaJointLimitU = -M_PI / 180.0 * ( tibia-C );
 
-		/**
-		 * 	Power of the motors, and joint stiffness
-		 */
-		conf.backPower 	= 0.5;
-		conf.coxaPower 	= 3.0;
-		conf.femurPower = 2.0;
-		conf.tibiaPower = 2.0;
 
-		conf.backDamping 	= 0.5;
-		conf.coxaDamping 	= 0.5;
-		conf.femurDamping 	= 0.3;
-		conf.tibiaDamping 	= 0.3;
+		//PID parameters for the motors
+		conf.back_Kp 	= 5.0;
+		conf.coxa_Kp 	= 5.0;
+		conf.femur_Kp	= 5.0;
+		conf.tibia_Kp 	= 3.0;
+		conf.tarsus_Kp 	= 2.0;
 
-		// Does the following have any effect?
-		conf.backMaxVel 	= 0.0;//1.7 * 1.961 * M_PI;
+		conf.back_Kd 	= 0.8;
+		conf.coxa_Kd 	= 0.8;
+		conf.femur_Kd 	= 0.8;
+		conf.tibia_Kd 	= 0.2;
+		conf.tarsus_Kd	= 0.2;
+
+		conf.back_Ki 	= 0.2;
+		conf.coxa_Ki 	= 0.2;
+		conf.femur_Ki 	= 0.2;
+		conf.tibia_Ki 	= 0.2;
+		conf.tarsus_Ki	= 0.2;
+
+		// Does the following have any effect? TODO
+		conf.backMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
 		conf.coxaMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
 		conf.femurMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
 		conf.tibiaMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
-
-		conf.tarsusPower = 1.0;
-		conf.tarsusDamping = 0.0;
-		conf.tarsusMaxVel = 0.0;
+		conf.tarsusMaxVel 	= 10.0;
 
 		return conf;
 	}
