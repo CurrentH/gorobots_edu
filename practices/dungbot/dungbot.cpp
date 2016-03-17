@@ -303,19 +303,11 @@ namespace lpzrobots
 			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandle );
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;
+			odeHandle.addIgnoredPair(tibia, front);
+			odeHandle.addIgnoredPair(tibia, rear);
+			odeHandle.addIgnoredPair(tibia, front);
 			objects.push_back( tibia );
 
-			//	Tarsus placement
-			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
-								tibiaCenter;
-			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
-			Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
-			tarsus->setTexture( "tarsus.jpg" );
-			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
-			tarsus->setPose( tarsusCenter );
-			legs[leg].tarsus = tarsus;
-			objects.push_back( tarsus );
-			tarsusParts.push_back( tarsus );
 
 			//	Calculate anchor and axis for the joints.
 			const osg::Vec3 anchor1 = nullpos * c1;
@@ -326,8 +318,6 @@ namespace lpzrobots
 
 			const osg::Vec3 anchor3 = nullpos * c3;
 	        Axis axis3 = Axis( 0, 1, 0 )*c3;
-
-	        const osg::Vec3 anchor4 = nullpos * c4;
 
 	        //	Torso coxa hinge joint.
 	        if( conf.testCoxa || conf.testNo )
@@ -384,18 +374,35 @@ namespace lpzrobots
 	        	joints.push_back( l );
 	        }
 
-	        //	Tibia tarsus fixed joint.
-	        FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
-			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
-			joints.push_back(q);
+
 
 	        // Tarsus
-			if( true ) // Toggle tarsus
+			if( conf.testTarsus )
 			{
 				/**
 				 * 	Creating the small sections for the tarsus
 				 */
 				// New: tarsus
+
+				//	Tarsus placement
+				osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
+									tibiaCenter;
+				osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
+				Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
+				tarsus->setTexture( "tarsus.jpg" );
+				tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
+				tarsus->setPose( tarsusCenter );
+				legs[leg].tarsus = tarsus;
+				objects.push_back( tarsus );
+				tarsusParts.push_back( tarsus );
+
+		        const osg::Vec3 anchor4 = nullpos * c4;
+
+		        //	Tibia tarsus fixed joint.
+		        FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
+				q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
+				joints.push_back(q);
+
 				double angle = M_PI/12;
 				double radius = conf.tarsusRadius[i%3]/2;
 				double partLength = conf.tarsusLength[i%3]/5;
@@ -742,8 +749,6 @@ namespace lpzrobots
 	{
 		DungBotConf conf;
 
-		conf.testTarsusSensor = false;
-
 		/**
 		 * 	Test of the legs
 		 */
@@ -752,7 +757,10 @@ namespace lpzrobots
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
 		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
-		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
+		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
+		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
+
+		conf.testTarsusSensor = false;
 
 		//	----------- Body dimensions -------
 		//TODO Measure the correct height.
@@ -810,7 +818,7 @@ namespace lpzrobots
 
 		std::cout << "Total mass: " << 14.826/totalMass+23.823/totalMass+30.439/totalMass+2*(1.2979/totalMass+1.5078/totalMass+3.0317/totalMass+2.8817/totalMass+2.2400/totalMass+2.6258/totalMass+1.5269/totalMass+1.3660/totalMass+2.1793/totalMass) << std::endl;
 
-		//	Tarsus
+		//	Tar0us
 		conf.tarsusLength ={
 							3.4765/totalLength,
 							3.00413/totalLength,
@@ -848,7 +856,7 @@ namespace lpzrobots
 	    B = 30;
 	    C = 30;
 
-	    //	CT JOINT
+	    //	CT JOIN
 	    conf.fFemurJointLimitD =  M_PI / 180.0 * A;
 	    conf.fFemurJointLimitU = -M_PI / 180.0 * ( femur-A );
 	    conf.mFemurJointLimitD =  M_PI / 180.0 * B;
@@ -872,22 +880,22 @@ namespace lpzrobots
 
 		//PID parameters for the motors
 		conf.back_Kp 	= 5.0;
-		conf.coxa_Kp 	= 5.0;
-		conf.femur_Kp	= 5.0;
-		conf.tibia_Kp 	= 3.0;
-		conf.tarsus_Kp 	= 2.0;
+		conf.coxa_Kp 	= 25.0;
+		conf.femur_Kp	= 25.0;
+		conf.tibia_Kp 	= 15.0;
+		conf.tarsus_Kp 	= 1.0;
 
 		conf.back_Kd 	= 0.8;
-		conf.coxa_Kd 	= 0.8;
-		conf.femur_Kd 	= 0.8;
-		conf.tibia_Kd 	= 0.2;
-		conf.tarsus_Kd	= 0.2;
+		conf.coxa_Kd 	= 0.5;
+		conf.femur_Kd 	= 0.5;
+		conf.tibia_Kd 	= 0.7;
+		conf.tarsus_Kd	= 0.5;
 
 		conf.back_Ki 	= 0.2;
-		conf.coxa_Ki 	= 0.2;
-		conf.femur_Ki 	= 0.2;
-		conf.tibia_Ki 	= 0.2;
-		conf.tarsus_Ki	= 0.2;
+		conf.coxa_Ki 	= 1.8;
+		conf.femur_Ki 	= 1.8;
+		conf.tibia_Ki 	= 1.8;
+		conf.tarsus_Ki	= 1.8;
 
 		// Does the following have any effect? TODO
 		conf.backMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;

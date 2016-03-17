@@ -25,15 +25,6 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name )
 
 	nSensors = 0;
 	nMotors = 0;
-	//	Coxa
-	state[0][0] = 0.7; state[1][0] = 0.5; state[2][0] = -0.8; state[3][0] = 0.7; state[4][0] = 0.5; state[5][0] = -0.8;
-	state[0][1] = 0.7; state[1][1] = 0.5; state[2][1] = -0.8; state[3][1] = 0.7; state[4][1] = 0.5; state[5][1] = -0.8;
-	//	Femur
-	state[6][0] = 0.7; state[7][0] = 0.8; state[8][0] = 0.7; state[9][0] = 0.7; state[10][0] = 0.8; state[11][0] = 0.7;
-	state[6][1] = 0.7; state[7][1] = 0.8; state[8][1] = 0.7; state[9][1] = 0.7; state[10][1] = 0.8; state[11][1] = 0.7;
-	//	Tibia
-	state[12][0] = -1.0; state[13][0] = -1.0; state[14][0] = -1.0; state[15][0] = -1.0; state[16][0] = -1.0; state[17][0] = -1.0;
-	state[12][1] = 1.0; state[13][1] = 1.0; state[14][1] = 1.0; state[15][1] = 1.0; state[16][1] = 1.0; state[17][1] = 1.0;
 }
 
 DungBotEmptyController::~DungBotEmptyController()
@@ -42,37 +33,6 @@ DungBotEmptyController::~DungBotEmptyController()
 	outputFile.close();
 	}
 }
-
-/*
-double DungBotEmptyController::PID( double targetPosition, double actualPosition, int motorNumber, double deltaT )
-{
-	//TODO MAKE ALL THE MOTOR TO servoVel
-	//TODO MAKE A DEADBAND FOR WHEN ACCEPT A POSITION AND TURN OF THE MOTOR
-
-	errorlast[ motorNumber ] = error[ motorNumber ];
-	error[ motorNumber ] = targetPosition - actualPosition;
-	double output = ( Kp * error[motorNumber] ) + ( Ki * integral[motorNumber] ) + ( Kd * derivative[motorNumber] );
-
-	// First to if's is for saturation
-	if( output > maxOutput )
-	{
-		output = maxOutput;
-	}
-	else if( output < -maxOutput )
-	{
-		output = -maxOutput;
-	}
-	else
-	{
-		integral[motorNumber] += ( error[motorNumber] * deltaT );	// Else we just calculate the integral
-	}
-
-	integral[motorNumber] += ( error[motorNumber] * deltaT );	// Else we just calculate the integral
-	derivative[motorNumber] = ( error[motorNumber] - errorlast[motorNumber] )/deltaT;
-
-	return output;
-}
-*/
 
 void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNumber, motor* motor, int motorNumber )
 {
@@ -83,69 +43,9 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	ticks_since_init++;
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
-	double movement = 0.7;
+	double movement = 1;
 
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
-	{
-		if( i >= 0 && i < 6)
-		{
-			if( int(ticks_since_init)%2000 == 0 )
-			{
-				if( i%2 == 0 )
-				{
-					motor[i] = movement;//state[i][0];
-				}
-				else
-				{
-					motor[i] = movement;//state[i][0];
-				}
-
-			}
-			else if( int(ticks_since_init)%1000 == 0 )
-			{
-				if( i%2 == 0 )
-				{
-					motor[i] = -movement;//state[i][1];
-				}
-				else
-				{
-					motor[i] = -movement;//state[i][1];
-				}
-			}
-		}
-		if( i >= 6 && i < 12 ) //FEMUR
-		{
-			if( int(ticks_since_init)%2000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-			else if( int(ticks_since_init)%1000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-		}
-		if( i >= 12 && i < 18 )
-		{
-			if( int(ticks_since_init)%2000 == 0 )
-			{
-				motor[i] = -movement/2;//state[i][1];
-			}
-			else if( int(ticks_since_init)%1000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-		}
-		//motor[i] = 0.9;
-		//motor[i] = sin( 0.01 * ticks_since_init );
-		//motor[i] = PID( output, sensor[i], i, ticks_since_init );
-		//motor[i] = PID( sin( 0.01 * ticks_since_init ), sensor[i], i, ticks_since_init );
-
-		if( writeOutput )
-		{
-			motorInput.push_back( motor[i] );
-			sensorOutput.push_back( sensor[i] );
-		}
-	}
+	startPos(motor);
 
 	if( int( ticks_since_init )%200 == 0 )
 	{
@@ -234,3 +134,117 @@ bool DungBotEmptyController::restore( FILE* f )
 	Configurable::parse(f);
 	return true;
 }
+
+void DungBotEmptyController::startPos(motor* motor) {
+
+	double coxa_pos[3] 	= {0.5, -0.2, -0.7}; // Front, Middle, Rear
+	double femur_pos[3]	= {0.6, 0.5, 0.2};
+	double tibia_pos[3]	= {0.9, 0.9, 0.9};
+
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	{
+		if( i >= 0 && i < 6)		// COXA
+		{
+			motor[i] = coxa_pos[i%3];
+		}
+		if( i >= 6 && i < 12 ) 		// FEMUR
+		{
+			motor[i] = femur_pos[i%3];
+		}
+		if( i >= 12 && i < 18 ) 	// TIBIA
+		{
+			motor[i] = tibia_pos[i%3];
+		}
+	}
+
+}
+
+
+	/*//	Coxa
+	state[0][0] = state[3][0] =  0.7; // Front - Movement towards head?
+	state[0][1] = state[3][1] = -0.7; // Front - Movement away from head?
+
+	state[1][0] = state[4][0] =  0.7; // Middle - Movement towards head?
+	state[1][1] = state[4][1] = -0.7; // Middle - Movement away from head?
+
+	state[2][0] = state[5][0] =  0.7; // Rear - Movement towards head?
+	state[2][1] = state[5][1] = -0.7; // Rear - Movement away from head?
+
+	//	Femur
+	state[6][0] = state[9][0] =  0.7;	// Front - Upward
+	state[6][1] = state[9][1] = -0.7;	// Front - Downward
+
+	state[7][0] = state[10][0] =  0.7;	// Middle - Upward
+	state[7][1] = state[10][1] = -0.7;	// Middle - Downward
+
+	state[8][0] = state[11][0] =  0.7;	// Rear - Upward
+	state[8][1] = state[11][1] = -0.7;	// Rear - Downward
+
+	//	Tibia
+	state[12][0] = state[15][0] = 0.7;	// Front - Upward
+	state[12][1] = state[15][1] = -0.7; // Front - Downward
+
+	state[13][0] = state[16][0] = 0.7;	// Front - Upward
+	state[13][1] = state[16][1] = -0.7; // Front - Downward
+
+	state[14][0] = state[17][0] = 0.7;	// Front - Upward
+	state[15][1] = state[17][1] = -0.7; // Front - Downward*/
+
+/*for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	{
+		if( i >= 0 && i < 6)
+		{
+			if( int(ticks_since_init)%2000 == 0 )
+			{
+				if( i%2 == 0 )
+				{
+					motor[i] = -movement;//state[i][0];
+				}
+				else
+				{
+					motor[i] = -movement;//state[i][0];
+				}
+
+			}
+			else if( int(ticks_since_init)%1000 == 0 )
+			{
+				if( i%2 == 0 )
+				{
+					motor[i] = -movement;//state[i][1];
+				}
+				else
+				{
+					motor[i] = -movement;//state[i][1];
+				}
+			}
+		}
+		if( i >= 6 && i < 12 ) //FEMUR
+		{
+			if( int(ticks_since_init)%2000 == 0 )
+			{
+				motor[i] = movement;//state[i][1];
+			}
+			else if( int(ticks_since_init)%1000 == 0 )
+			{
+				motor[i] = movement;//state[i][1];
+			}
+		}
+		if( i >= 12 && i < 18 )
+		{
+			if( int(ticks_since_init)%2000 == 0 )
+			{
+				motor[i] = movement;//state[i][1];
+			}
+			else if( int(ticks_since_init)%1000 == 0 )
+			{
+				motor[i] = movement;//state[i][1];
+			}
+		}
+
+
+		if( writeOutput )
+		{
+			motorInput.push_back( motor[i] );
+			sensorOutput.push_back( sensor[i] );
+		}
+	}*/

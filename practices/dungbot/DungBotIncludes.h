@@ -23,6 +23,7 @@ namespace lpzrobots
 		bool testCoxa;
 		bool testFemur;
 		bool testTibia;
+		bool testTarsus;
 
 		//	Body
 		double massFront;

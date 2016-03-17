@@ -48,7 +48,7 @@ class DungBotEmptyController : public AbstractController
 
 	private:
 		void collectData( std::vector<double>, std::vector<double> );
-		double PID( double targetPosition, double actualPosition, int motorNumber, double deltaT );
+		void startPos( motor* motor );
 
 		bool writeOutput = false;
 
