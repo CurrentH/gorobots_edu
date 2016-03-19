@@ -840,7 +840,7 @@ namespace lpzrobots
 		double coxaMiddle = 116.1153*rotationScale;
 		double coxaHind = 160.8514*rotationScale;
 		double A = 80;
-		double B = 50;
+		double B = 50; //e
 		double C = 50;
 
 		//	TC JOINT
