@@ -755,11 +755,11 @@ namespace lpzrobots
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
-		conf.testTibia = false;	//	If true, then Tibia hinges is made else fixed joints.
-		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
+		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
+		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
 		conf.testTarsusSensor = false;
 
 		//	----------- Body dimensions -------
@@ -879,23 +879,23 @@ namespace lpzrobots
 
 
 		//PID parameters for the motors
-		conf.back_Kp 	= 5.0;
-		conf.coxa_Kp 	= 25.0;
-		conf.femur_Kp	= 25.0;
-		conf.tibia_Kp 	= 15.0;
-		conf.tarsus_Kp 	= 1.0;
+		conf.back_Kp 	= 32.0;
+		conf.coxa_Kp 	= 32.0;
+		conf.femur_Kp	= 32.0;
+		conf.tibia_Kp 	= 32.0;
+		conf.tarsus_Kp 	= 100.0;
 
-		conf.back_Kd 	= 0.8;
-		conf.coxa_Kd 	= 0.5;
-		conf.femur_Kd 	= 0.5;
-		conf.tibia_Kd 	= 0.7;
-		conf.tarsus_Kd	= 0.5;
+		conf.back_Kd 	= 0.2;
+		conf.coxa_Kd 	= 0.2;
+		conf.femur_Kd 	= 0.2;
+		conf.tibia_Kd 	= 0.2;
+		conf.tarsus_Kd	= 0.1;
 
 		conf.back_Ki 	= 0.2;
-		conf.coxa_Ki 	= 1.8;
-		conf.femur_Ki 	= 1.8;
-		conf.tibia_Ki 	= 1.8;
-		conf.tarsus_Ki	= 1.8;
+		conf.coxa_Ki 	= 1.5;
+		conf.femur_Ki 	= 1.5;
+		conf.tibia_Ki 	= 1.5;
+		conf.tarsus_Ki	= 1.5;
 
 		// Does the following have any effect? TODO
 		conf.backMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;

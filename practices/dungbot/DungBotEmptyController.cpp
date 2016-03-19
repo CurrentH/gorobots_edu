@@ -207,7 +207,7 @@ void DungBotEmptyController::startPos(motor* motor) {
 
 			}
 			else if( int(ticks_since_init)%1000 == 0 )
-			{
+			{true
 				if( i%2 == 0 )
 				{
 					motor[i] = -movement;//state[i][1];
