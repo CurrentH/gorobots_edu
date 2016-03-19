@@ -359,8 +359,8 @@ namespace lpzrobots
 	        // Femur tibia hinge joint.
 	        if( conf.testTibia || conf.testNo )
 	        {
-	        	HingeJoint* l = new HingeJoint( femurThorax, tibia, anchor3, -axis3 );
-				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius[i%3] * 3.1 );
+	        	HingeJoint* l = new HingeJoint( tibia, femurThorax, anchor3, -axis3 );
+				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
 				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 1.0, 10.0, 1.3, true );
@@ -370,7 +370,7 @@ namespace lpzrobots
 	        else
 	        {
 	        	FixedJoint* l = new FixedJoint( femurThorax, tibia, anchor3 );
-	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tibiaRadius[i%3] * 3.1 );
+	        	l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 	        	joints.push_back( l );
 	        }
 
@@ -755,7 +755,7 @@ namespace lpzrobots
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
@@ -882,13 +882,13 @@ namespace lpzrobots
 		conf.back_Kp 	= 32.0;
 		conf.coxa_Kp 	= 32.0;
 		conf.femur_Kp	= 32.0;
-		conf.tibia_Kp 	= 32.0;
+		conf.tibia_Kp 	= 20.0;
 		conf.tarsus_Kp 	= 100.0;
 
 		conf.back_Kd 	= 0.2;
 		conf.coxa_Kd 	= 0.2;
-		conf.femur_Kd 	= 0.2;
-		conf.tibia_Kd 	= 0.2;
+		conf.femur_Kd 	= 0.05;
+		conf.tibia_Kd 	= 0.05;
 		conf.tarsus_Kd	= 0.1;
 
 		conf.back_Ki 	= 0.2;

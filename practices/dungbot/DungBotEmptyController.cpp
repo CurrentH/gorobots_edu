@@ -43,7 +43,6 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	ticks_since_init++;
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
-	double movement = 1;
 
 	startPos(motor);
 
@@ -139,7 +138,7 @@ void DungBotEmptyController::startPos(motor* motor) {
 
 	double coxa_pos[3] 	= {0.5, -0.2, -0.7}; // Front, Middle, Rear
 	double femur_pos[3]	= {0.6, 0.5, 0.2};
-	double tibia_pos[3]	= {0.9, 0.9, 0.9};
+	double tibia_pos[3]	= {-0.2, -0.2, -0.2};
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
