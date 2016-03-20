@@ -326,8 +326,7 @@ namespace lpzrobots
 				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
-				OneAxisServo * coxaMotor = new OneAxisServo( j, -1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, true );
-				//OneAxisServo * coxaMotor = new OneAxisServoVel( odeHandle, j, -1.0, 1.0, 1.0, 0.05, 20.0, 1.3 );
+				OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
 	        }
@@ -345,7 +344,7 @@ namespace lpzrobots
 				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
-				OneAxisServo * femurMotor = new OneAxisServo( k, -1.0, 1.0, 1.0, 0.2, 1.0, 10.0, 1.3, true );
+				OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -363,7 +362,7 @@ namespace lpzrobots
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
-				OneAxisServo * tibiaMotor = new OneAxisServo( l, -1.0, 1.0, 1.0, 0.2, 1.0, 10.0, 1.3, true );
+				OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
@@ -840,7 +839,7 @@ namespace lpzrobots
 		double coxaMiddle = 116.1153*rotationScale;
 		double coxaHind = 160.8514*rotationScale;
 		double A = 80;
-		double B = 50; //e
+		double B = 50;
 		double C = 50;
 
 		//	TC JOINT
@@ -878,17 +877,19 @@ namespace lpzrobots
 	    conf.rTibiaJointLimitU = -M_PI / 180.0 * ( tibia-C );
 
 
-		//PID parameters for the motors
-		conf.back_Kp 	= 32.0;
-		conf.coxa_Kp 	= 32.0;
-		conf.femur_Kp	= 32.0;
-		conf.tibia_Kp 	= 20.0;
-		conf.tarsus_Kp 	= 100.0;
+		// This is the maximum force for the motors (should just be height enough)
+	    // Consider using another conf. var
+		conf.back_Kp 	= 1000.0;
+		conf.coxa_Kp 	= 1000.0;
+		conf.femur_Kp	= 1000.0;
+		conf.tibia_Kp 	= 1000.0;
+		conf.tarsus_Kp 	= 1000.0;
 
+		// Kd and Ki parameters are not used anymore
 		conf.back_Kd 	= 0.2;
 		conf.coxa_Kd 	= 0.2;
-		conf.femur_Kd 	= 0.05;
-		conf.tibia_Kd 	= 0.05;
+		conf.femur_Kd 	= 0.0;
+		conf.tibia_Kd 	= 0.0;
 		conf.tarsus_Kd	= 0.1;
 
 		conf.back_Ki 	= 0.2;
@@ -897,12 +898,12 @@ namespace lpzrobots
 		conf.tibia_Ki 	= 1.5;
 		conf.tarsus_Ki	= 1.5;
 
-		// Does the following have any effect? TODO
-		conf.backMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 10.0;//1.7 * 1.961 * M_PI;
-		conf.tarsusMaxVel 	= 10.0;
+		// The following sets the max output for the motor. It scales the input to fit this
+		// So that 1 = maxVel TODO REFACTOR THIS VAR
+		conf.backMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
 
 		return conf;
 	}
