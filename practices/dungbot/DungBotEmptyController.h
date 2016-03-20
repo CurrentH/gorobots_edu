@@ -22,6 +22,7 @@
 #include <fstream>
 #include <map>
 #include <vector>
+#include <cmath>
 
 class DungBotEmptyController : public AbstractController
 {
@@ -48,7 +49,8 @@ class DungBotEmptyController : public AbstractController
 
 	private:
 		void collectData( std::vector<double>, std::vector<double> );
-		void startPos( motor* motor );
+		void PID( double targetPosition, int motorNumber );
+		void stand(motor* motor);
 
 		bool writeOutput = false;
 

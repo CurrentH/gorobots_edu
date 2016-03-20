@@ -30,6 +30,9 @@
 #include <ode_robots/constantmotor.h>
 #include <ode_robots/spring.h>
 
+// include PID controller
+#include "controller_PID.h"
+
 // Extra includes
 #include <selforg/inspectable.h>
 #include <selforg/configurable.h>		//Not used as is.. Should maybe used for addParameter, but that doesn't seem to work with it.

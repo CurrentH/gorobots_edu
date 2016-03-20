@@ -247,12 +247,6 @@ namespace lpzrobots
 	    {
 			LegPos leg = LegPos(i);
 
-			//	+1 for R0,R1,R2, -1 for L0,L1,L2
-
-	        //const double backLegInverse = ( leg == R1 || leg == R2 ) + ( leg == L1 || leg == L2 );
-			//const double frontLegInverse = ( leg == R0 ) + ( leg == L0 );
-			//const double backLegOnly = ( leg == L1 || leg == L2 || leg == R1 || leg == R2 );
-			//const double fb = (leg == L0 || leg == R0) - (leg == L1 || leg == L2 || leg == R1 || leg == R2);
 			const double frontLegOnly = ( leg == R0 || leg == L0 );
 			const double middleLegOnly = ( leg == R1 || leg == L1 );
 			const double hindLegOnly = ( leg == R2 || leg == L2 );
@@ -345,6 +339,7 @@ namespace lpzrobots
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
 				OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
+				//controller_PID* femurPID = new controller_PID(); //TODO, get the other constructor to work
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -378,11 +373,6 @@ namespace lpzrobots
 	        // Tarsus
 			if( conf.testTarsus )
 			{
-				/**
-				 * 	Creating the small sections for the tarsus
-				 */
-				// New: tarsus
-
 				//	Tarsus placement
 				osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
 									tibiaCenter;
@@ -684,7 +674,6 @@ namespace lpzrobots
 				tarsusSpring->setPower( conf.tarsus_Kp );
 				tarsusSpring->setDamping( conf.tarsus_Kd );
 				tarsusSpring->setIntegration( conf.tarsus_Ki );
-
 				tarsusSpring->setPower( conf.tarsusMaxVel );
 			}
 
@@ -694,8 +683,7 @@ namespace lpzrobots
 				tc->setPower( conf.coxa_Kp );
 				tc->setDamping( conf.coxa_Kd );
 				tc->setIntegration( conf.coxa_Ki );
-
-				tc->setMaxVel(conf.coxaMaxVel);
+				tc->setMaxVel(conf.coxaMaxVel);			// Power scale for the motor
 				;
 				if (it->first == L2 || it->first == R2) tc->setMinMax(conf.rCoxaJointLimitF, conf.rCoxaJointLimitB);
 				if (it->first == L1 || it->first == R1) tc->setMinMax(conf.mCoxaJointLimitF, conf.mCoxaJointLimitB);
@@ -708,8 +696,8 @@ namespace lpzrobots
 				ctr->setPower( conf.femur_Kp );
 				ctr->setDamping( conf.femur_Kd );
 				ctr->setIntegration( conf.femur_Ki );
+				ctr->setMaxVel( conf.femurMaxVel );   	// Power scale for the motor
 
-				ctr->setMaxVel( conf.femurMaxVel );
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
 				if (it->first == L1 || it->first == R1) ctr->setMinMax(conf.rFemurJointLimitU, conf.mFemurJointLimitD);
@@ -722,8 +710,7 @@ namespace lpzrobots
 				fti->setPower( conf.tibia_Kp );
 				fti->setDamping( conf.tibia_Kd );
 				fti->setIntegration( conf.tibia_Ki );
-
-				fti->setMaxVel( conf.tibiaMaxVel );
+				fti->setMaxVel( conf.tibiaMaxVel ); 	// Power scale for the motor
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
 				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
