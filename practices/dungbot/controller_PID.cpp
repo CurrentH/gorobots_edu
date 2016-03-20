@@ -1,7 +1,5 @@
-#include <ode-dbl/ode.h>
-#include <iostream>
-
 #include "controller_PID.h"
+
 using namespace std;
 
 namespace lpzrobots {
@@ -19,9 +17,6 @@ controller_PID::controller_PID(OneAxisJoint* joint, double maxPower,
     lasterror      = 0;
     force          = 0;
 }
-
-controller_PID::controller_PID(){
-};
 
 double controller_PID::step(double target_position) {
 	target_position = clip(target_position, -1.0, 1.0);

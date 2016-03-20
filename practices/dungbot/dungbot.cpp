@@ -339,7 +339,6 @@ namespace lpzrobots
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
 				OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
-				//controller_PID* femurPID = new controller_PID(); //TODO, get the other constructor to work
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }

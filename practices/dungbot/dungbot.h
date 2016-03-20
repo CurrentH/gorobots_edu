@@ -35,7 +35,7 @@
 
 // Extra includes
 #include <selforg/inspectable.h>
-#include <selforg/configurable.h>		//Not used as is.. Should maybe used for addParameter, but that doesn't seem to work with it.
+#include <selforg/configurable.h>
 #include <ode_robots/oderobot.h>
 #include <vector>
 #include <iostream>

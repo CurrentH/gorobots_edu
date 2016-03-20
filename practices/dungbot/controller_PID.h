@@ -1,6 +1,10 @@
 #ifndef __controller_PID_H
 #define __controller_PID_H
 
+#include "dungbot.h"
+#include <ode-dbl/ode.h>
+#include <iostream>
+
 namespace lpzrobots {
 class controller_PID
   {
@@ -33,11 +37,9 @@ class controller_PID
     controller_PID ( OneAxisJoint* joint, double maxPower, double _min,
     				 double _max, double KP , double KI , double KD );
 
-    controller_PID ();
     ~controller_PID();
 
     double step(double target_position);
-
 
   };
 

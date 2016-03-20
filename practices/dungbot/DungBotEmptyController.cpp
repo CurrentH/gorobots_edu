@@ -16,7 +16,7 @@ using namespace matrix;
 // The constructor implements the AbstractController interface. A trial number can be
 // passed to the constructor in order to automate variations in the controller setup
 // over different trials.
-DungBotEmptyController::DungBotEmptyController( const std::string& name )
+DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 : AbstractController( name, "1.0" )
 {
 	initialised = false;
@@ -155,89 +155,13 @@ bool DungBotEmptyController::restore( FILE* f )
 }
 
 
-void DungBotEmptyController::PID( double targetPosition, int motorNumber )
+void DungBotEmptyController::make_PID(  )
 {
-	/*
-	double Kp, Ki, Kd; 												//TODO find values for these (MATLAB or MATHEMATICA)
-	double error[17], integral[17], derivative[17], errorlast[17];  //TODO these needs to be saved somewhere else, so that they keep their value.
-	double maxOutput = 1; 											//TODO find a value for this (it should just be maxVel?)
-	double threshold = 0.005;
-
-	while(error > threshold)
-	{
-		errorlast[motorNumber] = error[motorNumber];
-		error[motorNumber] = targetPosition - sensor[motorNumber];
-		double output = (Kp * error[motorNumber]) + (Ki * integral[motorNumber]) + (Kd * derivative[motorNumber]);
-
-		// First to if's is for saturation
-		if (output > maxOutput)
-			output = maxOutput;
-		else if (output < -maxOutput)
-			output = -maxOutput;
-		else
-			 integral[motorNumber] += (error[motorNumber] * 0);
-
-		derivative[motorNumber] = (error[motorNumber] - errorlast[motorNumber])/0; // HOW TO GET THE TIME / WHAT TO USE FOR DELTA T?
-
-		motor[motorNumber] = output;
-	}
-	*/
+	// make a pid for every joint, how to get deltaT?
 }
 
-void DungBotEmptyController::stand(motor* motor) {
-
-	/*double coxa_pos[3] 	= {0.5, -0.2, -0.7}; // Front, Middle, Rear
-	double femur_pos[3]	= {0.6, 0.5, 0.2};
-	double tibia_pos[3]	= {-0.9, -0.9, -0.9};
-	int rotation_way = 1;
-
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
-	{
-		if( i >= 0 && i < 6)		// COXA
-		{
-			if(coxa_pos[i%3] < sensor[i]){
-				while(coxa_pos[i%3] < sensor[i])
-				{
-					motor[i] = 0.3;
-				}
-			} else {
-				while(coxa_pos[i%3] > sensor[i])
-				{
-					motor[i] = -0.3;
-				}
-			}
-		}
-
-		if( i >= 6 && i < 12 ) 		// FEMUR
-		{
-			if(femur_pos[i%3] < sensor[i]){
-				while(femur_pos[i%3] < sensor[i])
-				{
-					motor[i] = 0.3;
-				}
-			} else {
-				while(femur_pos[i%3] > sensor[i])
-				{
-					motor[i] = -0.3;
-				}
-			}
-		}
-
-		if( i >= 12 && i < 18 ) 	// TIBIA
-		{
-			if(tibia_pos[i%3] < sensor[i]){
-				while(tibia_pos[i%3] < sensor[i])
-				{
-					motor[i] = 0.3;
-				}
-			} else {
-				while(tibia_pos[i%3] > sensor[i])
-				{
-					motor[i] = -0.3;
-				}
-			}
-			stand(motor);}
-	}*/
+void DungBotEmptyController::stand(motor* motor)
+{
 }
 
 
