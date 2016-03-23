@@ -320,7 +320,8 @@ namespace lpzrobots
 				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
-				OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
+				//OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
+				OneAxisServo * coxaMotor = new OneAxisServoVelPos(odeHandle, j, -1.0, 1.0, 10, 0.05, 2.0, 10, 0.05, 2.0, 20.0, 1.0, true);
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
 	        }

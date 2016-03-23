@@ -51,11 +51,8 @@ class DungBotEmptyController : public AbstractController
 
 	private:
 		void collectData( std::vector<double>, std::vector<double> );
-		void make_PID(  );
-		void stand(motor* motor);
+		void stand( motor* motor );
 
-		typedef std::vector< lpzrobots::controller_PID* > PIDList;
-		PIDList pid_lost;
 		//controller_PID* femurPID = new controller_PID(k, conf.femurMaxVel, -1.0, 1.0, 10.0, 0.05, 0.01); // Delete / implement in controller
 		//pid_list.push_back( femurPID );  // Delete / implement in controller
 

@@ -47,22 +47,21 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	//stand(motor);
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
-		{
+	{
 		double output_temp = sin( 0.01 * ticks_since_init );
-			if( i >= 0 && i < 6)		// COXA
-			{
-				motor[i] = output_temp;
-			}
-			if( i >= 6 && i < 12 ) 		// FEMUR
-			{
-				motor[i] = output_temp;
-			}
-			if( i >= 12 && i < 18 ) 	// TIBIA
-			{
-				motor[i] = output_temp;
-			}
+		if( i >= 0 && i < 6)		// COXA
+		{
+			motor[i] = output_temp;
 		}
-
+		if( i >= 6 && i < 12 ) 		// FEMUR
+		{
+			motor[i] = output_temp;
+		}
+		if( i >= 12 && i < 18 ) 	// TIBIA
+		{
+			motor[i] = output_temp;
+		}
+	}
 
 	//startPos(motor);
 
@@ -154,14 +153,9 @@ bool DungBotEmptyController::restore( FILE* f )
 	return true;
 }
 
-
-void DungBotEmptyController::make_PID(  )
+void DungBotEmptyController::stand( motor* motor )
 {
-	// make a pid for every joint, how to get deltaT?
-}
 
-void DungBotEmptyController::stand(motor* motor)
-{
 }
 
 
