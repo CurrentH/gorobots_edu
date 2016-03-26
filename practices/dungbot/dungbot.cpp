@@ -339,7 +339,8 @@ namespace lpzrobots
 				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
-				OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
+				//OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
+				OneAxisServo * femurMotor = new OneAxisServoVelPos(odeHandle, k, -1.0, 1.0, 10, 0.05, 2.0, 10, 0.05, 2.0, 20.0, 1.0, true);
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -357,7 +358,8 @@ namespace lpzrobots
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
-				OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
+				//OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
+				OneAxisServo * tibiaMotor = new OneAxisServoVelPos(odeHandle, l, -1.0, 1.0, 10, 0.05, 2.0, 10, 0.05, 2.0, 20.0, 1.0, true);
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
