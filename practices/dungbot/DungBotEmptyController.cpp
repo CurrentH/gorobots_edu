@@ -41,24 +41,26 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	//	Update internal time
 	ticks_since_init++;
-	double output_temp = sin( 0.005 * ticks_since_init );
+	double output_temp = sin( 0.001 * ticks_since_init );
 
 	//stand(motor);
 	output_temp += 10;
+
+	motor[12] = output_temp;
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
 		if( i >= 0 && i < 6)		// COXA
 		{
-			motor[i] = output_temp;
+			//	motor[i] = out	put_temp;
 		}
 		if( i >= 6 && i < 12 ) 		// FEMUR
 		{
-			motor[i] = output_temp;
+			//motor[i] = output_temp;
 		}
 		if( i >= 12 && i < 18 ) 	// TIBIA
 		{
-			motor[i] = output_temp;
+			//motor[i] = output_temp;
 		}
 	}
 

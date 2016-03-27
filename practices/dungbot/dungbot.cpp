@@ -370,8 +370,6 @@ namespace lpzrobots
 	        	joints.push_back( l );
 	        }
 
-
-
 	        // Tarsus
 			if( conf.testTarsus )
 			{
@@ -686,7 +684,6 @@ namespace lpzrobots
 				tc->setDamping( conf.coxa_Kd );
 				tc->setIntegration( conf.coxa_Ki );
 				tc->setMaxVel( conf.coxaMaxVel );			// Power scale for the motor
-				tc->setOuterLoopParameters( 1000.0, 500.0, 10.0 );
 
 				if (it->first == L2 || it->first == R2) tc->setMinMax(conf.rCoxaJointLimitF, conf.rCoxaJointLimitB);
 				if (it->first == L1 || it->first == R1) tc->setMinMax(conf.mCoxaJointLimitF, conf.mCoxaJointLimitB);
@@ -700,7 +697,6 @@ namespace lpzrobots
 				ctr->setDamping( conf.femur_Kd );
 				ctr->setIntegration( conf.femur_Ki );
 				ctr->setMaxVel( conf.femurMaxVel );   	// Power scale for the motor
-				ctr->setOuterLoopParameters( 1000.0, 500.0, 10.0 );
 
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
@@ -715,7 +711,6 @@ namespace lpzrobots
 				fti->setDamping( conf.tibia_Kd );
 				fti->setIntegration( conf.tibia_Ki );
 				fti->setMaxVel( conf.tibiaMaxVel ); 	// Power scale for the motor
-				fti->setOuterLoopParameters( 1000.0, 500.0, 10.0 );
 
 				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
 				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
@@ -809,7 +804,7 @@ namespace lpzrobots
 
 		std::cout << "Total mass: " << 14.826/totalMass+23.823/totalMass+30.439/totalMass+2*(1.2979/totalMass+1.5078/totalMass+3.0317/totalMass+2.8817/totalMass+2.2400/totalMass+2.6258/totalMass+1.5269/totalMass+1.3660/totalMass+2.1793/totalMass) << std::endl;
 
-		//	Tar0us
+		//	Tarsus
 		conf.tarsusLength ={
 							3.4765/totalLength,
 							3.00413/totalLength,
@@ -871,11 +866,11 @@ namespace lpzrobots
 
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
-		conf.back_Kp 	= 1000.0;
-		conf.coxa_Kp 	= 1000.0;
-		conf.femur_Kp	= 1000.0;
-		conf.tibia_Kp 	= 1000.0;
-		conf.tarsus_Kp 	= 1000.0;
+		conf.back_Kp 	= 100.0;
+		conf.coxa_Kp 	= 100.0;
+		conf.femur_Kp	= 100.0;
+		conf.tibia_Kp 	= 100.0;
+		conf.tarsus_Kp 	= 100.0;
 
 		// Kd and Ki parameters are not used anymore
 		conf.back_Kd 	= 0.2;
