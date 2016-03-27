@@ -685,8 +685,9 @@ namespace lpzrobots
 				tc->setPower( conf.coxa_Kp );
 				tc->setDamping( conf.coxa_Kd );
 				tc->setIntegration( conf.coxa_Ki );
-				tc->setMaxVel(conf.coxaMaxVel);			// Power scale for the motor
-				;
+				tc->setMaxVel( conf.coxaMaxVel );			// Power scale for the motor
+				tc->setOuterLoopParameters( 1000.0, 500.0, 10.0 );
+
 				if (it->first == L2 || it->first == R2) tc->setMinMax(conf.rCoxaJointLimitF, conf.rCoxaJointLimitB);
 				if (it->first == L1 || it->first == R1) tc->setMinMax(conf.mCoxaJointLimitF, conf.mCoxaJointLimitB);
 				if (it->first == L0 || it->first == R0) tc->setMinMax(conf.fCoxaJointLimitF, conf.fCoxaJointLimitB);
@@ -699,6 +700,7 @@ namespace lpzrobots
 				ctr->setDamping( conf.femur_Kd );
 				ctr->setIntegration( conf.femur_Ki );
 				ctr->setMaxVel( conf.femurMaxVel );   	// Power scale for the motor
+				ctr->setOuterLoopParameters( 1000.0, 500.0, 10.0 );
 
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
@@ -713,7 +715,8 @@ namespace lpzrobots
 				fti->setDamping( conf.tibia_Kd );
 				fti->setIntegration( conf.tibia_Ki );
 				fti->setMaxVel( conf.tibiaMaxVel ); 	// Power scale for the motor
-				//	Min is up, up is negative
+				fti->setOuterLoopParameters( 1000.0, 500.0, 10.0 );
+
 				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
 				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
 				if (it->first == L0 || it->first == R0) fti->setMinMax(conf.fTibiaJointLimitU, conf.fTibiaJointLimitD);
@@ -743,8 +746,8 @@ namespace lpzrobots
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		conf.testTarsus = true; // If true, then tarsus is created, else it is not created

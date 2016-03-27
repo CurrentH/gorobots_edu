@@ -50,6 +50,7 @@ class DungBotEmptyController : public AbstractController
 		std::ofstream outputFile;
 
 	private:
+		void outputData( const sensor*, motor* );
 		void collectData( std::vector<double>, std::vector<double> );
 		void stand( motor* motor );
 
