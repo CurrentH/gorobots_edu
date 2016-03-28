@@ -41,30 +41,20 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	//	Update internal time
 	ticks_since_init++;
-	double output_temp = sin( 0.001 * ticks_since_init );
 
-	//stand(motor);
-	output_temp += 10;
-
-	motor[12] = output_temp;
-
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	if( int(ticks_since_init) < 1000 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
-		if( i >= 0 && i < 6)		// COXA
-		{
-			//	motor[i] = out	put_temp;
-		}
-		if( i >= 6 && i < 12 ) 		// FEMUR
-		{
-			//motor[i] = output_temp;
-		}
-		if( i >= 12 && i < 18 ) 	// TIBIA
-		{
-			//motor[i] = output_temp;
-		}
+		start(motor, 0.1);
+		if( int(ticks_since_init)%100==0 )
+			std::cout << (1000-ticks_since_init)/100 << std::endl;
+		return;
 	}
 
-	//startPos(motor);
+	stand(forceVector);
+	//walkNet(forceVector);
+	//rollBall(forceVector);
+	moveRobot(motor, forceVector);
+
 
 	if( int( ticks_since_init )%200 == 0 )
 	{
@@ -162,109 +152,53 @@ bool DungBotEmptyController::restore( FILE* f )
 	return true;
 }
 
-void DungBotEmptyController::stand( motor* motor )
+void DungBotEmptyController::stand( double* forceVector)
 {
+	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
+	double femur_pos[3]	= {0.2, 0.0, 0.5};
+	double tibia_pos[3]	= {-0.6, -0.9, -0.4};
 
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	{
+		if( i >= 0 && i < 6)		// COXA
+		{
+			forceVector[i] = 10 + coxa_pos[i%3];
+		}
+		if( i >= 6 && i < 12 ) 		// FEMUR
+		{
+			forceVector[i] = 10 + femur_pos[i%3];
+		}
+		if( i >= 12 && i < 18 ) 	// TIBIA
+		{
+			forceVector[i] = 10 + tibia_pos[i%3];
+			//forceVector[i] = 10 + sin( 0.01 * ticks_since_init ); // Test with Sine
+		}
+	}
 }
 
+void DungBotEmptyController::start(motor* motor, double vel) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*//	Coxa
-	state[0][0] = state[3][0] =  0.7; // Front - Movement towards head?
-	state[0][1] = state[3][1] = -0.7; // Front - Movement away from head?
-
-	state[1][0] = state[4][0] =  0.7; // Middle - Movement towards head?
-	state[1][1] = state[4][1] = -0.7; // Middle - Movement away from head?
-
-	state[2][0] = state[5][0] =  0.7; // Rear - Movement towards head?
-	state[2][1] = state[5][1] = -0.7; // Rear - Movement away from head?
-
-	//	Femur
-	state[6][0] = state[9][0] =  0.7;	// Front - Upward
-	state[6][1] = state[9][1] = -0.7;	// Front - Downward
-
-	state[7][0] = state[10][0] =  0.7;	// Middle - Upward
-	state[7][1] = state[10][1] = -0.7;	// Middle - Downward
-
-	state[8][0] = state[11][0] =  0.7;	// Rear - Upward
-	state[8][1] = state[11][1] = -0.7;	// Rear - Downward
-
-	//	Tibia
-	state[12][0] = state[15][0] = 0.7;	// Front - Upward
-	state[12][1] = state[15][1] = -0.7; // Front - Downward
-
-	state[13][0] = state[16][0] = 0.7;	// Front - Upward
-	state[13][1] = state[16][1] = -0.7; // Front - Downward
-
-	state[14][0] = state[17][0] = 0.7;	// Front - Upward
-	state[15][1] = state[17][1] = -0.7; // Front - Downward*/
-
-/*for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
-		if( i >= 0 && i < 6)
+		if( i >= 0 && i < 6)		// COXA
 		{
-			if( int(ticks_since_init)%2000 == 0 )
-			{
-				if( i%2 == 0 )
-				{
-					motor[i] = -movement;//state[i][0];
-				}
-				else
-				{
-					motor[i] = -movement;//state[i][0];
-				}
+			motor[i] = -vel;
+		}
+		if( i >= 6 && i < 12 ) 		// FEMUR
+		{
+			motor[i] = vel;
+		}
+		if( i >= 12 && i < 18 ) 	// TIBIA
+		{
+			motor[i] = -vel;
+		}
+	}
+}
 
-			}
-			else if( int(ticks_since_init)%1000 == 0 )
-			{true
-				if( i%2 == 0 )
-				{
-					motor[i] = -movement;//state[i][1];
-				}
-				else
-				{
-					motor[i] = -movement;//state[i][1];
-				}
-			}
-		}
-		if( i >= 6 && i < 12 ) //FEMUR
-		{
-			if( int(ticks_since_init)%2000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-			else if( int(ticks_since_init)%1000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-		}
-		if( i >= 12 && i < 18 )
-		{
-			if( int(ticks_since_init)%2000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-			else if( int(ticks_since_init)%1000 == 0 )
-			{
-				motor[i] = movement;//state[i][1];
-			}
-		}
+void DungBotEmptyController::moveRobot(motor* motor, double* forceVector) {
 
-
-		if( writeOutput )
-		{
-			motorInput.push_back( motor[i] );
-			sensorOutput.push_back( sensor[i] );
-		}
-	}*/
+	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	{
+		motor[i] = forceVector[i];
+	}
+}

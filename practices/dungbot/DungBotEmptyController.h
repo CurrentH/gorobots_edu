@@ -52,12 +52,14 @@ class DungBotEmptyController : public AbstractController
 	private:
 		void outputData( const sensor*, motor* );
 		void collectData( std::vector<double>, std::vector<double> );
-		void stand( motor* motor );
+		void start( motor* motor, double );
 
-		//controller_PID* femurPID = new controller_PID(k, conf.femurMaxVel, -1.0, 1.0, 10.0, 0.05, 0.01); // Delete / implement in controller
-		//pid_list.push_back( femurPID );  // Delete / implement in controller
+		void stand(double* arr );
+		void moveRobot( motor* motor, double* arr);
+
 
 		bool writeOutput = false;
+		double forceVector[17] = {0};
 
 		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
 };

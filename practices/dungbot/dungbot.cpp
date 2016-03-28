@@ -321,7 +321,7 @@ namespace lpzrobots
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
 				//OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
-				OneAxisServo * coxaMotor = new OneAxisServoVelPos(odeHandle, j, -1.0, 1.0, 10, 0.05, 2.0, 10, 0.05, 2.0, 20.0, 1.0, true);
+				OneAxisServo * coxaMotor = new OneAxisServoVelPos(odeHandle, j, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
 	        }
@@ -340,7 +340,7 @@ namespace lpzrobots
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
 				//OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
-				OneAxisServo * femurMotor = new OneAxisServoVelPos(odeHandle, k, -1.0, 1.0, 10, 0.05, 2.0, 10, 0.05, 2.0, 20.0, 1.0, true);
+				OneAxisServo * femurMotor = new OneAxisServoVelPos(odeHandle, k, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
 	        }
@@ -359,7 +359,7 @@ namespace lpzrobots
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
 				//OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
-				OneAxisServo * tibiaMotor = new OneAxisServoVelPos(odeHandle, l, -1.0, 1.0, 10, 0.05, 2.0, 10, 0.05, 2.0, 20.0, 1.0, true);
+				OneAxisServo * tibiaMotor = new OneAxisServoVelPos(odeHandle, l, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
 	        }
@@ -741,8 +741,8 @@ namespace lpzrobots
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = false;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = false;	//	If true, then Femur hinges is made else fixed joints.
+		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
@@ -867,22 +867,22 @@ namespace lpzrobots
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
 		conf.back_Kp 	= 100.0;
-		conf.coxa_Kp 	= 100.0;
-		conf.femur_Kp	= 100.0;
-		conf.tibia_Kp 	= 100.0;
+		conf.coxa_Kp 	= 7000.0;
+		conf.femur_Kp	= 7000.0;
+		conf.tibia_Kp 	= 7000.0;
 		conf.tarsus_Kp 	= 100.0;
 
 		// Kd and Ki parameters are not used anymore
 		conf.back_Kd 	= 0.2;
-		conf.coxa_Kd 	= 0.2;
-		conf.femur_Kd 	= 0.0;
-		conf.tibia_Kd 	= 0.0;
+		conf.coxa_Kd 	= 1.2;
+		conf.femur_Kd 	= 1.2;
+		conf.tibia_Kd 	= 1.2;
 		conf.tarsus_Kd	= 0.1;
 
 		conf.back_Ki 	= 0.2;
-		conf.coxa_Ki 	= 1.5;
-		conf.femur_Ki 	= 1.5;
-		conf.tibia_Ki 	= 1.5;
+		conf.coxa_Ki 	= 0.7;
+		conf.femur_Ki 	= 0.7;
+		conf.tibia_Ki 	= 0.7;
 		conf.tarsus_Ki	= 1.5;
 
 		// The following sets the max output for the motor. It scales the input to fit this
