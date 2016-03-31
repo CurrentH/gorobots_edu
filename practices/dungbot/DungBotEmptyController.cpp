@@ -162,15 +162,15 @@ void DungBotEmptyController::stand( double* forceVector)
 	{
 		if( i >= 0 && i < 6)		// COXA
 		{
-			forceVector[i] = 10 + coxa_pos[i%3];
+			forceVector[i] = coxa_pos[i%3];
 		}
 		if( i >= 6 && i < 12 ) 		// FEMUR
 		{
-			forceVector[i] = 10 + femur_pos[i%3];
+			forceVector[i] = femur_pos[i%3];
 		}
 		if( i >= 12 && i < 18 ) 	// TIBIA
 		{
-			forceVector[i] = 10 + tibia_pos[i%3];
+			forceVector[i] = tibia_pos[i%3];
 			//forceVector[i] = 10 + sin( 0.01 * ticks_since_init ); // Test with Sine
 		}
 	}
