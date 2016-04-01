@@ -72,7 +72,7 @@ namespace lpzrobots
 			typedef DungBotMotorSensor::DungBotSensorNames SensorName;
 
 		public:
-			//	Public methods
+		//	Public methods
 			static DungBotConf getDefaultConf( void );
 
 			DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
