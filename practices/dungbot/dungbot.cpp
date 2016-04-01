@@ -31,6 +31,7 @@ namespace lpzrobots
 		femur = 0;
 		tibia = 0;
 		tarsus = 0;
+		foot = 0;
 	}
 
     DungBot::DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle, const DungBotConf& conf, const string& name )

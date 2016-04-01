@@ -22,7 +22,6 @@
 #include <ode_robots/passivebox.h>
 
 #include "dungbot.h"
-
 #include "DungBotEmptyController.h"
 
 namespace lpzrobots

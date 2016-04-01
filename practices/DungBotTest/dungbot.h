@@ -156,7 +156,6 @@ namespace lpzrobots
 		          Primitive * coxa;
 		          Primitive * femur; 	//Called second in AmosII
 		          Primitive * tibia;
-		          Primitive * foot;
 		      };
 
 		private:

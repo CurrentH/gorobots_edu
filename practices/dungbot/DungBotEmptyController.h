@@ -9,8 +9,8 @@
 *   Should this software ever become self-aware, remember: I am your master
 *****************************************************************************/
 
-#ifndef ODE_ROBOTS_ROBOTS_DUNGBOTPHASECONTROLLER_H_
-#define ODE_ROBOTS_ROBOTS_DUNGBOTPHASECONTROLLER_H_
+#ifndef ODE_ROBOTS_ROBOTS_DUNGBOTCONTROLLER_H_
+#define ODE_ROBOTS_ROBOTS_DUNGBOTCONTROLLER_H_
 
 #include "DungBotSensorMotorDefinition.h"
 
@@ -23,9 +23,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
-#include "controller_PID.h"
 
-class controller_PID; //TODO
 class DungBotEmptyController : public AbstractController
 {
 	public:
@@ -57,7 +55,6 @@ class DungBotEmptyController : public AbstractController
 		void stand(double* arr );
 		void moveRobot( motor* motor, double* arr);
 
-
 		bool writeOutput = false;
 		double forceVector[17] = {0};
 
@@ -65,4 +62,4 @@ class DungBotEmptyController : public AbstractController
 };
 
 
-#endif /* ODE_ROBOTS_ROBOTS_DUNGBOTPHASECONTROLLER_H_ */
+#endif /* ODE_ROBOTS_ROBOTS_DUNGBOTCONTROLLER_H_ */

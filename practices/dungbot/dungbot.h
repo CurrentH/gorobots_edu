@@ -115,6 +115,7 @@ namespace lpzrobots
 				Primitive * femur; 	//Called second in AmosII
 				Primitive * tibia;
 				Primitive * tarsus;
+				Primitive * foot;
 			};
 
 		protected:

@@ -29,8 +29,9 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 
 DungBotEmptyController::~DungBotEmptyController()
 {
-	if(writeOutput){
-	outputFile.close();
+	if( writeOutput )
+	{
+		outputFile.close();
 	}
 }
 
@@ -66,53 +67,6 @@ void DungBotEmptyController::step( const sensor* sensor, int sensorNumber, motor
 {
 	stepNoLearning(sensor, sensorNumber, motor, motorNumber);
 }
-
-void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
-{
-	std::vector<double> sensorOutput;
-	std::vector<double> motorInput;
-
-	std::cout << "------------------------------------------------------------------" << std::endl;
-	std::cout << "Ticks: " << ticks_since_init << std::endl;
-	std::cout << "Coxa:  " << motor[0] << " " << motor[1] << " " << motor[2] << " "
-							<< motor[3] << " " << motor[4] << " " << motor[5] << std::endl;
-	std::cout << "Femur: " << motor[6] << " " << motor[7] << " " << motor[8] << " "
-							<< motor[9] << " " << motor[10] << " " << motor[11] << std::endl;
-	std::cout << "Tibia: " << motor[12] << " " << motor[13] << " " << motor[14] << " "
-							<< motor[15] << " " << motor[16] << " " << motor[17] << std::endl;
-	std::cout << "Coxa:  " << sensor[0] << " " << sensor[1] << " " << sensor[2] << " "
-							<< sensor[3] << " " << sensor[4] << " " << sensor[5] << std::endl;
-	std::cout << "Femur: " << sensor[6] << " " << sensor[7] << " " << sensor[8] << " "
-							<< sensor[9] << " " << sensor[10] << " " << sensor[11] << std::endl;
-	std::cout << "Tibia: " << sensor[12] << " " << sensor[13] << " " << sensor[14] << " "
-							<< sensor[15] << " " << sensor[16] << " " << sensor[17] << std::endl;
-
-	std::cout << "------------------------------------------------------------------" << std::endl;
-
-	if( writeOutput )
-	{
-		collectData( motorInput, sensorOutput );
-	}
-}
-
-void DungBotEmptyController::collectData( std::vector<double> motorInput, std::vector<double> sensorOutput )
-{
-	// Output
-	if( outputFile.is_open() && writeOutput)
-	{
-		outputFile << ticks_since_init;
-		for( unsigned int i = 0; i < motorInput.size(); i++ )
-		{
-			outputFile << "," << motorInput[i] << "," << sensorOutput[i];
-		}
-		outputFile << std::endl;
-	}
-	else
-	{
-		std::cout << "DungBot controller: File not open" << std::endl;
-	}
-}
-
 
 void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* randGen )
 {
@@ -176,7 +130,7 @@ void DungBotEmptyController::stand( double* forceVector)
 	}
 }
 
-void DungBotEmptyController::start(motor* motor, double vel) {
+void DungBotEmptyController::start( motor* motor, double vel ) {
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
@@ -195,10 +149,55 @@ void DungBotEmptyController::start(motor* motor, double vel) {
 	}
 }
 
-void DungBotEmptyController::moveRobot(motor* motor, double* forceVector) {
+void DungBotEmptyController::moveRobot( motor* motor, double* forceVector ) {
 
 	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
 	{
 		motor[i] = forceVector[i];
+	}
+}
+
+void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
+{
+	std::vector<double> sensorOutput;
+	std::vector<double> motorInput;
+
+	std::cout << "------------------------------------------------------------------" << std::endl;
+	std::cout << "Ticks: " << ticks_since_init << std::endl;
+	std::cout << "Coxa:  " << motor[0] << " " << motor[1] << " " << motor[2] << " "
+							<< motor[3] << " " << motor[4] << " " << motor[5] << std::endl;
+	std::cout << "Femur: " << motor[6] << " " << motor[7] << " " << motor[8] << " "
+							<< motor[9] << " " << motor[10] << " " << motor[11] << std::endl;
+	std::cout << "Tibia: " << motor[12] << " " << motor[13] << " " << motor[14] << " "
+							<< motor[15] << " " << motor[16] << " " << motor[17] << std::endl;
+	std::cout << "Coxa:  " << sensor[0] << " " << sensor[1] << " " << sensor[2] << " "
+							<< sensor[3] << " " << sensor[4] << " " << sensor[5] << std::endl;
+	std::cout << "Femur: " << sensor[6] << " " << sensor[7] << " " << sensor[8] << " "
+							<< sensor[9] << " " << sensor[10] << " " << sensor[11] << std::endl;
+	std::cout << "Tibia: " << sensor[12] << " " << sensor[13] << " " << sensor[14] << " "
+							<< sensor[15] << " " << sensor[16] << " " << sensor[17] << std::endl;
+
+	std::cout << "------------------------------------------------------------------" << std::endl;
+
+	if( writeOutput )
+	{
+		collectData( motorInput, sensorOutput );
+	}
+}
+
+void DungBotEmptyController::collectData( std::vector<double> motorInput, std::vector<double> sensorOutput )
+{
+	if( outputFile.is_open() && writeOutput)
+	{
+		outputFile << ticks_since_init;
+		for( unsigned int i = 0; i < motorInput.size(); i++ )
+		{
+			outputFile << "," << motorInput[i] << "," << sensorOutput[i];
+		}
+		outputFile << std::endl;
+	}
+	else
+	{
+		std::cout << "DungBot controller: File not open" << std::endl;
 	}
 }

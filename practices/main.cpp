@@ -31,7 +31,7 @@
 // simple wiring
 #include <selforg/one2onewiring.h>
 // the robot
-#include <ode_robots/amosII.h>
+//#include <ode_robots/amosII.h>
 #include <ode_robots/dungbeetle.h>
 
 // include the controller
