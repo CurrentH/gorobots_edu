@@ -30,8 +30,8 @@ namespace lpzrobots
 		public:
 		//	Public methods
 		double stepWalknetSeprateLeg( const sensor* sensor ); //returns double array[3]
-		// Default constructor!!
-		// Destructor!!
+		walknetSeparateLeg( void );
+		virtual ~walknetSeparateLeg( void );
 
 		protected:
 		//	Protected attributes
@@ -41,6 +41,9 @@ namespace lpzrobots
 
 		private:
 		//	Private attributes
+		void selectorNet();
+		void stanceNet();
+		void swingNet();
 
 		private:
 		//	Private methods

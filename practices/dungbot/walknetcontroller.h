@@ -20,6 +20,8 @@
 #include <iostream>
 #include <string>
 
+#include "walknetSeparateLeg.h"
+
 namespace lpzrobots
 {
 	class walknetcontroller
