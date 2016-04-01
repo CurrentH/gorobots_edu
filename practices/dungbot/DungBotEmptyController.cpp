@@ -51,10 +51,10 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 		return;
 	}
 
-	stand(forceVector);
-	//walkNet(forceVector);
-	//rollBall(forceVector);
-	moveRobot(motor, forceVector);
+	stand(angleVector);
+	//stepWalknet(angleVector, sensor);
+	//rollBall(angleVector);
+	moveRobot(motor, angleVector);
 
 
 	if( int( ticks_since_init )%200 == 0 )
@@ -106,7 +106,7 @@ bool DungBotEmptyController::restore( FILE* f )
 	return true;
 }
 
-void DungBotEmptyController::stand( double* forceVector)
+void DungBotEmptyController::stand( double* forceVector )
 {
 	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
 	double femur_pos[3]	= {0.2, 0.0, 0.5};

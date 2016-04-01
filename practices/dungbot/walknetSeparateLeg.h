@@ -29,6 +29,9 @@ namespace lpzrobots
 
 		public:
 		//	Public methods
+		double stepWalknetSeprateLeg( const sensor* sensor ); //returns double array[3]
+		// Default constructor!!
+		// Destructor!!
 
 		protected:
 		//	Protected attributes

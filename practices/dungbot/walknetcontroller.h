@@ -32,9 +32,8 @@ namespace lpzrobots
 		walknetcontroller( void );
 		virtual ~walknetcontroller( void );
 
-		virtual void start( void );
 		//For each step, call this to calculate and receive the new motor inputs.
-		std::vector<double> stepWalknet( sensor* sensor );
+		void stepWalknet( const sensor* sensor, double* angleVector );
 
 		protected:
 		//	Protected attributes
@@ -44,7 +43,7 @@ namespace lpzrobots
 
 		private:
 		//	Private attributes
-		std::vector< walknetSeparateLeg > separateLegs;
+		walknetSeparateLeg separateLegs[6];
 
 		private:
 		//	Private methods
