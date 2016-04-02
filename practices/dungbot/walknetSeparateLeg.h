@@ -20,37 +20,35 @@
 #include <iostream>
 #include <string>
 
-namespace lpzrobots
+#include "walknetcontroller.h"
+
+class walknetcontroller;
+class walknetSeparateLeg : public walknetcontroller
 {
-	class walknetSeparateLeg
-	{
-		public:
-		//	Public attributes
+	public:
+	//	Public attributes
 
-		public:
-		//	Public methods
-		double stepWalknetSeprateLeg( const sensor* sensor ); //returns double array[3]
-		walknetSeparateLeg( void );
-		virtual ~walknetSeparateLeg( void );
+	public:
+	//	Public methods
+	walknetSeparateLeg( void );
+	virtual ~walknetSeparateLeg( void );
+	double stepWalknetSeprateLeg( const sensor* sensor ); //returns double array[3]
 
-		protected:
-		//	Protected attributes
+	protected:
+	//	Protected attributes
 
-		protected:
-		//	Protected methods
+	protected:
+	//	Protected methods
 
-		private:
-		//	Private attributes
-		void selectorNet();
-		void stanceNet();
-		void swingNet();
+	private:
+	//	Private attributes
 
-		private:
-		//	Private methods
+	private:
+	//	Private methods
+	void selectorNet();
+	void stanceNet();
+	void swingNet();
 
-
-
-	};
-}
+};
 
 #endif

@@ -10,8 +10,9 @@
 *****************************************************************************/
 
 #include "DungBotEmptyController.h"
+#include "walknetcontroller.h"
 
-using namespace matrix;
+//using namespace matrix;
 
 // The constructor implements the AbstractController interface. A trial number can be
 // passed to the constructor in order to automate variations in the controller setup
@@ -52,9 +53,10 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	}
 
 	stand( angleVector );
-	//walknet( sensor, angleVector );
-	moveRobot( motor, angleVector );
 
+	walknet->stepWalknet( sensor );
+
+	moveRobot( motor, angleVector );
 
 	if( int( ticks_since_init )%200 == 0 )
 	{

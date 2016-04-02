@@ -24,7 +24,7 @@
 #include <vector>
 #include <cmath>
 
-#include "walknetcontroller.h"
+class walknetcontroller;
 
 class DungBotEmptyController : public AbstractController
 {
@@ -62,7 +62,8 @@ class DungBotEmptyController : public AbstractController
 
 		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
 
-        // walknetcontroller walknet(); //TODO WHY DOES THIS NOT WORK? Something with the inherit?
+		walknetcontroller * walknet;
+
 };
 
 
