@@ -3,11 +3,10 @@
 walknetSeparateLeg::walknetSeparateLeg(void) {
 }
 
-double walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
+double* walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
 
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
-	double viaAngle[3] = {0, 0, 0};
-
+	double viaAngle[3] = {1, 1, 1};
 	return viaAngle;
 }
 

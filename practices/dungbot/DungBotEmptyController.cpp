@@ -54,7 +54,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	// ----------------------------------
 	stand( angleVector );
-	walknet->stepWalknet( sensor, angleVector );
+	//walknet->stepWalknet( sensor, angleVector );
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 

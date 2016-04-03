@@ -406,7 +406,7 @@ namespace lpzrobots
 				for( int j = 1; j < 6; j++ )
 				{
 					 section = new Capsule( radius, partLength );
-					 section->setTexture( "tarsus.jpg" );
+					 //section->setTexture( "tarsus.jpg" );
 					 section->init( odeHandle, mass, osgHandle );
 
 					 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
@@ -747,7 +747,7 @@ namespace lpzrobots
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
-		conf.testTarsusSensor = false;
+		conf.testTarsusSensor = true;
 
 		//	----------- Body dimensions -------
 		//TODO Measure the correct height.

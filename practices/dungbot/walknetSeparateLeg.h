@@ -14,16 +14,15 @@
 
 // #include <ode/ode.h>
 #include <ode-dbl/ode.h>
+#include <selforg/abstractcontroller.h>
 
 // Extra includes
 #include <vector>
 #include <iostream>
 #include <string>
 
-#include "walknetcontroller.h"
 
-class walknetcontroller;
-class walknetSeparateLeg : public walknetcontroller
+class walknetSeparateLeg
 {
 	public:
 	//	Public attributes
@@ -32,7 +31,7 @@ class walknetSeparateLeg : public walknetcontroller
 	//	Public methods
 	walknetSeparateLeg( void );
 	virtual ~walknetSeparateLeg( void );
-	double stepWalknetSeprateLeg( const sensor* sensor ); //returns double array[3]
+	double* stepWalknetSeprateLeg( const sensor* sensor );
 
 	protected:
 	//	Protected attributes

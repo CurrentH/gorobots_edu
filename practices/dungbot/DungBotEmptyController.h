@@ -25,7 +25,6 @@
 #include <cmath>
 
 class walknetcontroller;
-
 class DungBotEmptyController : public AbstractController
 {
 	public:

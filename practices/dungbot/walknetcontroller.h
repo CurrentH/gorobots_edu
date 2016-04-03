@@ -14,11 +14,13 @@
 
 // #include <ode/ode.h>
 #include <ode-dbl/ode.h>
+#include <selforg/abstractcontroller.h>
 
 // Extra includes
 #include <vector>
 #include <iostream>
 #include <string>
+#include "walknetSeparateLeg.h"
 
 
 class walknetcontroller
@@ -41,7 +43,7 @@ class walknetcontroller
 
 	private:
 	//	Private attributes
-	//walknetSeparateLeg separateLegs[6];
+	walknetSeparateLeg separateLegs[6];
 
 	private:
 	//	Private methods
