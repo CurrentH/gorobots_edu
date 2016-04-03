@@ -1,10 +1,9 @@
 #include "walknetSeparateLeg.h"
 
-lpzrobots::walknetSeparateLeg::walknetSeparateLeg(void) {
+walknetSeparateLeg::walknetSeparateLeg(void) {
 }
 
-double lpzrobots::walknetSeparateLeg::stepWalknetSeprateLeg(
-		const sensor* sensor) {
+double walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
 
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
 	double viaAngle[3] = {0, 0, 0};
@@ -12,5 +11,5 @@ double lpzrobots::walknetSeparateLeg::stepWalknetSeprateLeg(
 	return viaAngle;
 }
 
-lpzrobots::walknetSeparateLeg::~walknetSeparateLeg(void) {
+walknetSeparateLeg::~walknetSeparateLeg(void) {
 }

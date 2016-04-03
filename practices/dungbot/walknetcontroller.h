@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 
+
 class walknetcontroller
 {
 	public:
@@ -30,7 +31,7 @@ class walknetcontroller
 	walknetcontroller( void );
 	virtual ~walknetcontroller( void );
 
-	void stepWalknet( const double* sensor );
+	void stepWalknet( const sensor* sensor, double angleVector[] );
 
 	protected:
 	//	Protected attributes

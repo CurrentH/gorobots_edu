@@ -28,6 +28,7 @@ walknetcontroller::walknetcontroller( void )
 	separateLegs[4] = leg5;
 	separateLegs[5] = leg6;
 	*/
+
 }
 
 walknetcontroller::~walknetcontroller( void )
@@ -40,12 +41,12 @@ walknetcontroller::~walknetcontroller( void )
 	*/
 }
 
-void walknetcontroller::stepWalknet( const sensor* sensor )
+void walknetcontroller::stepWalknet( const sensor* sensor, double angleVector[] )
 {
-	for( int i = 0; i <= 6; i++ )
+	for( int i = 0; i <= 5; i++ )
 	{
 		// should we extract only the neighboring leg sensors here?
-//		angleVector[i] = separateLegs[i].stepWalknetSeprateLeg( sensor ); //Should the angleVector in fact be a 6 by 3 matrix?																	// I have made it like that here! If so change it in the other functions
+		//angleVector[i] = separateLegs[i].stepWalknetSeprateLeg( sensor ); //Should the angleVector in fact be a 6 by 3 matrix?																	// I have made it like that here! If so change it in the other functions
 	}
 
 }
