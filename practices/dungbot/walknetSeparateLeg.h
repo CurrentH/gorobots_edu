@@ -29,7 +29,8 @@ class walknetSeparateLeg
 
 	public:
 	//	Public methods
-	walknetSeparateLeg( void );
+	walknetSeparateLeg( );
+	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
 	double* stepWalknetSeprateLeg( const sensor* sensor );
 
@@ -41,12 +42,13 @@ class walknetSeparateLeg
 
 	private:
 	//	Private attributes
+	int legNum;
 
 	private:
 	//	Private methods
-	void selectorNet();
-	void stanceNet();
-	void swingNet();
+	double selectorNet( const sensor* sensor );
+	double stanceNet( const sensor* sensor );
+	double swingNet( const sensor* sensor );
 
 };
 

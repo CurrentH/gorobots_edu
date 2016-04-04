@@ -13,19 +13,19 @@
 
 walknetcontroller::walknetcontroller( void )
 {
-	walknetSeparateLeg leg1;
-	walknetSeparateLeg leg2;
-	walknetSeparateLeg leg3;
-	walknetSeparateLeg leg4;
-	walknetSeparateLeg leg5;
-	walknetSeparateLeg leg6;
+	walknetSeparateLeg legFL(0);
+	walknetSeparateLeg legML(1);
+	walknetSeparateLeg legRL(2);
+	walknetSeparateLeg legFR(3);
+	walknetSeparateLeg legMR(4);
+	walknetSeparateLeg legRR(5);
 
-	separateLegs[0] = leg1;
-	separateLegs[1] = leg2;
-	separateLegs[2] = leg3;
-	separateLegs[3] = leg4;
-	separateLegs[4] = leg5;
-	separateLegs[5] = leg6;
+	separateLegs[0] = legFL;
+	separateLegs[1] = legML;
+	separateLegs[2] = legRL;
+	separateLegs[3] = legFR;
+	separateLegs[4] = legMR;
+	separateLegs[5] = legRR;
 }
 
 walknetcontroller::~walknetcontroller( void )
