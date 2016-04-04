@@ -44,11 +44,11 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	//	Update internal time
 	ticks_since_init++;
 
-	if( int(ticks_since_init) < 1000 ) // Start after 1000 ticks in init position. Please drop before times run out
+	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
 		start(motor, 0.1);
 		if( int(ticks_since_init)%100==0 )
-			std::cout << (1000-ticks_since_init)/100 << std::endl;
+			std::cout << (600-ticks_since_init)/100 << std::endl;
 		return;
 	}
 
@@ -107,27 +107,17 @@ bool DungBotEmptyController::restore( FILE* f )
 	return true;
 }
 
-void DungBotEmptyController::stand( double* forceVector )
+void DungBotEmptyController::stand( double angleVector[][3] )
 {
 	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
 	double femur_pos[3]	= {0.2, 0.0, 0.5};
 	double tibia_pos[3]	= {-0.6, -0.9, -0.4};
 
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	for( int i = 0; i < 6; i++ )
 	{
-		if( i >= 0 && i < 6)		// COXA
-		{
-			forceVector[i] = coxa_pos[i%3];
-		}
-		if( i >= 6 && i < 12 ) 		// FEMUR
-		{
-			forceVector[i] = femur_pos[i%3];
-		}
-		if( i >= 12 && i < 18 ) 	// TIBIA
-		{
-			forceVector[i] = tibia_pos[i%3];
-			//forceVector[i] = 10 + sin( 0.01 * ticks_since_init ); // Test with Sine
-		}
+		angleVector[i][0] = coxa_pos[i%3];
+		angleVector[i][1] = femur_pos[i%3];
+		angleVector[i][2] = tibia_pos[i%3];
 	}
 }
 
@@ -150,12 +140,16 @@ void DungBotEmptyController::start( motor* motor, double vel ) {
 	}
 }
 
-void DungBotEmptyController::moveRobot( motor* motor, double* forceVector ) {
+void DungBotEmptyController::moveRobot( motor* motor, double angleVector[][3] ) {
 
-	for( int i = 0; i < DungBotMotorSensor::DUNGBOT_MOTOR_MAX; i++ )
+	for( int i = 0; i < 3; i++ )
 	{
-		motor[i] = forceVector[i];
+		for(int j = 0; j < 6; j ++)
+		{
+			motor[i*6+j] = angleVector[j][i];
+		}
 	}
+
 }
 
 void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )

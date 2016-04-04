@@ -33,7 +33,7 @@ class walknetcontroller
 	walknetcontroller( void );
 	virtual ~walknetcontroller( void );
 
-	void stepWalknet( const sensor* sensor, double angleVector[] );
+	void stepWalknet( const sensor* sensor, double angleVector[][3] );
 
 	protected:
 	//	Protected attributes
