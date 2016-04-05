@@ -20,6 +20,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <math.h>
 
 
 class walknetSeparateLeg
@@ -43,12 +44,17 @@ class walknetSeparateLeg
 	private:
 	//	Private attributes
 	int legNum;
+	double PEP[3] = {0};
+	double AEP[3] = {0};
+	bool initSwing = true;
+	bool initStance = true;
 
 	private:
 	//	Private methods
 	double selectorNet( const sensor* sensor );
 	double stanceNet( const sensor* sensor );
 	double swingNet( const sensor* sensor );
+	bool atPosition( double targetPos[] );
 
 };
 

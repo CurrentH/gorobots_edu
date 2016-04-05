@@ -38,15 +38,16 @@ walknetcontroller::~walknetcontroller( void )
 
 void walknetcontroller::stepWalknet( const sensor* sensor, double angleVector[][3]  )
 {
-	double* tmp;
-
-	for( int i = 0; i <= 5; i++ )
+	double *tmpArr;
+	for( int i = 0; i < 6; i++ )
 	{
-		tmp = separateLegs[i].stepWalknetSeprateLeg( sensor );
-
+		tmpArr = separateLegs[i].stepWalknetSeprateLeg( sensor );
+		std::cout << tmpArr[1] << std::endl;
 		for( int j = 0; j < 3; j++ )
 		{
-			angleVector[i][j] = 1.0;
+			//std::cout << tmpArr[j] << std::endl;
+			angleVector[i][j] = 1.0;//tmpArr[j];
+			//std::cout << angleVector[i][j] << std::endl;
 		}
 	}
 
