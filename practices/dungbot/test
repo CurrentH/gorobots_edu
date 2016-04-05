@@ -1,0 +1,16 @@
+#!/bin/bash
+
+make clean;
+START1=$(date +%s);
+make;
+duration1=$(date +%s);
+make clean;
+START2=$(date +%s);
+make -j9;
+duration2=$(date +%s);
+echo First make: $((duration1-START1))
+echo Second make: $((duration2-START2))
+
+
+
+
