@@ -20,6 +20,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <math.h>
 
 
 class walknetSeparateLeg
@@ -45,6 +46,10 @@ class walknetSeparateLeg
 	private:
 	//	Private attributes
 	int legNum;
+	double PEP[3] = {0};
+	double AEP[3] = {0};
+	bool initSwing = true;
+	bool initStance = true;
 
 	bool RSunit = false;	//	Return Stroke unit (swing movement)
 	bool PSunit = false;	//	Power Stroke unit (stance movement)
@@ -60,7 +65,7 @@ class walknetSeparateLeg
 	bool checkPEP();
 	void setAEP( double );
 	void setPEP( double );
-
+	bool atPosition( double targetPos[] );
 };
 
 #endif

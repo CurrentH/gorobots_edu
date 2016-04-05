@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
   vector<int> line1, line2, line3;
   string path1_x,path2_x,path3_x,path1_y,path2_y,path3_y;
   string finalFrameColor1, finalFrameColor2, finalFrameColor3, finalFrameAllColors;
-  VideoCapture cap("ExampleVideo.mp4"); // open the video file for reading final
+  VideoCapture cap("ExampleVideo.mp4"); // open the video file for reading
 
   ofstream color1Trajectory_x,color2Trajectory_x,color3Trajectory_x,color1Trajectory_y,color2Trajectory_y,color3Trajectory_y;
   getColorTrajectory color1, color2,color3;
