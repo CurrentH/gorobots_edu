@@ -10,11 +10,11 @@ walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 double* walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
 
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
-	double* arrayPointer;
-	double viaAngle[3] = {0.9, 0.9, 0.9};
-
-	arrayPointer = viaAngle;
-	return arrayPointer;
+	double *viaAngle = new double[3];
+	viaAngle[0] = 0.65;
+	viaAngle[1] = 0.75;
+	viaAngle[2] = 0.85;
+	return viaAngle;
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
