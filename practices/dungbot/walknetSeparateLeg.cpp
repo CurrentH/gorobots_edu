@@ -8,7 +8,7 @@ walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 }
 
 double* walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
-
+	localSensorArray = extractSensor(sensor, legNum);
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
 	double *viaAngle = new double[3];
 	viaAngle[0] = 0.65;
@@ -44,9 +44,11 @@ double walknetSeparateLeg::selectorNet(const sensor* sensor)
 }
 
 double walknetSeparateLeg::stanceNet(const sensor* sensor) {
+	initSwing = true;
 	return 0.0;
 }
 
+//TODO Beware, contact with tibia instead of tarsus
 double walknetSeparateLeg::swingNet(const sensor* sensor) {
 	//const double HEIGHT = 1;
 	//const double MID_COXA_POS = (PEP[0]-AEP[0])/2;
@@ -54,17 +56,22 @@ double walknetSeparateLeg::swingNet(const sensor* sensor) {
 
 	if(initSwing){  // initialize things here
 		initSwing = false;
+		stage3 = true;
+		stage4 = true;
 	}
-	else if(true){ 	// is there ground contact
+	else if(localSensorArray[4] == 1){ 	// is there ground contact
 		// lift the leg
+		// Height manipulation
 	}
-	else if(!atPosition(middlePos)){  // Arrived at middle-point
+	else if(!atPosition(middlePos) && stage3){  // Arrived at middle-point
 		// go to this point
 	}
-	else if(!atPosition(AEP)){	// Arrived at AEP
+	else if(!atPosition(AEP) && stage4){	// Arrived at AEP
+		stage3 = false;
 		// go to this point
 	}
-	else if(true){	// is there ground contact
+	else if(localSensorArray[4] == 0){	// is there ground contact
+		stage4 = false;
 		// lower the leg
 	}
 
@@ -91,7 +98,8 @@ bool walknetSeparateLeg::checkPEP()
 
 double* walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
 {
-	double extractedSensors[4] = {0};
+	double *extractedSensors = new double[4];
+	extractedSensors[4] = 0;
 
 	for( int i = 0; i < 3; i++ )
 	{
@@ -110,10 +118,9 @@ double* walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
 
 bool walknetSeparateLeg::atPosition( double targetPos[] )
 {
-	// Make function that checks if we are at a position (with some deadband)
-	double coxaError = targetPos[0] ;//- sensor[0];
-	double femurError = targetPos[1] ;//- sensor[1];
-	double tibiaError = targetPos[2] ;//- sensor[2];
+	double coxaError = targetPos[0] - localSensorArray[0];
+	double femurError = targetPos[1] - localSensorArray[1];
+	double tibiaError = targetPos[2] - localSensorArray[2];
 	double deadBand = 0.2;
 
 	if(abs(coxaError) < deadBand && abs(femurError) < deadBand && abs(tibiaError) < deadBand){

@@ -48,8 +48,15 @@ class walknetSeparateLeg
 	int legNum;
 	double PEP[3] = {0};
 	double AEP[3] = {0};
+
 	bool initSwing = true;
+	bool stage3 = true;
+	bool stage4 = true;
+
+
 	bool initStance = true;
+
+	double *localSensorArray = new double[4];
 
 	bool RSunit = false;	//	Return Stroke unit (swing movement)
 	bool PSunit = false;	//	Power Stroke unit (stance movement)
