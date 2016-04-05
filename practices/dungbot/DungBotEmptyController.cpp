@@ -171,7 +171,6 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 							<< sensor[9] << " " << sensor[10] << " " << sensor[11] << std::endl;
 	std::cout << "Tibia: " << sensor[12] << " " << sensor[13] << " " << sensor[14] << " "
 							<< sensor[15] << " " << sensor[16] << " " << sensor[17] << std::endl;
-
 	std::cout << "------------------------------------------------------------------" << std::endl;
 
 	if( writeOutput )

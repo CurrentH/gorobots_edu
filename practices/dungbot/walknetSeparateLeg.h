@@ -33,6 +33,8 @@ class walknetSeparateLeg
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
 	double* stepWalknetSeprateLeg( const sensor* sensor );
+	double* getAEP( void );
+	double* getPEP( void );
 
 	protected:
 	//	Protected attributes
@@ -44,11 +46,20 @@ class walknetSeparateLeg
 	//	Private attributes
 	int legNum;
 
+	bool RSunit = false;	//	Return Stroke unit (swing movement)
+	bool PSunit = false;	//	Power Stroke unit (stance movement)
+	bool GCunit = false;	//	Ground Contact
+	bool PEPunit = false;	//	Boolean value if the leg is in the PEP position.
+
 	private:
 	//	Private methods
 	double selectorNet( const sensor* sensor );
 	double stanceNet( const sensor* sensor );
 	double swingNet( const sensor* sensor );
+	double* extractSensor( const sensor* sensor, int leg );
+	bool checkPEP();
+	void setAEP( double );
+	void setPEP( double );
 
 };
 

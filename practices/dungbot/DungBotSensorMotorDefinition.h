@@ -18,8 +18,8 @@ namespace DungBotMotorSensor
 		CR1_as = 7, //Coxa joint of right middle leg
 		CR2_as = 8, //Coxa joint of right hind leg
 
-		CL0_as = 9,  //Coxa joint of left hind leg
-		CL1_as = 10, //Coxa joint of left hind leg
+		CL0_as = 9,  //Coxa joint of left front leg
+		CL1_as = 10, //Coxa joint of left middle leg
 		CL2_as = 11, //Coxa joint of left hind leg
 
 		FR0_as = 12, //Fibula joint of right front leg
