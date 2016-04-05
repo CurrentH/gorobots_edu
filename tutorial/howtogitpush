@@ -1,0 +1,9 @@
+Short tutorial on Git:
+
+If you make a new file:
+	Create the file/folder
+	git add <name>
+	git commit #And remember to make comments
+	git push <name of repositort on pc e.g. origin> <branch name e.g. master>
+
+And you are done

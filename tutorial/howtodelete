@@ -1,0 +1,8 @@
+Short tutorial on Git:
+
+If you delete a file/folder
+	git rm <name> -r 	#Use only the last recursively if you are removing a folder
+	git commit 		#And remember to make comments
+	git push <name of repository on pc e.g. origin> <branch name e.g. master>
+
+And you are done

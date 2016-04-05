@@ -11,15 +11,16 @@
 #ifndef ODE_ROBOTS_ROBOTS_LOCOKIT_SPRINGYBOTSIMULATION_H_
 #define ODE_ROBOTS_ROBOTS_LOCOKIT_SPRINGYBOTSIMULATION_H_
 #include <stdio.h>
+
 #include <ode_robots/simulation.h>
-#include <selforg/noisegenerator.h>
 #include <ode_robots/odeagent.h>
+#include <selforg/noisegenerator.h>
 #include <ode_robots/speedsensor.h>
 #include <selforg/one2onewiring.h>
 #include <ode_robots/playground.h>
 #include <ode_robots/passivebox.h>
-#include <ode_robots/springybot.h>
 
+#include "springybot.h" //Edit from: #include <ode_robots/springybot.h"
 #include "SpringyBotEmptyController.h"
 
 namespace lpzrobots {
