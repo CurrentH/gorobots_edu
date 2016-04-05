@@ -25,11 +25,11 @@ double walknetSeparateLeg::selectorNet(const sensor* sensor)
 	double* tmp;
 
 	tmp = extractSensor( sensor, legNum );
-	GCunit = tmp[3];	//	Check if there is Ground Contact
-	PEPunit = checkPEP();
+	GCunit = tmp[3];				//	Check if there is Ground Contact
+	PEPunit = atPosition( PEP );	//	Check if the leg is at the PEP.
 
-	//RSunit = RSunit + PEPunit - GCunit;
-	//PSunit = PSunit - PEPunit + GCunit;
+	RSunit = RSunit + PEPunit - GCunit;
+	PSunit = PSunit - PEPunit + GCunit;
 
 	if( RSunit == true )
 	{
@@ -69,24 +69,6 @@ double walknetSeparateLeg::swingNet(const sensor* sensor) {
 	}
 
 	return 0.0;
-}
-
-bool walknetSeparateLeg::checkPEP()
-{
-	bool check = false;
-	double treshold;
-	double distance;
-	//double PEP[3] = {0};
-	//double pos[3] = {0};
-
-	//distance = sqrt( (PEP[0]-pos[0])^2 + (PEP[1]-pos[1])^2 + (PEP[2]-pos[2])^2 );
-
-	if( abs( distance ) < treshold )
-	{
-		check = true;
-	}
-
-	return check;
 }
 
 double* walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )

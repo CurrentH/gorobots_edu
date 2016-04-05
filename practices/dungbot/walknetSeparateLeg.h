@@ -62,7 +62,6 @@ class walknetSeparateLeg
 	double stanceNet( const sensor* sensor );
 	double swingNet( const sensor* sensor );
 	double* extractSensor( const sensor* sensor, int leg );
-	bool checkPEP();
 	void setAEP( double );
 	void setPEP( double );
 	bool atPosition( double targetPos[] );
