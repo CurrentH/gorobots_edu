@@ -50,6 +50,7 @@ class walknetSeparateLeg
 	std::vector<double> AEP;
 
 	bool initSwing = true;
+	bool stage2 = true;
 	bool stage3 = true;
 	bool stage4 = true;
 
@@ -65,9 +66,9 @@ class walknetSeparateLeg
 
 	private:
 	//	Private methods
-	double selectorNet( const sensor* sensor );
-	double stanceNet( const sensor* sensor );
-	double swingNet( const sensor* sensor );
+	std::vector<double> selectorNet( const sensor* sensor );
+	std::vector<double> stanceNet( const sensor* sensor );
+	std::vector<double> swingNet( const sensor* sensor );
 	std::vector<double> extractSensor( const sensor* sensor, int leg );
 	bool checkPEP();
 	void setAEP( double );
