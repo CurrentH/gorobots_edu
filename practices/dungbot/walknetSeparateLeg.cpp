@@ -24,7 +24,7 @@ std::vector<double> walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sens
 walknetSeparateLeg::~walknetSeparateLeg(void) {
 }
 
-double walknetSeparateLeg::selectorNet(const sensor* sensor)
+std::vector<double> walknetSeparateLeg::selectorNet(const sensor* sensor)
 {
 	std::vector<double> tmp = extractSensor( sensor, legNum );
 
@@ -43,43 +43,57 @@ double walknetSeparateLeg::selectorNet(const sensor* sensor)
 		return stanceNet( sensor );
 	}
 
-	return 0.0;
+	std::vector<double>nullVector(0);
+	return nullVector;
 }
 
-double walknetSeparateLeg::stanceNet(const sensor* sensor) {
+std::vector<double> walknetSeparateLeg::stanceNet(const sensor* sensor) {
 	initSwing = true;
-	return 0.0;
+	std::vector<double> middlePos(3,0);
+	return middlePos;
 }
 
 //TODO Beware, contact with tibia instead of tarsus
-double walknetSeparateLeg::swingNet(const sensor* sensor) {
+std::vector<double> walknetSeparateLeg::swingNet(const sensor* sensor) {
+
 	//const double HEIGHT = 1;
 	//const double MID_COXA_POS = (PEP[0]-AEP[0])/2;
-	std::vector<double> middlePos = {0,0,0};
+
+	std::vector<double> middlePos(3,0);
+	std::vector<double> swingNetAngle(3,0);
 
 	if(initSwing){  // initialize things here
 		initSwing = false;
+		stage2 = true;
 		stage3 = true;
 		stage4 = true;
+
+		swingNetAngle[1] = 0.5; // Femur angle
+		swingNetAngle[2] = 0.5; // Tibia angle
 	}
-	else if(localSensorArray[4] == 1){ 	// If there is ground contact
+	else if(localSensorArray[4] == 1 && stage3){ 	// If there is ground contact
 		// lift the leg
 		// Height manipulation
+		swingNetAngle[1] += 0.1;
 
 	}
 	else if(!atPosition(middlePos) && stage3){  // Arrived at middle-point
-		// go to this point
+		swingNetAngle = middlePos;
 	}
 	else if(!atPosition(AEP) && stage4){	// Arrived at AEP
-		stage3 = false;
-		// go to this point
+		stage3 = false;	// do not go to middle point again.
+		swingNetAngle = AEP;
 	}
 	else if(localSensorArray[4] == 0){	// If there is ground contact
-		stage4 = false;
+		stage2 = false; // do not lift again.
+		stage4 = false;	// do not go to AEP again
+
 		// lower the leg
+		swingNetAngle[1] -= 0.1;
+
 	}
 
-	return 0.0;
+	return swingNetAngle;
 }
 
 std::vector<double> walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
