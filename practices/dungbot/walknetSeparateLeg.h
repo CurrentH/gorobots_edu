@@ -41,7 +41,7 @@ class walknetSeparateLeg
 	//	Protected attributes
 
 	protected:
-	//	Protected methods
+	//	Protected methods,.
 
 	private:
 	//	Private attributes
