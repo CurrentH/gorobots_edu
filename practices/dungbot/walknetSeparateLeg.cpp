@@ -2,9 +2,6 @@
 
 using namespace std;
 
-walknetSeparateLeg::walknetSeparateLeg() {
-}
-
 walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 	legNum = newlegNum;
 	PEP.resize( 6 , 0 );
@@ -13,7 +10,7 @@ walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 }
 
 std::vector<double> walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
-	//localSensorArray = extractSensor(sensor, legNum);
+	localSensorArray = extractSensor(sensor, legNum);
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
 	std::vector<double> viaAngle(3,0);
 

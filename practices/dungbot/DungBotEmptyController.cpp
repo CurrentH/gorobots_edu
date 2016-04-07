@@ -29,6 +29,8 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 	nMotors = 0;
 
 	angleVector.resize( 6 , vector<double>( 3 , 0 ) );
+
+	walknet = new walknetcontroller();
 }
 
 DungBotEmptyController::~DungBotEmptyController()

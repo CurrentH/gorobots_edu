@@ -43,7 +43,7 @@ class walknetcontroller
 
 	private:
 	//	Private attributes
-	walknetSeparateLeg separateLegs[6];
+	std::vector<walknetSeparateLeg> separateLegs;
 
 	private:
 	//	Private methods

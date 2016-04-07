@@ -20,12 +20,12 @@ walknetcontroller::walknetcontroller( void )
 	walknetSeparateLeg legMR(4);
 	walknetSeparateLeg legRR(5);
 
-	separateLegs[0] = legFL;
-	separateLegs[1] = legML;
-	separateLegs[2] = legRL;
-	separateLegs[3] = legFR;
-	separateLegs[4] = legMR;
-	separateLegs[5] = legRR;
+	separateLegs.push_back(legFL);
+	separateLegs.push_back(legML);
+	separateLegs.push_back(legRL);
+	separateLegs.push_back(legFR);
+	separateLegs.push_back(legMR);
+	separateLegs.push_back(legRR);
 }
 
 walknetcontroller::~walknetcontroller( void )
