@@ -33,7 +33,7 @@ class walknetSeparateLeg
 	walknetSeparateLeg( );
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
-	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<std::vector<double>> &  );
+	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &  );
 	std::vector<double> getAEP( void );
 	std::vector<double> getPEP( void );
 
@@ -69,7 +69,7 @@ class walknetSeparateLeg
 	std::vector<double> selectorNet( const sensor* sensor );
 	std::vector<double> stanceNet( const sensor* sensor );
 	std::vector<double> swingNet( const sensor* sensor );
-	std::vector<double> extractSensor( const sensor* sensor, int leg );
+	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
 	bool checkPEP();
 	void setAEP( double );
 	void setPEP( double );

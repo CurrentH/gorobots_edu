@@ -6,17 +6,16 @@ walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 	legNum = newlegNum;
 	PEP.resize( 6 , 0 );
 	AEP.resize( 6 , 0 );
-	localSensorArray.resize( 4, 0 );
+	localSensorArray.assign( 4, 0 );
 }
 
-void walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor, std::vector<std::vector<double>> &angleVector) {
-	localSensorArray = extractSensor(sensor, legNum);
+void walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor, std::vector<double> &viaAngle) {
+	 extractSensor(sensor, legNum, localSensorArray);
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
 
-	angleVector[legNum][0] = 0.1;
-	angleVector[legNum][1] = 0.2;
-	angleVector[legNum][2] = 0.3;
-
+	viaAngle[0] = 0.1;
+	viaAngle[1] = 0.1;
+	viaAngle[2] = 0.1;
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -24,7 +23,8 @@ walknetSeparateLeg::~walknetSeparateLeg(void) {
 
 std::vector<double> walknetSeparateLeg::selectorNet(const sensor* sensor)
 {
-	std::vector<double> tmp = extractSensor( sensor, legNum );
+	std::vector<double> tmp(4,0);
+	extractSensor( sensor, legNum, tmp );
 
 	GCunit = tmp[3];				//	Check if there is Ground Contact
 	PEPunit = atPosition( PEP );	//	Check if the leg is at the PEP.
@@ -94,10 +94,8 @@ std::vector<double> walknetSeparateLeg::swingNet(const sensor* sensor) {
 	return swingNetAngle;
 }
 
-std::vector<double> walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
+void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vector<double> & extractedSensors )
 {
-	std::vector<double> extractedSensors(4,0);
-	extractedSensors[4] = 0;
 
 	for( int i = 0; i < 3; i++ )
 	{
@@ -111,7 +109,6 @@ std::vector<double> walknetSeparateLeg::extractSensor( const sensor* sensor, int
 		}
 	}
 
-	return extractedSensors;
 }
 
 bool walknetSeparateLeg::atPosition( std::vector<double> targetPos )
