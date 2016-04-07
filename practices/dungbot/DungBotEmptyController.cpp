@@ -28,7 +28,7 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 	nSensors = 0;
 	nMotors = 0;
 
-	angleVector.resize( 6 , vector<double>( 3 , 0 ) );
+	angleVector.assign( 6 , vector<double>( 3 , 0 ) );
 
 	walknet = new walknetcontroller();
 }
@@ -59,13 +59,14 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	// ----------------------------------
 	//stand( angleVector );
-	angleVector = walknet->stepWalknet( sensor, angleVector );
+	walknet->stepWalknet( sensor, angleVector );
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
 	if( int( ticks_since_init )%200 == 0 )
 	{
-		outputData( sensor, motor );
+		cout << ticks_since_init << endl;
+		//outputData( sensor, motor );
 	}
 }
 
@@ -112,7 +113,7 @@ bool DungBotEmptyController::restore( FILE* f )
 	return true;
 }
 
-void DungBotEmptyController::stand( double angleVector[][3] )
+void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVector )
 {
 	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
 	double femur_pos[3]	= {0.2, 0.0, 0.5};
@@ -162,20 +163,23 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
 
+    cout.setf(ios::fixed, ios::floatfield);
+    cout.precision(2);
+
 	std::cout << "------------------------------------------------------------------" << std::endl;
 	std::cout << "Ticks: " << ticks_since_init << std::endl;
-	std::cout << "Coxa:  " << motor[0] << " " << motor[1] << " " << motor[2] << " "
-							<< motor[3] << " " << motor[4] << " " << motor[5] << std::endl;
-	std::cout << "Femur: " << motor[6] << " " << motor[7] << " " << motor[8] << " "
-							<< motor[9] << " " << motor[10] << " " << motor[11] << std::endl;
-	std::cout << "Tibia: " << motor[12] << " " << motor[13] << " " << motor[14] << " "
-							<< motor[15] << " " << motor[16] << " " << motor[17] << std::endl;
-	std::cout << "Coxa:  " << sensor[0] << " " << sensor[1] << " " << sensor[2] << " "
-							<< sensor[3] << " " << sensor[4] << " " << sensor[5] << std::endl;
-	std::cout << "Femur: " << sensor[6] << " " << sensor[7] << " " << sensor[8] << " "
-							<< sensor[9] << " " << sensor[10] << " " << sensor[11] << std::endl;
-	std::cout << "Tibia: " << sensor[12] << " " << sensor[13] << " " << sensor[14] << " "
-							<< sensor[15] << " " << sensor[16] << " " << sensor[17] << std::endl;
+	std::cout << "Coxa:\t" << motor[0] << "\t" << motor[1] << "\t" << motor[2] << "\t"
+							<< motor[3] << "\t" << motor[4] << "\t" << motor[5] << std::endl;
+	std::cout << "Femur:\t" << motor[6] << "\t" << motor[7] << "\t" << motor[8] << "\t"
+							<< motor[9] << "\t" << motor[10] << "\t" << motor[11] << std::endl;
+	std::cout << "Tibia:\t" << motor[12] << "\t" << motor[13] << "\t" << motor[14] << "\t"
+							<< motor[15] << "\t" << motor[16] << "\t" << motor[17] << std::endl;
+	std::cout << "Coxa:\t" << sensor[0] << "\t" << sensor[1] << "\t" << sensor[2] << "\t"
+							<< sensor[3] << "\t" << sensor[4] << "\t" << sensor[5] << std::endl;
+	std::cout << "Femur:\t" << sensor[6] << "\t" << sensor[7] << "\t" << sensor[8] << "\t"
+							<< sensor[9] << "\t" << sensor[10] << "\t" << sensor[11] << std::endl;
+	std::cout << "Tibia:\t" << sensor[12] << "\t" << sensor[13] << "\t" << sensor[14] << "\t"
+							<< sensor[15] << "\t" << sensor[16] << "\t" << sensor[17] << std::endl;
 	std::cout << "------------------------------------------------------------------" << std::endl;
 
 	if( writeOutput )

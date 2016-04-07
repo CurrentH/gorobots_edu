@@ -53,7 +53,7 @@ class DungBotEmptyController : public AbstractController
 		void collectData( std::vector<double>, std::vector<double> );
 		void start( motor* motor, double );
 
-		void stand(double arr[][3] );
+		void stand( std::vector<std::vector<double>> &);
 		void moveRobot( motor* motor, std::vector<std::vector<double>> );
 
 		bool writeOutput = false;

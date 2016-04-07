@@ -33,7 +33,7 @@ class walknetSeparateLeg
 	walknetSeparateLeg( );
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
-	std::vector<double> stepWalknetSeprateLeg( const sensor* sensor );
+	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<std::vector<double>> &  );
 	std::vector<double> getAEP( void );
 	std::vector<double> getPEP( void );
 
