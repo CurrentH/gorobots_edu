@@ -68,7 +68,7 @@ class walknetSeparateLeg
 	//	Private methods
 	std::vector<double> selectorNet( const sensor* sensor );
 	std::vector<double> stanceNet( const sensor* sensor );
-	std::vector<double> swingNet( const sensor* sensor );
+	void swingNet( const sensor* sensor, std::vector<double> & );
 	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
 	bool checkPEP();
 	void setAEP( double );
