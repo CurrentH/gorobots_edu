@@ -54,10 +54,10 @@ class DungBotEmptyController : public AbstractController
 		void start( motor* motor, double );
 
 		void stand(double arr[][3] );
-		void moveRobot( motor* motor, double arr[][3]);
+		void moveRobot( motor* motor, std::vector<std::vector<double>> );
 
 		bool writeOutput = false;
-		double angleVector[6][3];
+		std::vector<std::vector<double>>angleVector;
 
 		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
 

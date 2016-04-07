@@ -33,9 +33,9 @@ class walknetSeparateLeg
 	walknetSeparateLeg( );
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
-	double* stepWalknetSeprateLeg( const sensor* sensor );
-	double* getAEP( void );
-	double* getPEP( void );
+	std::vector<double> stepWalknetSeprateLeg( const sensor* sensor );
+	std::vector<double> getAEP( void );
+	std::vector<double> getPEP( void );
 
 	protected:
 	//	Protected attributes
@@ -46,8 +46,8 @@ class walknetSeparateLeg
 	private:
 	//	Private attributes
 	int legNum;
-	double PEP[3] = {0};
-	double AEP[3] = {0};
+	std::vector<double> PEP;
+	std::vector<double> AEP;
 
 	bool initSwing = true;
 	bool stage3 = true;
@@ -56,7 +56,7 @@ class walknetSeparateLeg
 
 	bool initStance = true;
 
-	double *localSensorArray = new double[4];
+	std::vector<double> localSensorArray;
 
 	bool RSunit = false;	//	Return Stroke unit (swing movement)
 	bool PSunit = false;	//	Power Stroke unit (stance movement)
@@ -68,10 +68,11 @@ class walknetSeparateLeg
 	double selectorNet( const sensor* sensor );
 	double stanceNet( const sensor* sensor );
 	double swingNet( const sensor* sensor );
-	double* extractSensor( const sensor* sensor, int leg );
+	std::vector<double> extractSensor( const sensor* sensor, int leg );
+	bool checkPEP();
 	void setAEP( double );
 	void setPEP( double );
-	bool atPosition( double targetPos[] );
+	bool atPosition( std::vector<double> );
 };
 
 #endif

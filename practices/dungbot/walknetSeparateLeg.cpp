@@ -1,19 +1,26 @@
 #include "walknetSeparateLeg.h"
 
+using namespace std;
+
 walknetSeparateLeg::walknetSeparateLeg() {
 }
 
 walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 	legNum = newlegNum;
+	PEP.resize( 6 , 0 );
+	AEP.resize( 6 , 0 );
+	localSensorArray.resize( 4, 0 );
 }
 
-double* walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
-	localSensorArray = extractSensor(sensor, legNum);
+std::vector<double> walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor) {
+	//localSensorArray = extractSensor(sensor, legNum);
 	//selectorNet() -> stanceNet() || swingNet() -> tragetoryGenerator();
-	double *viaAngle = new double[3];
+	std::vector<double> viaAngle(3,0);
+
 	viaAngle[0] = 0.65;
 	viaAngle[1] = 0.75;
 	viaAngle[2] = 0.85;
+
 	return viaAngle;
 }
 
@@ -22,8 +29,7 @@ walknetSeparateLeg::~walknetSeparateLeg(void) {
 
 double walknetSeparateLeg::selectorNet(const sensor* sensor)
 {
-	double* tmp;
-	tmp = extractSensor( sensor, legNum );
+	std::vector<double> tmp = extractSensor( sensor, legNum );
 
 	GCunit = tmp[3];				//	Check if there is Ground Contact
 	PEPunit = atPosition( PEP );	//	Check if the leg is at the PEP.
@@ -52,16 +58,17 @@ double walknetSeparateLeg::stanceNet(const sensor* sensor) {
 double walknetSeparateLeg::swingNet(const sensor* sensor) {
 	//const double HEIGHT = 1;
 	//const double MID_COXA_POS = (PEP[0]-AEP[0])/2;
-	double middlePos[3] = {0,0,0};
+	std::vector<double> middlePos = {0,0,0};
 
 	if(initSwing){  // initialize things here
 		initSwing = false;
 		stage3 = true;
 		stage4 = true;
 	}
-	else if(localSensorArray[4] == 1){ 	// is there ground contact
+	else if(localSensorArray[4] == 1){ 	// If there is ground contact
 		// lift the leg
 		// Height manipulation
+
 	}
 	else if(!atPosition(middlePos) && stage3){  // Arrived at middle-point
 		// go to this point
@@ -70,7 +77,7 @@ double walknetSeparateLeg::swingNet(const sensor* sensor) {
 		stage3 = false;
 		// go to this point
 	}
-	else if(localSensorArray[4] == 0){	// is there ground contact
+	else if(localSensorArray[4] == 0){	// If there is ground contact
 		stage4 = false;
 		// lower the leg
 	}
@@ -78,9 +85,9 @@ double walknetSeparateLeg::swingNet(const sensor* sensor) {
 	return 0.0;
 }
 
-double* walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
+std::vector<double> walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
 {
-	double *extractedSensors = new double[4];
+	std::vector<double> extractedSensors(4,0);
 	extractedSensors[4] = 0;
 
 	for( int i = 0; i < 3; i++ )
@@ -98,7 +105,7 @@ double* walknetSeparateLeg::extractSensor( const sensor* sensor, int leg )
 	return extractedSensors;
 }
 
-bool walknetSeparateLeg::atPosition( double targetPos[] )
+bool walknetSeparateLeg::atPosition( std::vector<double> targetPos )
 {
 	double coxaError = targetPos[0] - localSensorArray[0];
 	double femurError = targetPos[1] - localSensorArray[1];
