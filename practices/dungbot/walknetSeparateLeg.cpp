@@ -4,9 +4,10 @@ using namespace std;
 
 walknetSeparateLeg::walknetSeparateLeg(int newlegNum) {
 	legNum = newlegNum;
-	PEP.resize( 6 , 0 );
-	AEP.resize( 6 , 0 );
+	PEP.assign( 3 , 0 );
+	AEP.assign( 3 , 0 );
 	localSensorArray.assign( 4, 0 );
+	coordinationRules.assign( 3, 0);
 }
 
 void walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor, std::vector<double> &viaAngle) {
@@ -21,28 +22,44 @@ void walknetSeparateLeg::stepWalknetSeprateLeg(const sensor* sensor, std::vector
 walknetSeparateLeg::~walknetSeparateLeg(void) {
 }
 
-std::vector<double> walknetSeparateLeg::selectorNet(const sensor* sensor)
+void walknetSeparateLeg::selectorNet(const sensor* sensor)
 {
-	std::vector<double> tmp(4,0);
-	extractSensor( sensor, legNum, tmp );
-
-	GCunit = tmp[3];				//	Check if there is Ground Contact
+	GCunit = localSensorArray[3];	//	Check if there is Ground Contact
 	PEPunit = atPosition( PEP );	//	Check if the leg is at the PEP.
 
-	RSunit = RSunit + PEPunit - GCunit;
+	RSunit = RSunit + PEPunit - GCunit;	//	Do the logic that tells the leg if it should move.
 	PSunit = PSunit - PEPunit + GCunit;
+
+/*
+	RSunit:
+	true + true - true = 1;		Have just walked	Is at PEP		Touches ground			Do: SwingNet
+	true + true - false = 2;	Have just walked	Is at PEP		Does not touch ground	Do: SwingNet
+	true + false - true = 0;	Have just walked	Is not at PEP	Touches ground			Do: Nothing
+	true + false - false = 1;	Have just walked	Is not at PEP	Does not touch ground	Do: SwingNet
+	false + true - true = 0;	Was just standing	Is at PEP		Touches ground			Do: SwingNet
+	false + true - false = 1;	Was just standing	Is at PEP		Does not touch ground	Do: Nothing
+	false + false - true = -1;	Was just standing	Is not at PEP	Touches ground			Do: Nothing
+	false + false - false = 0;	Was just standing	Is not at PEP	Does not touch ground	Do: Nothing
+
+	PSunit:
+	true - true + true = 1;		Was just standing	Is not at PEP	Touches ground			Do: StanceNet
+	true - true + false = 0;	Was just standing	Is not at PEP	Does not touch ground	Do: Nothing
+	true - false + true = 2;	Was just standing	Is at PEP		Touches ground			Do: StanceNet
+	true - false + false = 1;	Was just standing	Is at PEP		Does not touch ground	Do: StanceNet
+	false - true + true = 0;	Have just walked	Is not at PEP	Touches ground			Do: Nothing
+	false - true + false = -1;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
+	false - false + true = 1;	Have just walked	Is at PEP		Touches ground			Do: StanceNet
+	false - false + false = 0;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
+*/
 
 	if( RSunit == true )
 	{
-		return swingNet( sensor );
+		swingNet( sensor );
 	}
 	else if( PSunit == true )
 	{
-		return stanceNet( sensor );
+		stanceNet( sensor );
 	}
-
-	std::vector<double>nullVector(0);
-	return nullVector;
 }
 
 std::vector<double> walknetSeparateLeg::stanceNet(const sensor* sensor) {
@@ -96,7 +113,6 @@ std::vector<double> walknetSeparateLeg::swingNet(const sensor* sensor) {
 
 void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vector<double> & extractedSensors )
 {
-
 	for( int i = 0; i < 3; i++ )
 	{
 		extractedSensors[ i ] = sensor[ leg + i*6 ];
@@ -108,7 +124,6 @@ void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vect
 			extractedSensors[4] = 1;
 		}
 	}
-
 }
 
 bool walknetSeparateLeg::atPosition( std::vector<double> targetPos )
@@ -124,3 +139,17 @@ bool walknetSeparateLeg::atPosition( std::vector<double> targetPos )
 		return false;
 	}
 }
+
+bool walknetSeparateLeg::getPhase( void )
+{
+	return phase;
+}
+bool walknetSeparateLeg::getGroundContact( void )
+{
+	return localSensorArray[3];
+}
+void walknetSeparateLeg::setRule( int index, bool flag )
+{
+	coordinationRules[index] = flag;
+}
+

@@ -31,6 +31,16 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 	angleVector.assign( 6 , vector<double>( 3 , 0 ) );
 
 	walknet = new walknetcontroller();
+
+std::cout << true - true + true << std::endl;
+std::cout << true - true + false << std::endl;
+std::cout << true - false + true << std::endl;
+std::cout << true - false + false << std::endl;
+std::cout << false - true + true << std::endl;
+std::cout << false - true + false << std::endl;
+std::cout << false - false + true << std::endl;
+std::cout << false - false + false << std::endl;
+
 }
 
 DungBotEmptyController::~DungBotEmptyController()

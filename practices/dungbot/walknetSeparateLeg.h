@@ -36,6 +36,14 @@ class walknetSeparateLeg
 	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &  );
 	std::vector<double> getAEP( void );
 	std::vector<double> getPEP( void );
+	//	Used by the walknet to make the control laws for the legs.
+	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
+	void setAEP( double );
+	void setPEP( double );
+	bool atPosition( std::vector<double> );
+	bool getPhase();
+	bool getGroundContact();
+	void setRule( int, bool );
 
 	protected:
 	//	Protected attributes
@@ -46,18 +54,19 @@ class walknetSeparateLeg
 	private:
 	//	Private attributes
 	int legNum;
+	bool phase;
 	std::vector<double> PEP;
 	std::vector<double> AEP;
+	std::vector<double> localSensorArray;
+	std::vector<bool> coordinationRules;
 
+	bool initStance = true;
 	bool initSwing = true;
 	bool stage2 = true;
 	bool stage3 = true;
 	bool stage4 = true;
 
 
-	bool initStance = true;
-
-	std::vector<double> localSensorArray;
 
 	bool RSunit = false;	//	Return Stroke unit (swing movement)
 	bool PSunit = false;	//	Power Stroke unit (stance movement)
@@ -66,14 +75,9 @@ class walknetSeparateLeg
 
 	private:
 	//	Private methods
-	std::vector<double> selectorNet( const sensor* sensor );
+	void selectorNet( const sensor* sensor );
 	std::vector<double> stanceNet( const sensor* sensor );
 	std::vector<double> swingNet( const sensor* sensor );
-	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
-	bool checkPEP();
-	void setAEP( double );
-	void setPEP( double );
-	bool atPosition( std::vector<double> );
 };
 
 #endif

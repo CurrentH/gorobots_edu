@@ -38,11 +38,88 @@ walknetcontroller::~walknetcontroller( void )
 
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
 {
-
 	for( int i = 0; i < 6; i++ )
 	{
+
+
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
+
+
+
+
 	}
 
 }
+void walknetcontroller::coordinatingInfluences( void )
+{
+	//TODO: Check through the rules again. They should be right though.
 
+	/**
+	 * 		Do the coordination influences here.
+	 * 		Figure out what the legs need to do, and send the
+	 * 		signals to the separate legs.
+	 */
+	for( int i = 0; i < 6; i++ )
+	{
+		bool rule1, rule2, rule3;
+
+		//	Gather info from the other legs.
+		switch (i) {
+			case 0://	Front left
+				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+								separateLegs[i+1].getGroundContact() )
+							{ separateLegs[i].setRule(2, true); } else
+							{ separateLegs[i].setRule(2, false); }
+				break;
+			case 1://	Middle left
+				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+								separateLegs[i+1].getGroundContact() )
+							{ separateLegs[i].setRule(2, true); } else
+							{ separateLegs[i].setRule(2, false); }
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+							{ separateLegs[i+3].setRule(3, true); } else
+							{ separateLegs[i+3].setRule(3, false); }
+				break;
+			case 2://	Rear left
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+							{ separateLegs[i+3].setRule(3, true); } else
+							{ separateLegs[i+3].setRule(3, false); }
+				break;
+			case 3://	Front Right
+				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+								separateLegs[i+1].getGroundContact() )
+							{ separateLegs[i].setRule(2, true); } else
+							{ separateLegs[i].setRule(2, false); }
+				break;
+			case 4://	Middle Right
+				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+								separateLegs[i+1].getGroundContact() )
+							{ separateLegs[i].setRule(2, true); } else
+							{ separateLegs[i].setRule(2, false); }
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+							{ separateLegs[i].setRule(3, true); } else
+							{ separateLegs[i].setRule(3, false); }
+				break;
+			case 5://	Rear Right
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+							{ separateLegs[i].setRule(3, true); } else
+							{ separateLegs[i].setRule(3, false); }
+				break;
+			default:
+				break;
+		}
+	}
+
+}

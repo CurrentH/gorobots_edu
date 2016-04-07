@@ -47,6 +47,7 @@ class walknetcontroller
 
 	private:
 	//	Private methods
+	void coordinatingInfluences( void );
 
 };
 

@@ -62,7 +62,7 @@ namespace lpzrobots
 		// Configure environment
 		setCameraHomePos(Pos(-2.85247, 2.68423, 2.9186),  Pos(-131.376, -16.7443, 0));
 
-		global.odeConfig.setParam( "controlinterval", 1 ); //TODO: Leon: Controlinterval?
+		global.odeConfig.setParam( "controlinterval", 1 );
 		global.odeConfig.setParam( "simstepsize", 0.01 );
 		global.odeConfig.setParam( "gravity", -9.8 );
 
