@@ -31,16 +31,6 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 	angleVector.assign( 6 , vector<double>( 3 , 0 ) );
 
 	walknet = new walknetcontroller();
-
-std::cout << true - true + true << std::endl;
-std::cout << true - true + false << std::endl;
-std::cout << true - false + true << std::endl;
-std::cout << true - false + false << std::endl;
-std::cout << false - true + true << std::endl;
-std::cout << false - true + false << std::endl;
-std::cout << false - false + true << std::endl;
-std::cout << false - false + false << std::endl;
-
 }
 
 DungBotEmptyController::~DungBotEmptyController()
@@ -66,8 +56,9 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 			std::cout << (600-ticks_since_init)/100 << std::endl;
 		return;
 	}
-	start(motor, 1.1);
+
 	// ----------------------------------
+	start(motor, 1.0);
 	//stand( angleVector );
 	//walknet->stepWalknet( sensor, angleVector );
 	//moveRobot( motor, angleVector );
@@ -75,8 +66,8 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	if( int( ticks_since_init )%200 == 0 )
 	{
-		cout << ticks_since_init << endl;
-		//outputData( sensor, motor );
+		//cout << ticks_since_init << endl;
+		outputData( sensor, motor );
 	}
 }
 
@@ -143,11 +134,11 @@ void DungBotEmptyController::start( motor* motor, double vel ) {
 	{
 		if( i >= 0 && i < 6)		// COXA
 		{
-			motor[i] = -vel;
+			motor[i] = -vel*sin(ticks_since_init*0.001);
 		}
 		if( i >= 6 && i < 12 ) 		// FEMUR
 		{
-			motor[i] = vel;
+			motor[i] = vel*sin(ticks_since_init*0.001);
 		}
 		if( i >= 12 && i < 18 ) 	// TIBIA
 		{

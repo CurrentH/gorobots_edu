@@ -34,16 +34,16 @@ class walknetSeparateLeg
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
 	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &  );
-	std::vector<double> getAEP( void );
-	std::vector<double> getPEP( void );
 	//	Used by the walknet to make the control laws for the legs.
 	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
 	void setAEP( double );
 	void setPEP( double );
+	void setRule( int, bool );
+	std::vector<double> getAEP( void );
+	std::vector<double> getPEP( void );
 	bool atPosition( std::vector<double> );
 	bool getPhase();
 	bool getGroundContact();
-	void setRule( int, bool );
 
 	protected:
 	//	Protected attributes
@@ -77,16 +77,8 @@ class walknetSeparateLeg
 	//	Private methods
 	void selectorNet( const sensor* sensor );
 	std::vector<double> stanceNet( const sensor* sensor );
-<<<<<<< HEAD
-	std::vector<double> swingNet( const sensor* sensor );
-=======
 	void swingNet( const sensor* sensor, std::vector<double> & );
-	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
-	bool checkPEP();
-	void setAEP( double );
-	void setPEP( double );
-	bool atPosition( std::vector<double> );
->>>>>>> deb54e97cbcfab4d81eb02df74e3bcd636e58283
+
 };
 
 #endif

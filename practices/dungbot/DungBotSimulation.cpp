@@ -63,11 +63,7 @@ namespace lpzrobots
 		setCameraHomePos(Pos(-2.85247, 2.68423, 2.9186),  Pos(-131.376, -16.7443, 0));
 
 		global.odeConfig.setParam( "controlinterval", 1 );
-<<<<<<< HEAD
 		global.odeConfig.setParam( "simstepsize", 0.01 );
-=======
-		global.odeConfig.setParam( "simstepsize", 0.007 );
->>>>>>> deb54e97cbcfab4d81eb02df74e3bcd636e58283
 		global.odeConfig.setParam( "gravity", -9.8 );
 
 	    // add playground

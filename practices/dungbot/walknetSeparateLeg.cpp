@@ -191,4 +191,13 @@ void walknetSeparateLeg::setRule( int index, bool flag )
 {
 	coordinationRules[index] = flag;
 }
+std::vector<double> walknetSeparateLeg::getAEP( void )
+{
+	return AEP;
+}
+std::vector<double> walknetSeparateLeg::getPEP( void )
+{
+	return PEP;
+}
+
 
