@@ -9,18 +9,50 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	PEP[0] = -0.1;
-	PEP[1] = 0.0;
-	PEP[2] = -0.9;
+	switch (newlegNum)
+	{
+	case 0: case 3: PEP[0] = -0.2; PEP[1] = 0.2; PEP[2] = -0.2;
+	    break;
+	case 1: case 4: PEP[0] = -0.2; PEP[1] = 0.2; PEP[2] = -0.2;
+	    break;
+	case 2: case 5: PEP[0] = -0.2; PEP[1] = 0.2; PEP[2] = -0.2;
+	    break;
+	default: cout << "LEG UNKNOWN";
+	    break;
+	}
 
-	AEP[0] = 0.1;
-	AEP[1] = 0.0;
-	AEP[2] = -0.9;
+	switch (newlegNum)
+	{
+	case 0: case 3: AEP[0] = 0.1; AEP[1] = 0.0; AEP[2] = -0.9;
+	    break;
+	case 1: case 4: AEP[0] = 0.1; AEP[1] = 0.0; AEP[2] = -0.9;
+	    break;
+	case 2: case 5: AEP[0] = 0.1; AEP[1] = 0.0; AEP[2] = -0.9;
+	    break;
+	default: cout << "LEG UNKNOWN";
+	    break;
+	}
+
 }
 
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle ) {
 	 extractSensor(sensor, legNum, localSensorArray);
-	 selectorNet( sensor, viaAngle );
+
+	 //selectorNet( sensor, viaAngle );
+
+	if(legNum == 3 || legNum == 0){
+		//swingNet(sensor, viaAngle);
+		viaAngle = PEP;
+	} else if(legNum == 2 || legNum == 5 ){
+	viaAngle[0] = -1.0;
+	viaAngle[1] = 1.0;
+	viaAngle[2] = -1.0;
+	} else{
+	viaAngle[0] = 1.0;
+	viaAngle[1] = 1.0;
+	viaAngle[2] = -1.0;
+	}
+
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -96,11 +128,11 @@ void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swi
 		swingNetAngle=PEP;
 
 	} else if(!atPosition(middlePos) && stage3){
-		swingNetAngle=middlePos;
+		//swingNetAngle=middlePos;
 		stage2 = false;
 
 	} else if(!atPosition(AEP)){
-		swingNetAngle=AEP;
+		//swingNetAngle=AEP;
 		stage3 = false;
 
 	} else{

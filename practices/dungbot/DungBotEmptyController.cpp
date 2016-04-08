@@ -134,15 +134,15 @@ void DungBotEmptyController::start( motor* motor, double vel ) {
 	{
 		if( i >= 0 && i < 6)		// COXA
 		{
-			motor[i] = -vel*sin(ticks_since_init*0.001);
+			motor[i] = -vel;//*sin(ticks_since_init*0.001);
 		}
 		if( i >= 6 && i < 12 ) 		// FEMUR
 		{
-			motor[i] = vel*sin(ticks_since_init*0.001);
+			motor[i] = vel;//*sin(ticks_since_init*0.001);
 		}
 		if( i >= 12 && i < 18 ) 	// TIBIA
 		{
-			motor[i] = -vel*sin(ticks_since_init*0.001);
+			motor[i] = -vel;//*sin(ticks_since_init*0.001);
 		}
 	}
 }
@@ -167,21 +167,22 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
     cout.setf(ios::fixed, ios::floatfield);
     cout.precision(2);
 
-	std::cout << "------------------------------------------------------------------" << std::endl;
-	std::cout << "Ticks: " << ticks_since_init << std::endl;
-	std::cout << "Coxa:\t" << motor[0] << "\t" << motor[1] << "\t" << motor[2] << "\t"
-							<< motor[3] << "\t" << motor[4] << "\t" << motor[5] << std::endl;
-	std::cout << "Femur:\t" << motor[6] << "\t" << motor[7] << "\t" << motor[8] << "\t"
-							<< motor[9] << "\t" << motor[10] << "\t" << motor[11] << std::endl;
-	std::cout << "Tibia:\t" << motor[12] << "\t" << motor[13] << "\t" << motor[14] << "\t"
-							<< motor[15] << "\t" << motor[16] << "\t" << motor[17] << std::endl;
-	std::cout << "Coxa:\t" << sensor[0] << "\t" << sensor[1] << "\t" << sensor[2] << "\t"
-							<< sensor[3] << "\t" << sensor[4] << "\t" << sensor[5] << std::endl;
-	std::cout << "Femur:\t" << sensor[6] << "\t" << sensor[7] << "\t" << sensor[8] << "\t"
-							<< sensor[9] << "\t" << sensor[10] << "\t" << sensor[11] << std::endl;
-	std::cout << "Tibia:\t" << sensor[12] << "\t" << sensor[13] << "\t" << sensor[14] << "\t"
-							<< sensor[15] << "\t" << sensor[16] << "\t" << sensor[17] << std::endl;
-	std::cout << "------------------------------------------------------------------" << std::endl;
+
+
+	cout << "------------------------------------------------------------------" << endl;
+	cout << "     \t   \tCurrent\t     \t\t    \tDesired\t     " << endl;
+	cout << "     \tCoxa\tFemur\tTibia\t\tCoxa\tFemur\tTibia" << endl;
+	cout << "Leg0:\t"<< sensor[0] <<"\t"<< sensor[6] <<"\t"<< sensor[12] <<"     \t"<< motor[0] <<"\t"<< motor[6] <<"\t"<< motor[12] <<"" << endl;
+	cout << "Leg1:\t"<< sensor[1] <<"\t"<< sensor[7] <<"\t"<< sensor[13] <<"     \t"<< motor[1] <<"\t"<< motor[7] <<"\t"<< motor[13] <<"" << endl;
+	cout << "Leg2:\t"<< sensor[2] <<"\t"<< sensor[8] <<"\t"<< sensor[14] <<"     \t"<< motor[2] <<"\t"<< motor[8] <<"\t"<< motor[14] <<"" << endl;
+	cout << "Leg3:\t"<< sensor[3] <<"\t"<< sensor[9] <<"\t"<< sensor[15] <<"     \t"<< motor[3] <<"\t"<< motor[9] <<"\t"<< motor[15] <<"" << endl;
+	cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"" << endl;
+	cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"" << endl;
+	std::cout << "\nTicks: " << ticks_since_init << std::endl;
+	cout << "------------------------------------------------------------------" << endl;
+
+	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
+
 
 	if( writeOutput )
 	{
