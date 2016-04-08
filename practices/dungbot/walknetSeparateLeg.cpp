@@ -11,11 +11,11 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 
 	switch (newlegNum)
 	{
-	case 0: case 3: PEP[0] = -0.2; PEP[1] = 0.2; PEP[2] = -0.2;
+	case 0: case 3: PEP[0] = -1.0; PEP[1] = 0.4; PEP[2] = -0.7;
 	    break;
-	case 1: case 4: PEP[0] = -0.2; PEP[1] = 0.2; PEP[2] = -0.2;
+	case 1: case 4: PEP[0] = -1.0; PEP[1] = -0.2; PEP[2] = -0.4;
 	    break;
-	case 2: case 5: PEP[0] = -0.2; PEP[1] = 0.2; PEP[2] = -0.2;
+	case 2: case 5: PEP[0] = -0.65; PEP[1] = -0.2; PEP[2] = -0.3;
 	    break;
 	default: cout << "LEG UNKNOWN";
 	    break;
@@ -23,11 +23,11 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 
 	switch (newlegNum)
 	{
-	case 0: case 3: AEP[0] = 0.1; AEP[1] = 0.0; AEP[2] = -0.9;
+	case 0: case 3: AEP[0] = 0.2; AEP[1] = 0.2; AEP[2] = -0.7;
 	    break;
-	case 1: case 4: AEP[0] = 0.1; AEP[1] = 0.0; AEP[2] = -0.9;
+	case 1: case 4: AEP[0] = 0.5; AEP[1] = 0.5; AEP[2] = -0.6;
 	    break;
-	case 2: case 5: AEP[0] = 0.1; AEP[1] = 0.0; AEP[2] = -0.9;
+	case 2: case 5: AEP[0] = 0.5; AEP[1] = 0.85; AEP[2] = -0.9;
 	    break;
 	default: cout << "LEG UNKNOWN";
 	    break;
@@ -40,9 +40,9 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 
 	 //selectorNet( sensor, viaAngle );
 
-	if(legNum == 3 || legNum == 0){
-		//swingNet(sensor, viaAngle);
-		viaAngle = PEP;
+	if(legNum == 1 || legNum == 4 || true){
+		swingNet(sensor, viaAngle);
+		//viaAngle = PEP;
 	} else if(legNum == 2 || legNum == 5 ){
 	viaAngle[0] = -1.0;
 	viaAngle[1] = 1.0;
@@ -117,10 +117,10 @@ void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &sw
 void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swingNetAngle) {
 
 	//const double HEIGHT = 1;
-	//const double MID_COXA_POS = (PEP[0]-AEP[0])/2;
+	const double MID_COXA_POS = (PEP[0]-AEP[0])/2;
 
 	std::vector<double> middlePos(3,0);
-	middlePos[0] = 0.0;
+	middlePos[0] = MID_COXA_POS;
 	middlePos[1] = 1.0;
 	middlePos[2] = -0.5;
 
@@ -128,11 +128,11 @@ void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swi
 		swingNetAngle=PEP;
 
 	} else if(!atPosition(middlePos) && stage3){
-		//swingNetAngle=middlePos;
+		swingNetAngle=middlePos;
 		stage2 = false;
 
 	} else if(!atPosition(AEP)){
-		//swingNetAngle=AEP;
+		swingNetAngle=AEP;
 		stage3 = false;
 
 	} else{
