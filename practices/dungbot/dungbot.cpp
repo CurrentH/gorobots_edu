@@ -322,6 +322,7 @@ namespace lpzrobots
 				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
+				//OneAxisServo * coxaMotor = new OneAxisServo( j, -1, 1, 1, 0.01, 0, 1 );
 				//OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
 				OneAxisServo * coxaMotor = new OneAxisServoPosForce(odeHandle, j, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].tcServo = coxaMotor;
@@ -341,6 +342,7 @@ namespace lpzrobots
 				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
+				//OneAxisServo * femurMotor = new OneAxisServo( k, -1, 1, 1, 0.01, 0, 1 );
 				//OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
 				OneAxisServo * femurMotor = new OneAxisServoPosForce(odeHandle, k, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].ctrServo = femurMotor;
@@ -360,6 +362,7 @@ namespace lpzrobots
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
+				//OneAxisServo * tibiaMotor = new OneAxisServo( l, -1, 1, 1, 0.01, 0, 1 );
 				//OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
 				OneAxisServo * tibiaMotor = new OneAxisServoPosForce(odeHandle, l, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].ftiServo = tibiaMotor;
@@ -868,31 +871,31 @@ namespace lpzrobots
 
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
-		conf.back_Kp 	= 100.0;
-		conf.coxa_Kp 	= 1000.0;
-		conf.femur_Kp	= 1000.0;
-		conf.tibia_Kp 	= 1000.0;
+		conf.back_Kp 	= 5.0;
+		conf.coxa_Kp 	= 5.0;
+		conf.femur_Kp	= 5.0;
+		conf.tibia_Kp 	= 5.0;
 		conf.tarsus_Kp 	= 0.0;
 
 		// Kd and Ki parameters are not used anymore
 		conf.back_Kd 	= 0.0;
-		conf.coxa_Kd 	= 100.2;
-		conf.femur_Kd 	= 100.2;
-		conf.tibia_Kd 	= 100.2;
-		conf.tarsus_Kd	= 100.0;
+		conf.coxa_Kd 	= 0.5;
+		conf.femur_Kd 	= 0.5;
+		conf.tibia_Kd 	= 0.5;
+		conf.tarsus_Kd	= 0.0;
 
 		conf.back_Ki 	= 0.0;
-		conf.coxa_Ki 	= 0.0;
-		conf.femur_Ki 	= 0.0;
-		conf.tibia_Ki 	= 0.0;
+		conf.coxa_Ki 	= 0.5;
+		conf.femur_Ki 	= 0.5;
+		conf.tibia_Ki 	= 0.5;
 		conf.tarsus_Ki	= 0.0;
 
 		// The following sets the max output for the motor. It scales the input to fit this
 		// So that 1 = maxVel TODO REFACTOR THIS VAR
-		conf.backMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 5.0;//1.7 * 1.961 * M_PI;
+		conf.backMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
+		conf.coxaMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
+		conf.femurMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
+		conf.tibiaMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
 
 		return conf;
 	}
