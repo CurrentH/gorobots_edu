@@ -39,37 +39,44 @@ namespace DungBotMotorSensor
 		R0_s4 = 28,
 		R0_s5 = 29,
 
-		L0_s1 = 30,
-		L0_s2 = 31,
-		L0_s3 = 32,
-		L0_s4 = 33,
-		L0_s5 = 34,
+		L0_s1 = 31,
+		L0_s2 = 32,
+		L0_s3 = 33,
+		L0_s4 = 34,
+		L0_s5 = 35,
 
-		R1_s1 = 35,//middle right
-		R1_s2 = 36,
-		R1_s3 = 37,
-		R1_s4 = 38,
-		R1_s5 = 39,
+		R1_s1 = 37,//middle right
+		R1_s2 = 38,
+		R1_s3 = 39,
+		R1_s4 = 40,
+		R1_s5 = 41,
 
-		L1_s1 = 40,//middle left
-		L1_s2 = 41,
-		L1_s3 = 42,
-		L1_s4 = 43,
-		L1_s5 = 44,
+		L1_s1 = 43,//middle left
+		L1_s2 = 44,
+		L1_s3 = 45,
+		L1_s4 = 46,
+		L1_s5 = 47,
 
-		R2_s1 = 45,
-		R2_s2 = 46,
-		R2_s3 = 47,
-		R2_s4 = 48,
-		R2_s5 = 49,
+		R2_s1 = 49,
+		R2_s2 = 50,
+		R2_s3 = 51,
+		R2_s4 = 52,
+		R2_s5 = 53,
 
-		L2_s1 = 50,
-		L2_s2 = 51,
-		L2_s3 = 52,
-		L2_s4 = 53,
-		L2_s5 = 54,
+		L2_s1 = 55,
+		L2_s2 = 56,
+		L2_s3 = 57,
+		L2_s4 = 58,
+		L2_s5 = 59,
 
-		DUNGBOT_SENSOR_MAX = 55,
+		R0_s0 = 30,
+		L0_s0 = 36,
+		R1_s0 = 42,
+		L1_s0 = 48,
+		R2_s0 = 54,
+		L2_s0 = 60,
+
+		DUNGBOT_SENSOR_MAX = 61,
 	};
 
 	enum DungBotMotorNames

@@ -266,6 +266,7 @@ namespace lpzrobots
 			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
 			coxaThorax->setTexture( "coxa1.jpg" );
+			//coxaThorax->setColor( Color(255,255,0) );
 			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandle );
 			coxaThorax->setPose( coxaCenter );
 			legs[leg].coxa = coxaThorax;
@@ -376,27 +377,35 @@ namespace lpzrobots
 	        }
 
 	        // Tarsus
+
+			//	Tarsus placement
+			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
+								tibiaCenter;
+			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
+			Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
+			//tarsus->setTexture( "tarsus.jpg" );
+			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
+			tarsus->setPose( tarsusCenter );
+			legs[leg].tarsus = tarsus;
+			objects.push_back( tarsus );
+			tarsusParts.push_back( tarsus );
+
+			const osg::Vec3 anchor4 = nullpos * c4;
+
+			//	Tibia tarsus fixed joint.
+			FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
+			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
+			joints.push_back(q);
+
+			if( conf.testTarsusSensor)
+			{
+				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ] = new ContactSensor(true, 65, 1.5 * conf.tarsusRadius[i%3], false, true, Color(255,255,0));
+				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0,  (-0.5 *conf.tarsusLength[i%3] / 5) * 2.1));
+				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ]->init(tarsus);
+			}
+
 			if( conf.testTarsus )
 			{
-				//	Tarsus placement
-				osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
-									tibiaCenter;
-				osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
-				Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
-				tarsus->setTexture( "tarsus.jpg" );
-				tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
-				tarsus->setPose( tarsusCenter );
-				legs[leg].tarsus = tarsus;
-				objects.push_back( tarsus );
-				tarsusParts.push_back( tarsus );
-
-		        const osg::Vec3 anchor4 = nullpos * c4;
-
-		        //	Tibia tarsus fixed joint.
-		        FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
-				q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
-				joints.push_back(q);
-
 				double angle = M_PI/12;
 				double radius = conf.tarsusRadius[i%3]/2;
 				double partLength = conf.tarsusLength[i%3]/5;
@@ -433,7 +442,7 @@ namespace lpzrobots
 
 					 if( conf.testTarsusSensor )
 					 {
-						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radius, false, true, Color(1,9,3));
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 65, 1.5 * radius, false, true, Color(255,0,0));
 						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * partLength));
 						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
 					 }
@@ -591,7 +600,7 @@ namespace lpzrobots
 		sensors[DungBotMotorSensor::FL2_as] = servos[DungBotMotorSensor::FL2_m] ? -servos[DungBotMotorSensor::FL2_m]->get() : 0;
 		sensors[DungBotMotorSensor::BJ_as] = servos[DungBotMotorSensor::BJ_m] ? -servos[DungBotMotorSensor::BJ_m]->get() : 0;
 		//TODO: make sensor for head servo.
-		if( conf.testTarsusSensor )
+		if( conf.testTarsusSensor && conf.testTarsus)
 		{
 			sensors[DungBotMotorSensor::L0_s1] = tarsusContactSensors[std::make_pair(L0,1)]->get();
 			sensors[DungBotMotorSensor::L0_s2] = tarsusContactSensors[std::make_pair(L0,2)]->get();
@@ -628,6 +637,22 @@ namespace lpzrobots
 			sensors[DungBotMotorSensor::R2_s3] = tarsusContactSensors[std::make_pair(R2,3)]->get();
 			sensors[DungBotMotorSensor::R2_s4] = tarsusContactSensors[std::make_pair(R2,4)]->get();
 			sensors[DungBotMotorSensor::R2_s5] = tarsusContactSensors[std::make_pair(R2,5)]->get();
+
+			sensors[DungBotMotorSensor::L0_s0] = tarsusContactSensors[std::make_pair(L0,0)]->get();
+			sensors[DungBotMotorSensor::R0_s0] = tarsusContactSensors[std::make_pair(R0,0)]->get();
+			sensors[DungBotMotorSensor::L1_s0] = tarsusContactSensors[std::make_pair(L1,0)]->get();
+			sensors[DungBotMotorSensor::R1_s0] = tarsusContactSensors[std::make_pair(R1,0)]->get();
+			sensors[DungBotMotorSensor::L2_s0] = tarsusContactSensors[std::make_pair(L2,0)]->get();
+			sensors[DungBotMotorSensor::R2_s0] = tarsusContactSensors[std::make_pair(R2,0)]->get();
+		} else if(conf.testTarsusSensor && !conf.testTarsus)
+		{
+
+			sensors[DungBotMotorSensor::L0_s0] = tarsusContactSensors[std::make_pair(L0,0)]->get();
+			sensors[DungBotMotorSensor::R0_s0] = tarsusContactSensors[std::make_pair(R0,0)]->get();
+			sensors[DungBotMotorSensor::L1_s0] = tarsusContactSensors[std::make_pair(L1,0)]->get();
+			sensors[DungBotMotorSensor::R1_s0] = tarsusContactSensors[std::make_pair(R1,0)]->get();
+			sensors[DungBotMotorSensor::L2_s0] = tarsusContactSensors[std::make_pair(L2,0)]->get();
+			sensors[DungBotMotorSensor::R2_s0] = tarsusContactSensors[std::make_pair(R2,0)]->get();
 		}
 
 		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
@@ -751,7 +776,7 @@ namespace lpzrobots
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
 		conf.testTarsus = false; // If true, then tarsus is created, else it is not created
-		conf.testTarsusSensor = false;
+		conf.testTarsusSensor = true;
 
 		//	----------- Body dimensions -------
 		//TODO Measure the correct height.

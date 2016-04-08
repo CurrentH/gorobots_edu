@@ -180,9 +180,17 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 	cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"" << endl;
 	cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"" << endl;
 	std::cout << "\nTicks: " << ticks_since_init << std::endl;
+	cout << "Contact: " << sensor[30] << ", "<< sensor[36] << ", "<< sensor[42] << ", "<<sensor[48] << ", " << sensor[54] << ", " << sensor[60] << endl;
 	cout << "------------------------------------------------------------------" << endl;
 
 	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
+	/*
+	for(int i = 0; i < DungBotMotorSensor::DUNGBOT_SENSOR_MAX; i++)
+	{
+		cout << sensor[i] << " ";
+	}
+	*/
+
 
 
 	if( writeOutput )
