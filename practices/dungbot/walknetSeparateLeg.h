@@ -66,8 +66,6 @@ class walknetSeparateLeg
 	bool stage3 = true;
 	bool stage4 = true;
 
-
-
 	bool RSunit = false;	//	Return Stroke unit (swing movement)
 	bool PSunit = false;	//	Power Stroke unit (stance movement)
 	bool GCunit = false;	//	Ground Contact
@@ -75,8 +73,8 @@ class walknetSeparateLeg
 
 	private:
 	//	Private methods
-	void selectorNet( const sensor* sensor );
-	std::vector<double> stanceNet( const sensor* sensor );
+	void selectorNet( const sensor* sensor, std::vector<double> & );
+	void stanceNet( const sensor* sensor, std::vector<double> & );
 	void swingNet( const sensor* sensor, std::vector<double> & );
 
 };

@@ -40,20 +40,11 @@ void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vect
 {
 	for( int i = 0; i < 6; i++ )
 	{
-
-
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
-
-
-
-
 	}
-
 }
 void walknetcontroller::coordinatingInfluences( void )
 {
-	//TODO: Check through the rules again. They should be right though.
-
 	/**
 	 * 		Do the coordination influences here.
 	 * 		Figure out what the legs need to do, and send the
@@ -61,9 +52,6 @@ void walknetcontroller::coordinatingInfluences( void )
 	 */
 	for( int i = 0; i < 6; i++ )
 	{
-		bool rule1, rule2, rule3;
-
-		//	Gather info from the other legs.
 		switch (i) {
 			case 0://	Front left
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )

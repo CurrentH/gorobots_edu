@@ -58,10 +58,10 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	}
 
 	// ----------------------------------
-	start(motor, 1.0);
+	//start(motor, 1.0);
 	//stand( angleVector );
-	//walknet->stepWalknet( sensor, angleVector );
-	//moveRobot( motor, angleVector );
+	walknet->stepWalknet( sensor, angleVector );
+	moveRobot( motor, angleVector );
 	// ----------------------------------
 
 	if( int( ticks_since_init )%200 == 0 )
