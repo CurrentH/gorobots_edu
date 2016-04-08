@@ -66,11 +66,11 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 			std::cout << (600-ticks_since_init)/100 << std::endl;
 		return;
 	}
-
+	start(motor, 1.1);
 	// ----------------------------------
 	//stand( angleVector );
-	walknet->stepWalknet( sensor, angleVector );
-	moveRobot( motor, angleVector );
+	//walknet->stepWalknet( sensor, angleVector );
+	//moveRobot( motor, angleVector );
 	// ----------------------------------
 
 	if( int( ticks_since_init )%200 == 0 )
@@ -127,7 +127,7 @@ void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVecto
 {
 	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
 	double femur_pos[3]	= {0.2, 0.0, 0.5};
-	double tibia_pos[3]	= {-0.6, -0.9, -0.4};
+	double tibia_pos[3]	= {0.6, 0.9, 0.4};
 
 	for( int i = 0; i < 6; i++ )
 	{
@@ -151,7 +151,7 @@ void DungBotEmptyController::start( motor* motor, double vel ) {
 		}
 		if( i >= 12 && i < 18 ) 	// TIBIA
 		{
-			motor[i] = -vel;
+			motor[i] = -vel*sin(ticks_since_init*0.001);
 		}
 	}
 }

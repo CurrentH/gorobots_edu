@@ -301,6 +301,7 @@ namespace lpzrobots
 			odeHandle.addIgnoredPair(tibia, front);
 			odeHandle.addIgnoredPair(tibia, rear);
 			odeHandle.addIgnoredPair(tibia, front);
+			odeHandle.addIgnoredPair(tibia, coxaThorax);
 			objects.push_back( tibia );
 
 
@@ -868,22 +869,22 @@ namespace lpzrobots
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
 		conf.back_Kp 	= 100.0;
-		conf.coxa_Kp 	= 7000.0;
-		conf.femur_Kp	= 7000.0;
-		conf.tibia_Kp 	= 7000.0;
+		conf.coxa_Kp 	= 1000.0;
+		conf.femur_Kp	= 1000.0;
+		conf.tibia_Kp 	= 1000.0;
 		conf.tarsus_Kp 	= 0.0;
 
 		// Kd and Ki parameters are not used anymore
-		conf.back_Kd 	= 0.2;
-		conf.coxa_Kd 	= 1.2;
-		conf.femur_Kd 	= 1.2;
-		conf.tibia_Kd 	= 1.2;
-		conf.tarsus_Kd	= 0.0;
+		conf.back_Kd 	= 0.0;
+		conf.coxa_Kd 	= 100.2;
+		conf.femur_Kd 	= 100.2;
+		conf.tibia_Kd 	= 100.2;
+		conf.tarsus_Kd	= 100.0;
 
-		conf.back_Ki 	= 0.2;
-		conf.coxa_Ki 	= 0.7;
-		conf.femur_Ki 	= 0.7;
-		conf.tibia_Ki 	= 0.7;
+		conf.back_Ki 	= 0.0;
+		conf.coxa_Ki 	= 0.0;
+		conf.femur_Ki 	= 0.0;
+		conf.tibia_Ki 	= 0.0;
 		conf.tarsus_Ki	= 0.0;
 
 		// The following sets the max output for the motor. It scales the input to fit this
