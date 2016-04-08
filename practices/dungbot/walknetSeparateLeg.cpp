@@ -38,8 +38,8 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle ) {
 	 extractSensor(sensor, legNum, localSensorArray);
 
-	 //selectorNet( sensor, viaAngle );
-
+	 selectorNet( sensor, viaAngle );
+/*
 	if(legNum == 3 || legNum == 0){
 		//swingNet(sensor, viaAngle);
 		viaAngle = PEP;
@@ -52,7 +52,7 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 	viaAngle[1] = 1.0;
 	viaAngle[2] = -1.0;
 	}
-
+*/
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -69,8 +69,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	if( legNum == 2 )
 	{
-		std::cout << RSunit << "+"<< PEPunit << "-" << GCunit << std::endl;
-		std::cout << PSunit << "-"<< PEPunit << "+" << GCunit << std::endl;
+		std::cout << RSunit << "+"<< PEPunit << "-" << GCunit << ":" << PSunit << "-"<< PEPunit << "+" << GCunit << std::endl;
 	}
 /*
 	RSunit:
@@ -96,13 +95,11 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	if( RSunit == true || coordinationRules[1] == true || coordinationRules[2] == true )
 	{
-		std::cout << "TEST1" << std::endl;
 		phase = true;
 		swingNet( sensor, viaAngle );
 	}
-	else if( PSunit == true || coordinationRules[0] == true )
+	if( PSunit == true || coordinationRules[0] == true )
 	{
-		std::cout << "\t TEST1" << std::endl;
 		phase = false;
 		stanceNet( sensor, viaAngle );
 	}
