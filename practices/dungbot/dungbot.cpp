@@ -113,7 +113,7 @@ namespace lpzrobots
 
     	for( int i = 0; i < LEG_POS_MAX; i++ )
 		{
-			for( int j = 1; j < 6; j++ )
+			for( int j = 0; j < 6; j++ )
 			{
 				if( conf.testTarsusSensor )
 				{
@@ -132,7 +132,7 @@ namespace lpzrobots
 
     	for( int i = 0; i < LEG_POS_MAX; i++ )
 		{
-			for( int j = 1; j < 6; j++ )
+			for( int j = 0; j < 6; j++ ) //TODO TODO TODO TODO TODO TODO TODO
 			{
 				if( conf.testTarsusSensor )
 				{
@@ -265,9 +265,9 @@ namespace lpzrobots
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
-			coxaThorax->setTexture( "coxa1.jpg" );
-			//coxaThorax->setColor( Color(255,255,0) );
-			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandle );
+			//coxaThorax->setTexture( "coxa1.jpg" );
+			OsgHandle osgHandleCoxa = osgHandle.changeColor(255,255,0,1);
+			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandleCoxa );
 			coxaThorax->setPose( coxaCenter );
 			legs[leg].coxa = coxaThorax;
 			objects.push_back( coxaThorax );
@@ -280,8 +280,9 @@ namespace lpzrobots
 								coxaCenter;
 			osg::Matrix femurCenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
 			Primitive* femurThorax = new Capsule( conf.femurRadius[i%3], conf.femurLength[i%3]  );
-			femurThorax->setTexture( "femur.jpg" );
-			femurThorax->init( odeHandle, conf.femurMass[i%3], osgHandle );
+			//femurThorax->setTexture( "femur.jpg" );
+			OsgHandle osgHandleFemur = osgHandle.changeColor(0,191,255,1);
+			femurThorax->init( odeHandle, conf.femurMass[i%3], osgHandleFemur );
 			femurThorax->setPose( femurCenter );
 			legs[leg].femur = femurThorax;
 			odeHandle.addIgnoredPair(femurThorax, front);
@@ -296,7 +297,8 @@ namespace lpzrobots
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
 			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
 			tibia->setTexture( "tebia.jpg" );
-			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandle );
+			OsgHandle osgHandleTibia = osgHandle.changeColor(199,21,133,1);
+			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandleTibia );
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;
 			odeHandle.addIgnoredPair(tibia, front);
@@ -323,8 +325,6 @@ namespace lpzrobots
 				j->init( odeHandle, osgHandle.changeColor("joint"), true, conf.coxaRadius[i%3] * 3.1 );
 				legs[leg].tcJoint = j;
 				joints.push_back( j );
-				//OneAxisServo * coxaMotor = new OneAxisServo( j, -1, 1, 1, 0.01, 0, 1 );
-				//OneAxisServo * coxaMotor = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0);
 				OneAxisServo * coxaMotor = new OneAxisServoPosForce(odeHandle, j, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].tcServo = coxaMotor;
 				servos[ getMotorName( leg, TC ) ] = coxaMotor;
@@ -343,8 +343,6 @@ namespace lpzrobots
 				k->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ctJoint = k;
 				joints.push_back( k );
-				//OneAxisServo * femurMotor = new OneAxisServo( k, -1, 1, 1, 0.01, 0, 1 );
-				//OneAxisServo * femurMotor = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
 				OneAxisServo * femurMotor = new OneAxisServoPosForce(odeHandle, k, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].ctrServo = femurMotor;
 				servos[ getMotorName( leg, CTR ) ] = femurMotor;
@@ -363,8 +361,6 @@ namespace lpzrobots
 				l->init( odeHandle, osgHandle.changeColor("joint"), true, conf.femurRadius[i%3] * 3.1 );
 				legs[leg].ftJoint = l;
 				joints.push_back( l );
-				//OneAxisServo * tibiaMotor = new OneAxisServo( l, -1, 1, 1, 0.01, 0, 1 );
-				//OneAxisServo * tibiaMotor = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0);
 				OneAxisServo * tibiaMotor = new OneAxisServoPosForce(odeHandle, l, -1.0, 1.0, 7000, 0.002, 0.7, 20.0, 1.0, true);
 				legs[leg].ftiServo = tibiaMotor;
 				servos[ getMotorName( leg, FTI ) ] = tibiaMotor;
@@ -379,12 +375,12 @@ namespace lpzrobots
 	        // Tarsus
 
 			//	Tarsus placement
-			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] /*/ 2*/  ) *
+			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
 								tibiaCenter;
 			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
 			Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
-			//tarsus->setTexture( "tarsus.jpg" );
-			tarsus->init( odeHandle, conf.tarsusMass, osgHandle );
+			OsgHandle osgHandleTarsus = osgHandle.changeColor(0,0,255,1);
+			tarsus->init( odeHandle, conf.tarsusMass, osgHandleTarsus );
 			tarsus->setPose( tarsusCenter );
 			legs[leg].tarsus = tarsus;
 			objects.push_back( tarsus );
@@ -394,33 +390,33 @@ namespace lpzrobots
 
 			//	Tibia tarsus fixed joint.
 			FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
-			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 3.1 );
+			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 2.1 );
 			joints.push_back(q);
 
-			if( conf.testTarsusSensor)
+			if( conf.testTarsusSensor )
 			{
-				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ] = new ContactSensor(false, 65, 4.5 * conf.tarsusRadius[i%3], true, true, Color(255,255,0));
-				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0,  (-0.5 *conf.tarsusLength[i%3] / 5) * 2.1));
+				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ] = new ContactSensor(true, 65, 2.5 * conf.tarsusRadius[i%3], false, true, Color(0,255,0));
+				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -0.5 *conf.tarsusLength[i%3] / 5));
 				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ]->init(tarsusParts.at(0));
 			}
 
 			if( conf.testTarsus )
 			{
-				double angle = M_PI/12;
+				double angle = M_PI/16;
 				double radius = conf.tarsusRadius[i%3]/2;
-				double partLength = conf.tarsusLength[i%3]/5;
+				double partLength = conf.tarsusLength[i%3]/10;
 				double mass = conf.tarsusMass/5;
 
 				std::cout << "leg number     " << i << std::endl;
 
 				Primitive *section = tarsus;
-				osg::Matrix m6 = tarsusCenter;
+				osg::Matrix m6 = osg::Matrix::translate(0,0,-(conf.tarsusLength[i%3]/5)/2.4)*tarsusCenter; //
 
 				for( int j = 1; j < 6; j++ )
 				{
 					 section = new Capsule( radius, partLength );
 					 //section->setTexture( "tarsus.jpg" );
-					 section->init( odeHandle, mass, osgHandle );
+					 section->init( odeHandle, mass, osgHandleTarsus );
 
 					 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
 							 osg::Matrix::translate(0,0,-partLength) *
@@ -442,7 +438,7 @@ namespace lpzrobots
 
 					 if( conf.testTarsusSensor )
 					 {
-						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 1, 1.5 * radius, false, true, Color(255,0,0));
+						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 1, 1.5 * radius, false, true, Color(0,255,0));
 						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -(0.5) * partLength));
 						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ]->init(tarsusParts.at(j));
 					 }
@@ -470,6 +466,7 @@ namespace lpzrobots
         auto bodyPart = new Box( dimension[0], dimension[1], dimension[2] );
         // Set texture from Image library
         bodyPart->setTexture( "body.jpg");
+        //OsgHandle osgHandleBody = osgHandle.changeColor(0,150,0,1);
         // Initialize the primitive
         bodyPart->init( odeHandle, mass, osgHandle );
         // Set pose
@@ -777,7 +774,7 @@ namespace lpzrobots
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
-		conf.testTarsus = false; // If true, then tarsus is created, else it is not created
+		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
 		conf.testTarsusSensor = true;
 
 		//	----------- Body dimensions -------
