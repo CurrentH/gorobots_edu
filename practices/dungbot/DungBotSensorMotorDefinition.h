@@ -33,43 +33,57 @@ namespace DungBotMotorSensor
 		BJ_as = 18, //Backbone joint angle
 		HJ_as = 19, //Head joint angle
 
-		R0_s1 = 25,
-		R0_s2 = 26,
-		R0_s3 = 27,
-		R0_s4 = 28,
-		R0_s5 = 29,
+		R0_s0 = 25,
+		R0_s1 = 26,
+		R0_s2 = 27,
+		R0_s3 = 28,
+		R0_s4 = 29,
+		R0_s5 = 30,
 
-		L0_s1 = 30,
-		L0_s2 = 31,
-		L0_s3 = 32,
-		L0_s4 = 33,
-		L0_s5 = 34,
+		L0_s0 = 31,
+		L0_s1 = 32,
+		L0_s2 = 33,
+		L0_s3 = 34,
+		L0_s4 = 35,
+		L0_s5 = 36,
 
-		R1_s1 = 35,//middle right
-		R1_s2 = 36,
-		R1_s3 = 37,
-		R1_s4 = 38,
-		R1_s5 = 39,
+		R1_s0 = 37,
+		R1_s1 = 38,//middle right
+		R1_s2 = 39,
+		R1_s3 = 40,
+		R1_s4 = 41,
+		R1_s5 = 42,
 
-		L1_s1 = 40,//middle left
-		L1_s2 = 41,
-		L1_s3 = 42,
-		L1_s4 = 43,
-		L1_s5 = 44,
+		L1_s0 = 43,
+		L1_s1 = 44,//middle left
+		L1_s2 = 45,
+		L1_s3 = 46,
+		L1_s4 = 47,
+		L1_s5 = 48,
 
-		R2_s1 = 45,
-		R2_s2 = 46,
-		R2_s3 = 47,
-		R2_s4 = 48,
-		R2_s5 = 49,
+		R2_s0 = 49,
+		R2_s1 = 50,
+		R2_s2 = 51,
+		R2_s3 = 52,
+		R2_s4 = 53,
+		R2_s5 = 54,
 
-		L2_s1 = 50,
-		L2_s2 = 51,
-		L2_s3 = 52,
-		L2_s4 = 53,
-		L2_s5 = 54,
+		L2_s0 = 55,
+		L2_s1 = 56,
+		L2_s2 = 57,
+		L2_s3 = 58,
+		L2_s4 = 59,
+		L2_s5 = 60,
 
-		DUNGBOT_SENSOR_MAX = 55,
+		//	Contact sensors on the tarsus stump.
+
+
+
+
+
+
+
+		DUNGBOT_SENSOR_MAX = 61,
 	};
 
 	enum DungBotMotorNames

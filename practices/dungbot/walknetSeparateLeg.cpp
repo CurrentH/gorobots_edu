@@ -39,7 +39,6 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 {
 	 extractSensor(sensor, legNum, localSensorArray);
 	 selectorNet( sensor, viaAngle );
-
 /*
 	if(legNum == 3 || legNum == 0)
 	{

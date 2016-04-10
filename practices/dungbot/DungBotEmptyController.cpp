@@ -60,8 +60,8 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	// ----------------------------------
 	//start(motor, 1.0);
-	//stand( angleVector );
-	walknet->stepWalknet( sensor, angleVector );
+	stand( angleVector );
+	//walknet->stepWalknet( sensor, angleVector ); //TODO: Fix logic with the legs inside Walknet.
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
@@ -165,10 +165,12 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 	std::vector<double> motorInput;
 	std::vector<bool> legPhase;
 	legPhase = walknet->getPhase();
-
+/*
     cout.setf(ios::fixed, ios::floatfield);
     cout.precision(2);
+*/
 
+/*
 	cout << "------------------------------------------------------------------" << endl;
 	cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << endl;
 	cout << "     \tCoxa\tFemur\tTibia\t\tCoxa\tFemur\tTibia" << endl;
@@ -179,9 +181,20 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 	cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"    \t" << legPhase[4]<< endl;
 	cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"    \t" << legPhase[5] << endl;
 	std::cout << "\nTicks: " << ticks_since_init << std::endl;
+	cout << "Contact: " << sensor[25] << ", "<< sensor[31] << ", "<< sensor[37] << ", "<<sensor[43] << ", " << sensor[49] << ", " << sensor[55] << endl;
 	cout << "------------------------------------------------------------------" << endl;
-
+*/
 	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
+/*
+	for(int i = 17; i < DungBotMotorSensor::DUNGBOT_SENSOR_MAX; i++)
+	{
+		std::cout << sensor[i] << " ";
+	}
+	std::cout << std::endl;
+*/
+
+    std::cout << sensor[DungBotMotorSensor::L0_s0] << " "<< sensor[DungBotMotorSensor::L1_s0] << " "<< sensor[DungBotMotorSensor::L2_s0] << " "
+    		<< sensor[DungBotMotorSensor::R0_s0] << " "<< sensor[DungBotMotorSensor::R1_s0] << " "<< sensor[DungBotMotorSensor::R2_s0] << std::endl;
 
 
 	if( writeOutput )
