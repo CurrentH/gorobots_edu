@@ -8,7 +8,6 @@
 # Author:     Georg Martius  <georg.martius at web.de>
 # Date:       Oct 2009
 
-
 EXEC = start
 # add files to compile in the conf file
 include Makefile.conf
@@ -22,7 +21,6 @@ INC    += -I.
 BASELIBS = $(shell ode_robots-config $(CFGOPTS) --static --libs) $(shell selforg-config $(CFGOPTS) --static --libs)
 BASELIBSSHARED := $(shell ode_robots-config $(CFGOPTS) --libs) $(shell selforg-config $(CFGOPTS) --libs)
 
-
 LIBSELFORG=$(shell selforg-config $(CFGOPTS) --libfile)
 LIBSELFORGSHARED:=$(shell selforg-config $(CFGOPTS) --solibfile)
 SELFORGSRCPREFIX=$(shell selforg-config $(CFGOPTS) --srcprefix)
@@ -30,9 +28,6 @@ SELFORGSRCPREFIX=$(shell selforg-config $(CFGOPTS) --srcprefix)
 LIBODEROBOTS=$(shell ode_robots-config $(CFGOPTS) --libfile)
 LIBODEROBOTSSHARED:=$(shell ode_robots-config $(CFGOPTS) --solibfile)
 ODEROBOTSSRCPREFIX=$(shell ode_robots-config $(CFGOPTS) --srcprefix)
-
-
-
 
 LIBS  += $(BASELIBS) $(ADDITIONAL_LIBS)
 

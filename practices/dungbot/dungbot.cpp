@@ -750,8 +750,8 @@ namespace lpzrobots
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
-		conf.testTarsus = false; // If true, then tarsus is created, else it is not created
-		conf.testTarsusSensor = false;
+		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
+		conf.testTarsusSensor = true;
 
 		//	----------- Body dimensions -------
 		//TODO Measure the correct height.

@@ -60,14 +60,13 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	// ----------------------------------
 	//start(motor, 1.0);
-	stand( angleVector );
-	//walknet->stepWalknet( sensor, angleVector );
+	//stand( angleVector );
+	walknet->stepWalknet( sensor, angleVector );
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
 	if( int( ticks_since_init )%200 == 0 )
 	{
-		//cout << ticks_since_init << endl;
 		outputData( sensor, motor );
 	}
 }
@@ -164,21 +163,21 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 {
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
+	std::vector<bool> legPhase;
+	legPhase = walknet->getPhase();
 
     cout.setf(ios::fixed, ios::floatfield);
     cout.precision(2);
 
-
-
 	cout << "------------------------------------------------------------------" << endl;
-	cout << "     \t   \tCurrent\t     \t\t    \tDesired\t     " << endl;
+	cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << endl;
 	cout << "     \tCoxa\tFemur\tTibia\t\tCoxa\tFemur\tTibia" << endl;
-	cout << "Leg0:\t"<< sensor[0] <<"\t"<< sensor[6] <<"\t"<< sensor[12] <<"     \t"<< motor[0] <<"\t"<< motor[6] <<"\t"<< motor[12] <<"" << endl;
-	cout << "Leg1:\t"<< sensor[1] <<"\t"<< sensor[7] <<"\t"<< sensor[13] <<"     \t"<< motor[1] <<"\t"<< motor[7] <<"\t"<< motor[13] <<"" << endl;
-	cout << "Leg2:\t"<< sensor[2] <<"\t"<< sensor[8] <<"\t"<< sensor[14] <<"     \t"<< motor[2] <<"\t"<< motor[8] <<"\t"<< motor[14] <<"" << endl;
-	cout << "Leg3:\t"<< sensor[3] <<"\t"<< sensor[9] <<"\t"<< sensor[15] <<"     \t"<< motor[3] <<"\t"<< motor[9] <<"\t"<< motor[15] <<"" << endl;
-	cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"" << endl;
-	cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"" << endl;
+	cout << "Leg0:\t"<< sensor[0] <<"\t"<< sensor[6] <<"\t"<< sensor[12] <<"     \t"<< motor[0] <<"\t"<< motor[6] <<"\t"<< motor[12] <<"    \t" << legPhase[0] << endl;
+	cout << "Leg1:\t"<< sensor[1] <<"\t"<< sensor[7] <<"\t"<< sensor[13] <<"     \t"<< motor[1] <<"\t"<< motor[7] <<"\t"<< motor[13] <<"    \t" << legPhase[1]<< endl;
+	cout << "Leg2:\t"<< sensor[2] <<"\t"<< sensor[8] <<"\t"<< sensor[14] <<"     \t"<< motor[2] <<"\t"<< motor[8] <<"\t"<< motor[14] <<"    \t" << legPhase[2]<< endl;
+	cout << "Leg3:\t"<< sensor[3] <<"\t"<< sensor[9] <<"\t"<< sensor[15] <<"     \t"<< motor[3] <<"\t"<< motor[9] <<"\t"<< motor[15] <<"    \t" << legPhase[3]<< endl;
+	cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"    \t" << legPhase[4]<< endl;
+	cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"    \t" << legPhase[5] << endl;
 	std::cout << "\nTicks: " << ticks_since_init << std::endl;
 	cout << "------------------------------------------------------------------" << endl;
 

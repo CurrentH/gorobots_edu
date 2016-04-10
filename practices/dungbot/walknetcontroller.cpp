@@ -43,6 +43,17 @@ void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vect
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
 	}
 }
+std::vector<bool> walknetcontroller::getPhase( void )
+{
+	std::vector<bool> tmp;
+	for( int i = 0; i < 6; i++ )
+	{
+		tmp.push_back( separateLegs[i].getPhase() );
+	}
+	return tmp;
+}
+
+
 void walknetcontroller::coordinatingInfluences( void )
 {
 	/**

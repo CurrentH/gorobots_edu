@@ -34,6 +34,7 @@ class walknetcontroller
 	virtual ~walknetcontroller( void );
 
 	void stepWalknet( const sensor* sensor, std::vector<std::vector<double>> & );
+	std::vector<bool> getPhase( void );
 
 	protected:
 	//	Protected attributes

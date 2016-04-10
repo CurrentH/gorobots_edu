@@ -39,6 +39,7 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 {
 	 extractSensor(sensor, legNum, localSensorArray);
 	 selectorNet( sensor, viaAngle );
+
 /*
 	if(legNum == 3 || legNum == 0)
 	{
@@ -74,36 +75,15 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	if( legNum == 2 )
 	{
-		std::cout << RSunit << "+"<< PEPunit << "-" << GCunit << ":" << PSunit << "-"<< PEPunit << "+" << GCunit << std::endl;
+		//std::cout << RSunit << "+"<< PEPunit << "-" << GCunit << ":" << PSunit << "-"<< PEPunit << "+" << GCunit << std::endl;
 	}
-/*
-	RSunit:
-	true + true - true = 1;		Have just walked	Is at PEP		Touches ground			Do: SwingNet
-	true + true - false = 2;	Have just walked	Is at PEP		Does not touch ground	Do: SwingNet
-	true + false - true = 0;	Have just walked	Is not at PEP	Touches ground			Do: Nothing
-	true + false - false = 1;	Have just walked	Is not at PEP	Does not touch ground	Do: SwingNet
-	false + true - true = 0;	Was just standing	Is at PEP		Touches ground			Do: SwingNet
-	false + true - false = 1;	Was just standing	Is at PEP		Does not touch ground	Do: Nothing
-	false + false - true = -1;	Was just standing	Is not at PEP	Touches ground			Do: Nothing
-	false + false - false = 0;	Was just standing	Is not at PEP	Does not touch ground	Do: Nothing
-
-	PSunit:
-	true - true + true = 1;		Was just standing	Is not at PEP	Touches ground			Do: StanceNet
-	true - true + false = 0;	Was just standing	Is not at PEP	Does not touch ground	Do: Nothing
-	true - false + true = 2;	Was just standing	Is at PEP		Touches ground			Do: StanceNet
-	true - false + false = 1;	Was just standing	Is at PEP		Does not touch ground	Do: StanceNet
-	false - true + true = 0;	Have just walked	Is not at PEP	Touches ground			Do: Nothing
-	false - true + false = -1;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
-	false - false + true = 1;	Have just walked	Is at PEP		Touches ground			Do: StanceNet
-	false - false + false = 0;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
-*/
 
 	if( RSunit == true || coordinationRules[1] == true || coordinationRules[2] == true )
 	{
 		phase = true;
 		swingNet( sensor, viaAngle );
 	}
-	if( PSunit == true || coordinationRules[0] == true )
+	else if( PSunit == true || coordinationRules[0] == true )
 	{
 		phase = false;
 		stanceNet( sensor, viaAngle );
@@ -150,9 +130,9 @@ void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vect
 		extractedSensors[ i ] = sensor[ leg + i*6 ];
 	}
 
-	for( int i = 0; i < 5; i++ )
+	for( int i = 0; i < 6; i++ )
 	{
-		if( sensor[25 + 5*leg + i] == true ){
+		if( sensor[25 + 6*leg + i] == true ){
 			extractedSensors[3] = 1.0;
 		}
 	}
@@ -195,3 +175,24 @@ std::vector<double> walknetSeparateLeg::getPEP( void )
 }
 
 
+/*
+	RSunit:
+	true + true - true = 1;		Have just walked	Is at PEP		Touches ground			Do: SwingNet
+	true + true - false = 2;	Have just walked	Is at PEP		Does not touch ground	Do: SwingNet
+	true + false - true = 0;	Have just walked	Is not at PEP	Touches ground			Do: Nothing
+	true + false - false = 1;	Have just walked	Is not at PEP	Does not touch ground	Do: SwingNet
+	false + true - true = 0;	Was just standing	Is at PEP		Touches ground			Do: SwingNet
+	false + true - false = 1;	Was just standing	Is at PEP		Does not touch ground	Do: Nothing
+	false + false - true = -1;	Was just standing	Is not at PEP	Touches ground			Do: Nothing
+	false + false - false = 0;	Was just standing	Is not at PEP	Does not touch ground	Do: Nothing
+
+	PSunit:
+	true - true + true = 1;		Was just standing	Is not at PEP	Touches ground			Do: StanceNet
+	true - true + false = 0;	Was just standing	Is not at PEP	Does not touch ground	Do: Nothing
+	true - false + true = 2;	Was just standing	Is at PEP		Touches ground			Do: StanceNet
+	true - false + false = 1;	Was just standing	Is at PEP		Does not touch ground	Do: StanceNet
+	false - true + true = 0;	Have just walked	Is not at PEP	Touches ground			Do: Nothing
+	false - true + false = -1;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
+	false - false + true = 1;	Have just walked	Is at PEP		Touches ground			Do: StanceNet
+	false - false + false = 0;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
+*/
