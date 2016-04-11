@@ -41,7 +41,7 @@ class walknetSeparateLeg
 	void setRule( int, bool );
 	std::vector<double> getAEP( void );
 	std::vector<double> getPEP( void );
-	bool atPosition( std::vector<double> );
+	bool atPosition( std::vector<double> , double);
 	bool getPhase();
 	bool getGroundContact();
 
@@ -56,15 +56,16 @@ class walknetSeparateLeg
 	int legNum;
 	bool phase = false;
 	std::vector<double> PEP;
+	std::vector<double> MID;
 	std::vector<double> AEP;
 	std::vector<double> localSensorArray;
 	std::vector<bool> coordinationRules;
 
 	bool initStance = true;
 	bool initSwing = true;
-	bool stage2 = true;
-	bool stage3 = true;
-	bool stage4 = true;
+	bool stageAEP = true;
+	bool stagePEP = true;
+	bool stageMID = true;
 
 	bool RSunit = false;	//	Return Stroke unit (swing movement)
 	bool PSunit = false;	//	Power Stroke unit (stance movement)
