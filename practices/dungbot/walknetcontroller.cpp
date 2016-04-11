@@ -68,7 +68,7 @@ void walknetcontroller::coordinatingInfluences( void )
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
 							{ separateLegs[i].setRule(1, false); }
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.1 ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
 							{ separateLegs[i].setRule(2, false); }
@@ -77,16 +77,16 @@ void walknetcontroller::coordinatingInfluences( void )
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
 							{ separateLegs[i].setRule(1, false); }
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.1  ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
 							{ separateLegs[i].setRule(2, false); }
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP(), 0.1  ) )
 							{ separateLegs[i+3].setRule(3, true); } else
 							{ separateLegs[i+3].setRule(3, false); }
 				break;
 			case 2://	Rear left
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP(), 0.1  ) )
 							{ separateLegs[i+3].setRule(3, true); } else
 							{ separateLegs[i+3].setRule(3, false); }
 				break;
@@ -94,7 +94,7 @@ void walknetcontroller::coordinatingInfluences( void )
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
 							{ separateLegs[i].setRule(1, false); }
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.1  ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
 							{ separateLegs[i].setRule(2, false); }
@@ -103,16 +103,16 @@ void walknetcontroller::coordinatingInfluences( void )
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
 							{ separateLegs[i].setRule(1, false); }
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.1  ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
 							{ separateLegs[i].setRule(2, false); }
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP(), 0.1  ) )
 							{ separateLegs[i].setRule(3, true); } else
 							{ separateLegs[i].setRule(3, false); }
 				break;
 			case 5://	Rear Right
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP(), 0.1  ) )
 							{ separateLegs[i].setRule(3, true); } else
 							{ separateLegs[i].setRule(3, false); }
 				break;
