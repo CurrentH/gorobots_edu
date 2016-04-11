@@ -38,8 +38,8 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
-	 //selectorNet( sensor, viaAngle );
-	 swingNet(sensor, viaAngle);
+	 selectorNet( sensor, viaAngle );
+	 //swingNet(sensor, viaAngle);
 /*
 	if(legNum == 3 || legNum == 0)
 	{
@@ -72,13 +72,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 	RSunit = RSunit + PEPunit - GCunit;	//	Do the logic that tells the leg if it should move.
 	PSunit = PSunit - PEPunit + GCunit;
 
-
-	if( legNum == 2 )
-	{
-		//std::cout << RSunit << "+"<< PEPunit << "-" << GCunit << ":" << PSunit << "-"<< PEPunit << "+" << GCunit << std::endl;
-	}
-
-	if( RSunit == true || coordinationRules[1] == true || coordinationRules[2] == true )
+	if( (RSunit == true || coordinationRules[1] == true || coordinationRules[2] == true) && coordinationRules[0] == false )
 	{
 		phase = true;
 		swingNet( sensor, viaAngle );
@@ -88,6 +82,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		phase = false;
 		stanceNet( sensor, viaAngle );
 	}
+
 }
 
 void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &swingNetAngle) {
@@ -130,7 +125,7 @@ void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vect
 		extractedSensors[ i ] = sensor[ leg + i*6 ];
 	}
 
-	for( int i = 0; i < 6; i++ )
+	for( int i = 0; i < 7; i++ )
 	{
 		if( sensor[25 + 6*leg + i] == true ){
 			extractedSensors[3] = 1.0;

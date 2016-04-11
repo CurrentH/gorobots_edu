@@ -38,19 +38,19 @@ walknetcontroller::~walknetcontroller( void )
 
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
 {
+	coordinatingInfluences();
 	for( int i = 0; i < 6; i++ )
 	{
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
 	}
 }
-std::vector<bool> walknetcontroller::getPhase( void )
+void walknetcontroller::getPhase( std::vector<bool> &phaseVector )
 {
-	std::vector<bool> tmp;
+	phaseVector.clear();
 	for( int i = 0; i < 6; i++ )
 	{
-		tmp.push_back( separateLegs[i].getPhase() );
+		phaseVector.push_back( separateLegs[i].getPhase() );
 	}
-	return tmp;
 }
 
 
@@ -65,28 +65,31 @@ void walknetcontroller::coordinatingInfluences( void )
 	{
 		switch (i) {
 			case 0://	Front left
-				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
-								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
+				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )		//	If leg in front is in Swing phase
+							{ separateLegs[i].setRule(1, true); } else		//	Set rule 1 = true
+							{ separateLegs[i].setRule(1, false); }			//	Else rule 1 = false
+
+				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&	//	When the leg behind touches the ground
+								separateLegs[i+1].getGroundContact() )		//	at the end of the swing phase
+							{ separateLegs[i].setRule(2, true); } else		//	Set rule 2 = true
+							{ separateLegs[i].setRule(2, false); }			//	Else rule 2 = false
 				break;
 			case 1://	Middle left
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
+							{ separateLegs[i].setRule(1, false);
+							}
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
 							{ separateLegs[i].setRule(2, false); }
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+
+				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
 							{ separateLegs[i+3].setRule(3, true); } else
 							{ separateLegs[i+3].setRule(3, false); }
 				break;
 			case 2://	Rear left
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
 							{ separateLegs[i+3].setRule(3, true); } else
 							{ separateLegs[i+3].setRule(3, false); }
 				break;
@@ -94,6 +97,7 @@ void walknetcontroller::coordinatingInfluences( void )
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
 							{ separateLegs[i].setRule(1, false); }
+
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
@@ -103,16 +107,18 @@ void walknetcontroller::coordinatingInfluences( void )
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
 							{ separateLegs[i].setRule(1, true); } else
 							{ separateLegs[i].setRule(1, false); }
+
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP() ) &&
 								separateLegs[i+1].getGroundContact() )
 							{ separateLegs[i].setRule(2, true); } else
 							{ separateLegs[i].setRule(2, false); }
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+
+				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
 							{ separateLegs[i].setRule(3, true); } else
 							{ separateLegs[i].setRule(3, false); }
 				break;
 			case 5://	Rear Right
-				/*Rule3*/ if( separateLegs[i-1].atPosition( separateLegs[i+1].getPEP() ) )
+				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
 							{ separateLegs[i].setRule(3, true); } else
 							{ separateLegs[i].setRule(3, false); }
 				break;

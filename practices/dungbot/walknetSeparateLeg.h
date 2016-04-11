@@ -54,7 +54,7 @@ class walknetSeparateLeg
 	private:
 	//	Private attributes
 	int legNum;
-	bool phase;
+	bool phase = false;
 	std::vector<double> PEP;
 	std::vector<double> AEP;
 	std::vector<double> localSensorArray;

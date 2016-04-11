@@ -60,8 +60,8 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	// ----------------------------------
 	//start(motor, 1.0);
-	stand( angleVector );
-	//walknet->stepWalknet( sensor, angleVector ); //TODO: Fix logic with the legs inside Walknet.
+	//stand( angleVector );
+	walknet->stepWalknet( sensor, angleVector );
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
@@ -164,12 +164,10 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
 	std::vector<bool> legPhase;
-	legPhase = walknet->getPhase();
-/*
+	walknet->getPhase( legPhase );
+
     cout.setf(ios::fixed, ios::floatfield);
     cout.precision(2);
-*/
-
 /*
 	cout << "------------------------------------------------------------------" << endl;
 	cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << endl;
@@ -184,18 +182,12 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 	cout << "Contact: " << sensor[25] << ", "<< sensor[31] << ", "<< sensor[37] << ", "<<sensor[43] << ", " << sensor[49] << ", " << sensor[55] << endl;
 	cout << "------------------------------------------------------------------" << endl;
 */
-	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
-/*
-	for(int i = 17; i < DungBotMotorSensor::DUNGBOT_SENSOR_MAX; i++)
-	{
-		std::cout << sensor[i] << " ";
-	}
-	std::cout << std::endl;
-*/
 
+	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
+
+//	Print sensor values for the stumps.
     std::cout << sensor[DungBotMotorSensor::L0_s0] << " "<< sensor[DungBotMotorSensor::L1_s0] << " "<< sensor[DungBotMotorSensor::L2_s0] << " "
     		<< sensor[DungBotMotorSensor::R0_s0] << " "<< sensor[DungBotMotorSensor::R1_s0] << " "<< sensor[DungBotMotorSensor::R2_s0] << std::endl;
-
 
 	if( writeOutput )
 	{

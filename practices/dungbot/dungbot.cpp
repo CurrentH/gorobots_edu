@@ -774,7 +774,7 @@ namespace lpzrobots
 		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
 		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
 
-		conf.testTarsus = true; // If true, then tarsus is created, else it is not created
+		conf.testTarsus = false; // If true, then tarsus is created, else it is not created
 		conf.testTarsusSensor = true;
 
 		//	----------- Body dimensions -------
@@ -895,10 +895,10 @@ namespace lpzrobots
 
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
-		conf.back_Kp 	= 5.0;
-		conf.coxa_Kp 	= 5.0;
-		conf.femur_Kp	= 5.0;
-		conf.tibia_Kp 	= 5.0;
+		conf.back_Kp 	= 4.0;
+		conf.coxa_Kp 	= 2.5;
+		conf.femur_Kp	= 2.5;
+		conf.tibia_Kp 	= 2.5;
 		conf.tarsus_Kp 	= 0.0;
 
 		// Kd and Ki parameters are not used anymore
