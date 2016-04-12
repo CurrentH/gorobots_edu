@@ -10,40 +10,40 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	switch (newlegNum)
+	switch( newlegNum )
 	{
-	case 0: case 3: PEP[0] = -0.5; PEP[1] = 0.9; PEP[2] = -0.4; // ok (but needs a bit visual tweak)
-	    break;
-	case 1: case 4: PEP[0] = -1.0; PEP[1] = 0.15; PEP[2] = -0.55;
-	    break;
-	case 2: case 5: PEP[0] = -0.75; PEP[1] = 0.0; PEP[2] = -0.55;
-	    break;
-	default: cout << "LEG UNKNOWN";
-	    break;
+		case 0: case 3: PEP[0] = -0.5; PEP[1] = 0.9; PEP[2] = -0.4; // ok (but needs a bit visual tweak)
+			break;
+		case 1: case 4: PEP[0] = -1.0; PEP[1] = 0.15; PEP[2] = -0.55;
+			break;
+		case 2: case 5: PEP[0] = -0.75; PEP[1] = 0.0; PEP[2] = -0.55;
+			break;
+		default: cout << "LEG UNKNOWN";
+			break;
 	}
 
-	switch (newlegNum)
+	switch( newlegNum )
 	{
-	case 0: case 3: MID[0] =  0.3; MID[1] = 1.0; MID[2] = -0.5; // ok (but needs a bit visual tweak)
-	    break;
-	case 1: case 4: MID[0] = -0.5; MID[1] = 0.8; MID[2] = -0.6;
-	    break;
-	case 2: case 5: MID[0] = -0.5; MID[1] = 1.0; MID[2] = -0.7;
-	    break;
-	default: cout << "LEG UNKNOWN";
-	    break;
+		case 0: case 3: MID[0] =  0.3; MID[1] = 1.0; MID[2] = -0.5; // ok (but needs a bit visual tweak)
+			break;
+		case 1: case 4: MID[0] = -0.5; MID[1] = 0.8; MID[2] = -0.6;
+			break;
+		case 2: case 5: MID[0] = -0.5; MID[1] = 1.0; MID[2] = -0.7;
+			break;
+		default: cout << "LEG UNKNOWN";
+			break;
 	}
 
-	switch (newlegNum)
+	switch( newlegNum )
 	{
-	case 0: case 3: AEP[0] =  0.4; AEP[1] = 0.0; AEP[2] = -0.8; // ok (but needs a bit visual tweak)
-	    break;
-	case 1: case 4: AEP[0] = 0.1; AEP[1] = 0.6; AEP[2] = -0.55;
-	    break;
-	case 2: case 5: AEP[0] = -0.2; AEP[1] = 1.0; AEP[2] = -0.7;
-	    break;
-	default: cout << "LEG UNKNOWN";
-	    break;
+		case 0: case 3: AEP[0] =  0.4; AEP[1] = 0.0; AEP[2] = -0.8; // ok (but needs a bit visual tweak)
+			break;
+		case 1: case 4: AEP[0] = 0.1; AEP[1] = 0.6; AEP[2] = -0.55;
+			break;
+		case 2: case 5: AEP[0] = -0.2; AEP[1] = 1.0; AEP[2] = -0.7;
+			break;
+		default: cout << "LEG UNKNOWN";
+			break;
 	}
 
 }

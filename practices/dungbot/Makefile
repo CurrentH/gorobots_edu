@@ -49,6 +49,8 @@ shared:  libode_robots_shared
 
 $(EXEC): Makefile Makefile.depend $(OFILES) $(LIBODEROBOTS) $(LIBSELFORG)
 	$(CXX) $(CPPFLAGS) $(OFILES) $(LIBS) -o $(EXEC)
+	./$(EXEC)
+	rm -f $(EXEC)
 
 libode_robots:
 	cd $(ODEROBOTSSRCPREFIX) && $(MAKE) lib
