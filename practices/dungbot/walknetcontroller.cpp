@@ -44,7 +44,6 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 	{
 		if( separateLegs[i].startStance == true || separateLegs[i].startSwing == true )
 		{
-			std::cout << "FALSK" << std::endl;
 			flag = false;
 		}
 	}
