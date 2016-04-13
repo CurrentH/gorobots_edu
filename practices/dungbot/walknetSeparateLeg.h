@@ -27,8 +27,8 @@ class walknetSeparateLeg
 {
 	public:
 	//	Public attributes
-	bool startSwing = false;
-	bool startStance = false;
+	bool startSwing = true;
+	bool startStance = true;
 
 	public:
 	//	Public methods
