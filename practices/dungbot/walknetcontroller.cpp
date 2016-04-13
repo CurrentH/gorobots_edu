@@ -66,7 +66,6 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 
 		if( switchFlag )
 		{
-
 			separateLegs[0].startSwing = true;
 			separateLegs[2].startSwing = true;
 			separateLegs[4].startSwing = true;
@@ -82,7 +81,6 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 			separateLegs[1].startSwing = true;
 			separateLegs[3].startSwing = true;
 			separateLegs[5].startSwing = true;
-
 		}
 
 	}
@@ -97,7 +95,6 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
 {
 	coordinatingInfluences();
-
 	for( int i = 0; i < 6; i++ )
 	{
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
