@@ -127,69 +127,76 @@ void walknetcontroller::coordinatingInfluences( void )
 	{
 		switch (i) {
 			case 0://	Front left
+				/*Rule1*/ /*if( separateLegs[i+1].startSwing == true)
+							{ separateLegs[i].setRule(0, true); }
+							{ separateLegs[i].setRule(0, false); }
+							*/
+				/*Rule2*/
+
+
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
+							{ separateLegs[i].setRule(0, true); } else
+							{ separateLegs[i].setRule(0, false); }
 
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01 ) &&
 								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
 
 				break;
 			case 1://	Middle left
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
+							{ separateLegs[i].setRule(0, true); } else
+							{ separateLegs[i].setRule(0, false); }
 
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01  ) &&
 								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
 
 				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i+3].setRule(3, true); } else
-							{ separateLegs[i+3].setRule(3, false); }
+							{ separateLegs[i+3].setRule(2, true); } else
+							{ separateLegs[i+3].setRule(2, false); }
 
 				break;
 
 			case 2://	Rear left
 				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i+3].setRule(3, true); } else
-							{ separateLegs[i+3].setRule(3, false); }
+							{ separateLegs[i+3].setRule(2, true); } else
+							{ separateLegs[i+3].setRule(2, false); }
 
 				break;
 
 			case 3://	Front Right
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
+							{ separateLegs[i].setRule(0, true); } else
+							{ separateLegs[i].setRule(0, false); }
 
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01  ) &&
 								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
 
 				break;
 			case 4://	Middle Right
 				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
+							{ separateLegs[i].setRule(0, true); } else
+							{ separateLegs[i].setRule(0, false); }
 
 				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01  ) &&
 								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
+							{ separateLegs[i].setRule(1, true); } else
+							{ separateLegs[i].setRule(1, false); }
 
 				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i].setRule(3, true); } else
-							{ separateLegs[i].setRule(3, false); }
+							{ separateLegs[i].setRule(2, true); } else
+							{ separateLegs[i].setRule(2, false); }
 
 				break;
 			case 5://	Rear Right
 				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i].setRule(3, true); } else
-							{ separateLegs[i].setRule(3, false); }
+							{ separateLegs[i].setRule(2, true); } else
+							{ separateLegs[i].setRule(2, false); }
 
 				break;
 
