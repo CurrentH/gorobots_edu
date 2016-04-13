@@ -27,8 +27,8 @@ class walknetSeparateLeg
 {
 	public:
 	//	Public attributes
-	bool startSwing = true;
-	bool startStance = true;
+	bool startSwing = false;
+	bool startStance = false;
 
 	public:
 	//	Public methods
@@ -71,6 +71,12 @@ class walknetSeparateLeg
 	enum stanceState { SWING_TO_PEP, GET_GC, STANCE_DONE };
 	int stanceState; // TODO make get and set
 
+	enum swingState2 { TO_PEP_SWING, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE };
+	int swingState2; // TODO make get and set
+
+	enum stanceState2 { TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
+	int stanceState2; // TODO make get and set
+
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
 
@@ -84,6 +90,9 @@ class walknetSeparateLeg
 	void selectorNet( const sensor* sensor, std::vector<double> & );
 	void stanceNet( const sensor* sensor, std::vector<double> & );
 	void swingNet( const sensor* sensor, std::vector<double> & );
+
+	void stanceNet2( const sensor* sensor, std::vector<double> & );
+	void swingNet2( const sensor* sensor, std::vector<double> & );
 
 };
 
