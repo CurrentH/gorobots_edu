@@ -56,7 +56,7 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 	 extractSensor(sensor, legNum, localSensorArray);
 	 //selectorNet( sensor, viaAngle );
 
-	 if( legNum == 2  )
+	 if( legNum == 2 )
 	 {
 		 stanceNet(sensor, viaAngle);
 	 }
@@ -96,8 +96,10 @@ void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &sw
 		case SWING_TO_PEP:
 
 			if(!localSensorArray[3]){
+				cout << "GET_GC" << endl;
 				stanceState = GET_GC;
 			}else if( !atAngle(PEP[0], 0, 0.01) ) {
+				cout << "TO PEP" << endl;
 				swingNetAngle[0] = PEP[0];
 				swingNetAngle[1] = localSensorArray[1]; // Leave CF and TF as they are
 				swingNetAngle[2] = localSensorArray[2];
@@ -108,6 +110,7 @@ void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &sw
 			break;
 
 		case GET_GC:
+			cout << "GET_GC" << endl;
 			if(!localSensorArray[3]){
 
 				if(localSensorArray[1] >= -0.9){
@@ -121,14 +124,14 @@ void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &sw
 				}
 
 			} else {
-				swingState = SWING_TO_PEP;
+				stanceState = SWING_TO_PEP;
 			}
 			break;
 
 		case STANCE_DONE:
 			if(startStance)
 			{
-				swingState = SWING_TO_PEP;
+				stanceState = SWING_TO_PEP;
 			}
 			break;
 		default: cout << "stanceState Error!" << endl;
@@ -226,7 +229,6 @@ void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swi
 		case RAISE_HEIGHT:
 			// Raise leg if ground contact
 			if(localSensorArray[3]){
-				cout << "GC" << endl;
 				if(localSensorArray[1] <= 0.9){
 					swingNetAngle[0] = localSensorArray[0];
 					swingNetAngle[1] = localSensorArray[1] + 0.03; // TODO Faster or slower?
