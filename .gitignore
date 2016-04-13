@@ -2,6 +2,7 @@ TAGS
 .project
 .cproject
 .history
+.gitignore
 build
 Makefile.depend
 start

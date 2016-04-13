@@ -19,7 +19,7 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	{
 		case 0: case 3: PEP[0] = -0.5; PEP[1] = 0.9; PEP[2] = -0.4; // ok (but needs a bit visual tweak)
 			break;
-		case 1: case 4: PEP[0] = -1.0; PEP[1] = 0.15; PEP[2] = -0.55;
+		case 1: case 4: PEP[0] = -0.9; PEP[1] = 0.15; PEP[2] = -0.55;
 			break;
 		case 2: case 5: PEP[0] = -0.75; PEP[1] = 0.0; PEP[2] = -0.55;
 			break;
@@ -56,10 +56,7 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
-
-	 stanceNet2( sensor, viaAngle );
-	 swingNet2( sensor, viaAngle );
-
+	 selectorNet( sensor, viaAngle );
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -75,13 +72,17 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	if( (RSunit == true || coordinationRules[1] == true || coordinationRules[2] == true) && coordinationRules[0] == false )
 	{
+		startSwing = true;
+		startStance = false;
 		phase = true;
-		swingNet( sensor, viaAngle );
+		swingNet2( sensor, viaAngle );
 	}
 	else if( PSunit == true || coordinationRules[0] == true )
 	{
+		startSwing = false;
+		startStance = true;
 		phase = false;
-		stanceNet( sensor, viaAngle );
+		stanceNet2( sensor, viaAngle );
 	}
 
 }
