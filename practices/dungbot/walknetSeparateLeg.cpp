@@ -10,8 +10,8 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	swingState = SET_SWING_HEIGHT;
-	stanceState = SWING_TO_PEP;
+	swingState = SWING_DONE;
+	stanceState = STANCE_DONE;
 
 	switch (newlegNum)
 	{
