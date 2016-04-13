@@ -75,6 +75,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		startSwing = true;
 		startStance = false;
 		phase = true;
+		stanceNet2( sensor, viaAngle );
 		swingNet2( sensor, viaAngle );
 	}
 	else if( PSunit == true || coordinationRules[0] == true )
@@ -82,6 +83,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		startSwing = false;
 		startStance = true;
 		phase = false;
+		swingNet2( sensor, viaAngle );
 		stanceNet2( sensor, viaAngle );
 	}
 
@@ -319,6 +321,10 @@ std::vector<double> walknetSeparateLeg::getPEP( void )
 }
 
 void walknetSeparateLeg::stanceNet2(const sensor* sensor, std::vector<double> &viaAngle){
+	if(startStance == false){
+		stanceState2 = STANCE2_DONE;
+	}
+
 	switch(stanceState2)
 			{
 				case TO_AEP_STANCE:
@@ -357,6 +363,11 @@ void walknetSeparateLeg::stanceNet2(const sensor* sensor, std::vector<double> &v
 
 }
 void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &viaAngle){
+
+	if(startSwing == false){
+		swingState2 = SWING2_DONE;
+	}
+
 	switch(swingState2)
 		{
 			case TO_PEP_SWING:

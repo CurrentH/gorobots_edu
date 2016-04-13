@@ -30,6 +30,11 @@ class walknetSeparateLeg
 	bool startSwing = false;
 	bool startStance = false;
 
+	int swingState2; // TODO make get and set
+	int stanceState2; // TODO make get and set
+	enum swingState2 { TO_PEP_SWING, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE };
+	enum stanceState2 { TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
+
 	public:
 	//	Public methods
 	walknetSeparateLeg( );
@@ -47,6 +52,8 @@ class walknetSeparateLeg
 	bool atAngle( double targetPos, int legPartNum, double deadband );
 	bool getPhase();
 	bool getGroundContact();
+
+
 
 	protected:
 	//	Protected attributes
@@ -71,11 +78,7 @@ class walknetSeparateLeg
 	enum stanceState { SWING_TO_PEP, GET_GC, STANCE_DONE };
 	int stanceState; // TODO make get and set
 
-	enum swingState2 { TO_PEP_SWING, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE };
-	int swingState2; // TODO make get and set
 
-	enum stanceState2 { TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
-	int stanceState2; // TODO make get and set
 
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
