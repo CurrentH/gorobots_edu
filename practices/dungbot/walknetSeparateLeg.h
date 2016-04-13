@@ -27,6 +27,8 @@ class walknetSeparateLeg
 {
 	public:
 	//	Public attributes
+	bool startSwing = false;
+	bool startStance = false;
 
 	public:
 	//	Public methods
@@ -63,10 +65,10 @@ class walknetSeparateLeg
 	std::vector<bool> coordinationRules;
 
 	enum swingState { SET_SWING_HEIGHT, SWING_COXA, RAISE_HEIGHT,
-					  SET_STANCE_HEIGHT, LOWER_HEIGHT, READY_FOR_STANCE };
+					  SET_STANCE_HEIGHT, LOWER_HEIGHT, SWING_DONE };
 	int swingState; // TODO make get and set
 
-	enum stanceState { SWING_TO_PEP, GET_GC, READY_FOR_SWING };
+	enum stanceState { SWING_TO_PEP, GET_GC, STANCE_DONE };
 	int stanceState; // TODO make get and set
 
 	bool STANCE_REACHED	= false;

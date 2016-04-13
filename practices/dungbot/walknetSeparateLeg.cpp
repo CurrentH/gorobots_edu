@@ -10,8 +10,8 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	swingState = SET_SWING_HEIGHT;
-	stanceState = SWING_TO_PEP;
+	swingState = SWING_DONE;
+	stanceState = STANCE_DONE;
 
 	switch (newlegNum)
 	{
@@ -95,6 +95,9 @@ void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &sw
 				swingNetAngle[0] = PEP[0];
 				swingNetAngle[1] = localSensorArray[1]; // Leave CF and TF as they are
 				swingNetAngle[2] = localSensorArray[2];
+			}else{
+				startStance = false;
+				stanceState = STANCE_DONE;
 			}
 			break;
 
@@ -116,7 +119,11 @@ void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &sw
 			}
 			break;
 
-		case READY_FOR_SWING:
+		case STANCE_DONE:
+			if(startStance)
+			{
+				swingState = SWING_TO_PEP;
+			}
 			break;
 		default: cout << "stanceState Error!" << endl;
 			break;
@@ -186,7 +193,8 @@ void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swi
 
 				if(localSensorArray[3]){
 					STANCE_REACHED = false;
-					swingState = READY_FOR_STANCE;
+					startSwing = false;
+					swingState = SWING_DONE;
 				} else {
 					swingState = LOWER_HEIGHT;
 				}
@@ -225,7 +233,11 @@ void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swi
 				swingState = SWING_COXA;
 			}
 			break;
-		case READY_FOR_STANCE:
+		case SWING_DONE:
+			if(startSwing)
+			{
+				swingState = SET_SWING_HEIGHT;
+			}
 			break;
 		default: cout << "swingState Error!" << endl;
 			break;
