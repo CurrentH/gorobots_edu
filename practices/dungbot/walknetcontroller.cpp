@@ -36,13 +36,38 @@ walknetcontroller::~walknetcontroller( void )
 	}
 }
 
+void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std::vector<double>> &angleVector, bool flag  )
+{
+	coordinatingInfluences();
+	if( flag )
+	{
+		separateLegs[0].set = true;
+		separateLegs[1].set = true;
+		separateLegs[2].set = true;
+		separateLegs[3].set = false;
+		separateLegs[4].set = false;
+		separateLegs[5].set = false;
+	}
+	else
+	{
+		separateLegs[0].set = false;
+		separateLegs[1].set = false;
+		separateLegs[2].set = false;
+		separateLegs[3].set = true;
+		separateLegs[4].set = true;
+		separateLegs[5].set = true;
+	}
+}
+
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
 {
 	coordinatingInfluences();
+	/*
 	for( int i = 0; i < 6; i++ )
 	{
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
 	}
+	*/
 }
 void walknetcontroller::getPhase( std::vector<bool> &phaseVector )
 {
@@ -90,6 +115,7 @@ void walknetcontroller::coordinatingInfluences( void )
 							{ separateLegs[i+3].setRule(3, false); }
 
 				break;
+
 			case 2://	Rear left
 				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
 							{ separateLegs[i+3].setRule(3, true); } else

@@ -33,6 +33,7 @@ class walknetcontroller
 	walknetcontroller( void );
 	virtual ~walknetcontroller( void );
 
+	void stepWalknet( const sensor* sensor, std::vector<std::vector<double>> & , bool);
 	void stepWalknet( const sensor* sensor, std::vector<std::vector<double>> & );
 	void getPhase( std::vector<bool> & );
 

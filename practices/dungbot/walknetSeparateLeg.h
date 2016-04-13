@@ -42,6 +42,7 @@ class walknetSeparateLeg
 	std::vector<double> getAEP( void );
 	std::vector<double> getPEP( void );
 	bool atPosition( std::vector<double> , double);
+	bool atAngle( double targetPos, int legPartNum, double deadband );
 	bool getPhase();
 	bool getGroundContact();
 
@@ -61,16 +62,20 @@ class walknetSeparateLeg
 	std::vector<double> localSensorArray;
 	std::vector<bool> coordinationRules;
 
-	bool initStance = true;
-	bool initSwing = true;
-	bool stageAEP = true;
-	bool stagePEP = true;
-	bool stageMID = true;
+	enum swingState { SET_SWING_HEIGHT, SWING_COXA, RAISE_HEIGHT,
+					  SET_STANCE_HEIGHT, LOWER_HEIGHT, READY_FOR_STANCE };
+	int swingState; // TODO make get and set
 
-	bool RSunit = false;	//	Return Stroke unit (swing movement)
-	bool PSunit = false;	//	Power Stroke unit (stance movement)
-	bool GCunit = false;	//	Ground Contact
-	bool PEPunit = false;	//	Boolean value if the leg is in the PEP position.
+	enum stanceState { SWING_TO_PEP, GET_GC, READY_FOR_SWING };
+	int stanceState; // TODO make get and set
+
+	bool STANCE_REACHED	= false;
+	bool SWING_REACHED	= false;
+
+	bool RSunit 	= false;	//	Return Stroke unit (swing movement)
+	bool PSunit		= false;	//	Power Stroke unit (stance movement)
+	bool GCunit 	= false;	//	Ground Contact
+	bool PEPunit 	= false;	//	Boolean value if the leg is in the PEP position.
 
 	private:
 	//	Private methods

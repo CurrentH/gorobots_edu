@@ -10,7 +10,10 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	switch( newlegNum )
+	swingState = SET_SWING_HEIGHT;
+	stanceState = SWING_TO_PEP;
+
+	switch (newlegNum)
 	{
 		case 0: case 3: PEP[0] = -0.5; PEP[1] = 0.9; PEP[2] = -0.4; // ok (but needs a bit visual tweak)
 			break;
@@ -52,27 +55,6 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 {
 	 extractSensor(sensor, legNum, localSensorArray);
 	 selectorNet( sensor, viaAngle );
-
-	 //swingNet(sensor, viaAngle);
-/*
-	if(legNum == 3 || legNum == 0)
-	{
-		//swingNet(sensor, viaAngle);
-		viaAngle = PEP;
-	}
-	else if(legNum == 2 || legNum == 5 )
-	{
-		viaAngle[0] = -1.0;
-		viaAngle[1] = 1.0;
-		viaAngle[2] = -1.0;
-	}
-	else
-	{
-		viaAngle[0] = 1.0;
-		viaAngle[1] = 1.0;
-		viaAngle[2] = -1.0;
-	}
-*/
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -100,76 +82,185 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 }
 
 void walknetSeparateLeg::stanceNet(const sensor* sensor, std::vector<double> &swingNetAngle) {
+
 	const double pos_deadband = 0.01;
 
-	/*
-	 * Stance net should maybe also have a mid point
-	 * The height is changing when coxa is rotating
-	 * Resulting in the legs being lower than PEP and APE
-	 * At the mid points between AEP and PEP. This should maybe
-	 * be done mathematically right?
-	 */
+	switch(stanceState)
+	{
+		case SWING_TO_PEP:
 
-	if(initStance){
-		initStance = false;
-		stageAEP = true;
+			if(!localSensorArray[3]){
+				stanceState = GET_GC;
+			}else if( !atAngle(PEP[0], 0, 0.01) ) {
+				swingNetAngle[0] = PEP[0];
+				swingNetAngle[1] = localSensorArray[1]; // Leave CF and TF as they are
+				swingNetAngle[2] = localSensorArray[2];
+			}
+			break;
+
+		case GET_GC:
+			if(!localSensorArray[3]){
+
+				if(localSensorArray[1] >= -0.9){
+					swingNetAngle[0] = localSensorArray[0];
+					swingNetAngle[1] = localSensorArray[1] - 0.13; // TODO Faster or slower?
+					swingNetAngle[2] = localSensorArray[2];
+				} else {
+					swingNetAngle[0] = localSensorArray[0];
+					swingNetAngle[1] = localSensorArray[1];
+					swingNetAngle[2] = localSensorArray[2] - 0.13; // TODO Faster or slower?
+				}
+
+			} else {
+				swingState = SWING_TO_PEP;
+			}
+			break;
+
+		case READY_FOR_SWING:
+			break;
+		default: cout << "stanceState Error!" << endl;
+			break;
 	}
-	if(!atPosition(AEP, pos_deadband) && stageAEP){ // It should be in its AEP (from swing)
-		swingNetAngle=AEP;
 
-	} else if(!atPosition(PEP, pos_deadband)){
-		swingNetAngle=PEP;
-		stageAEP = false;
-
-	} else{
-		initSwing = true;
-		//stageAEP = true; // Use this to repeat stanceNet
-	}
 }
 
-//TODO Beware, contact with tibia instead of tarsus
 void walknetSeparateLeg::swingNet(const sensor* sensor, std::vector<double> &swingNetAngle) {
 
-	const double pos_deadband = 0.01;
+	const double MID_POINT 				= ( AEP[0] + PEP[0] ) / 2;
+	const double SWING_HEIGHT_cf	  	= MID[1];
+	const double SWING_HEIGHT_ft		= MID[2];
+	const double STANCE_HEIGHT_cf	  	= AEP[1];
+	const double STANCE_HEIGHT_ft		= AEP[2];
+	const double pos_deadband 			= 0.01;
 
-	if(initSwing){
-		initSwing = false;
-		stagePEP = true;
-		stageMID = true;
-	}
-	if(!atPosition(PEP, pos_deadband) && stagePEP){ // It should be in its PEP (from stance)
-		swingNetAngle=PEP;
+	// Default is set in constructor to be SET_SWING_HEIGHT
+	switch(swingState)
+	{
+		case SET_SWING_HEIGHT:
+			// Change to swing height
+			swingNetAngle[0] = localSensorArray[0]; // Leave CT as it is
+			swingNetAngle[1] = SWING_HEIGHT_cf;
+			swingNetAngle[2] = SWING_HEIGHT_ft;
 
-	} else if(!atPosition(MID, pos_deadband) && stageMID){
-		swingNetAngle=MID;
-		stagePEP = false;
+			// Swing height reached
+			if( atAngle( SWING_HEIGHT_cf, 1, 0.01 ) && atAngle( SWING_HEIGHT_ft, 2, 0.01 ) )
+			{
+				swingState = SWING_COXA;
+			}
+			break;
 
-	} else if(!atPosition(AEP, pos_deadband)){
-		swingNetAngle=AEP;
-		stageMID = false;
+		case SWING_COXA:
+			// Change coxa to AEP position
+			swingNetAngle[0] = AEP[0];
+			swingNetAngle[1] = localSensorArray[1]; // Leave CF and TF as they are
+			swingNetAngle[2] = localSensorArray[2];
 
-	} else{
-		//stagePEP = true; // Use this to repeat swingNet
-		//stageAEP = true; // Use this to repeat stanceNet
-		initStance = true;
+			// Lift leg at ground contact
+			if(localSensorArray[3]){
+				swingState = RAISE_HEIGHT;
+			}
+			else if( atAngle(AEP[0], 0, 0.01) )  // Coxa AEP reached
+			{
+				swingState = SET_STANCE_HEIGHT;
+			}
+
+			break;
+
+		case SET_STANCE_HEIGHT:
+
+			// Change to swing height
+			if(!STANCE_REACHED){
+				swingNetAngle[0] = localSensorArray[0];
+				swingNetAngle[1] = STANCE_HEIGHT_cf;
+				swingNetAngle[2] = STANCE_HEIGHT_ft;
+			} else {
+				swingNetAngle[0] = localSensorArray[0];
+				swingNetAngle[1] = localSensorArray[1];
+				swingNetAngle[2] = localSensorArray[2];
+			}
+
+			// Swing height reached
+			if( (atAngle( STANCE_HEIGHT_cf, 1, 0.01 ) && atAngle( STANCE_HEIGHT_ft, 2, 0.01 )) || STANCE_REACHED )
+			{
+				STANCE_REACHED = true;
+
+				if(localSensorArray[3]){
+					STANCE_REACHED = false;
+					swingState = READY_FOR_STANCE;
+				} else {
+					swingState = LOWER_HEIGHT;
+				}
+			}
+			break;
+		case LOWER_HEIGHT:
+			if(!localSensorArray[3]){
+
+				if(localSensorArray[1] >= -0.9){
+					swingNetAngle[0] = localSensorArray[0];
+					swingNetAngle[1] = localSensorArray[1] - 0.03; // TODO Faster or slower?
+					swingNetAngle[2] = localSensorArray[2];
+				} else {
+					swingNetAngle[0] = localSensorArray[0];
+					swingNetAngle[1] = localSensorArray[1];
+					swingNetAngle[2] = localSensorArray[2] - 0.03; // TODO Faster or slower?
+				}
+
+			} else {
+				swingState = SET_STANCE_HEIGHT;
+			}
+			break;
+		case RAISE_HEIGHT:
+			// Raise leg if ground contact
+			if(localSensorArray[3]){
+				if(localSensorArray[1] <= 0.9){
+					swingNetAngle[0] = localSensorArray[0];
+					swingNetAngle[1] = localSensorArray[1] + 0.03; // TODO Faster or slower?
+					swingNetAngle[2] = localSensorArray[2];
+				} else {
+					swingNetAngle[0] = localSensorArray[0];
+					swingNetAngle[1] = localSensorArray[1];
+					swingNetAngle[2] = localSensorArray[2] + 0.03; // TODO Faster or slower?
+				}
+			} else {
+				swingState = SWING_COXA;
+			}
+			break;
+		case READY_FOR_STANCE:
+			break;
+		default: cout << "swingState Error!" << endl;
+			break;
 	}
 
 }
 
 void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vector<double> & extractedSensors )
 {
+	//	Set the three first places for the angles for that specific leg.
 	for( int i = 0; i < 3; i++ )
 	{
 		extractedSensors[ i ] = sensor[ leg + i*6 ];
 	}
 
-	for( int i = 0; i < 7; i++ )
+	//	Set index 3, for the contact sensor
+	extractedSensors[3] = 0.0;
+	for( int i = 0; i < 6; i++ )
 	{
 		if( sensor[25 + 6*leg + i] == true ){
 			extractedSensors[3] = 1.0;
 		}
 	}
 	getGroundContact();
+}
+
+bool walknetSeparateLeg::atAngle( double targetPos, int legPartNum, double deadband )
+{
+	double error = targetPos - localSensorArray[legPartNum];
+
+	if(abs(error) < deadband ){
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool walknetSeparateLeg::atPosition( std::vector<double> targetPos, double deadband )
@@ -228,3 +319,30 @@ std::vector<double> walknetSeparateLeg::getPEP( void )
 	false - false + true = 1;	Have just walked	Is at PEP		Touches ground			Do: StanceNet
 	false - false + false = 0;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
 */
+
+/*
+	const double MID_POINT = ( AEP[0] + PEP[0] ) / 2;
+	const double pos_deadband = 0.01;
+
+	if(initSwing){
+		initSwing = false;
+		stagePEP = true;
+		stageMID = true;
+	}
+	if(!atPosition(PEP, pos_deadband) && stagePEP){ // It should be in its PEP (from stance)
+		swingNetAngle=PEP;
+
+	} else if(!atPosition(MID, pos_deadband) && stageMID){
+		swingNetAngle=MID;
+		stagePEP = false;
+
+	} else if(!atPosition(AEP, pos_deadband)){
+		swingNetAngle=AEP;
+		stageMID = false;
+
+	} else{
+		//stagePEP = true; // Use this to repeat swingNet
+		//stageAEP = true; // Use this to repeat stanceNet
+		initStance = true;
+	}
+ */
