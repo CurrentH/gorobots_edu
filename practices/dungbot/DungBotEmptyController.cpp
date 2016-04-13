@@ -191,19 +191,27 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 
 	if( writeOutput )
 	{
-		collectData( motorInput, sensorOutput );
+		collectData( sensor, motor );
 	}
 }
 
-void DungBotEmptyController::collectData( std::vector<double> motorInput, std::vector<double> sensorOutput )
+void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
 {
 	if( outputFile.is_open() && writeOutput)
 	{
+		//	Print all motor and sensor values here.
+		/*
 		outputFile << ticks_since_init;
 		for( unsigned int i = 0; i < motorInput.size(); i++ )
 		{
-			outputFile << "," << motorInput[i] << "," << sensorOutput[i];
+			outputFile << "," << motor[i] << "," << sensor[i];
 		}
+		outputFile << std::endl;
+		*/
+
+		//	Print the contact sensors for the stump.
+		outputFile << ticks_since_init << "," << sensor[DungBotMotorSensor::L0_s0] << "," << sensor[DungBotMotorSensor::L1_s0] << "," << sensor[DungBotMotorSensor::L2_s0] << ","
+		    		<< sensor[DungBotMotorSensor::R0_s0] << "," << sensor[DungBotMotorSensor::R1_s0] << "," << sensor[DungBotMotorSensor::R2_s0];
 		outputFile << std::endl;
 	}
 	else

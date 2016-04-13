@@ -50,13 +50,13 @@ class DungBotEmptyController : public AbstractController
 
 	private:
 		void outputData( const sensor*, motor* );
-		void collectData( std::vector<double>, std::vector<double> );
+		void collectData( const sensor*, motor* );
 		void start( motor* motor, double );
 
 		void stand( std::vector<std::vector<double>> &);
 		void moveRobot( motor* motor, std::vector<std::vector<double>> );
 
-		bool writeOutput = false;
+		bool writeOutput = true;
 		std::vector<std::vector<double>>angleVector;
 
 		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
