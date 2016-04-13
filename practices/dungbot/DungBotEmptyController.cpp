@@ -61,7 +61,8 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	// ----------------------------------
 	//start(motor, 1.0);
 	//stand( angleVector );
-	walknet->stepWalknet( sensor, angleVector );
+	//walknet->stepWalknet( sensor, angleVector );
+	walknet->stepWalknetTripod( sensor, angleVector );
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
@@ -161,6 +162,8 @@ void DungBotEmptyController::moveRobot( motor* motor, std::vector<std::vector<do
 
 void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 {
+	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
+
 	std::vector<double> sensorOutput;
 	std::vector<double> motorInput;
 	std::vector<bool> legPhase;
@@ -169,21 +172,19 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
     cout.setf(ios::fixed, ios::floatfield);
     cout.precision(2);
 /*
-	cout << "------------------------------------------------------------------" << endl;
-	cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << endl;
-	cout << "     \tCoxa\tFemur\tTibia\t\tCoxa\tFemur\tTibia" << endl;
-	cout << "Leg0:\t"<< sensor[0] <<"\t"<< sensor[6] <<"\t"<< sensor[12] <<"     \t"<< motor[0] <<"\t"<< motor[6] <<"\t"<< motor[12] <<"    \t" << legPhase[0] << endl;
-	cout << "Leg1:\t"<< sensor[1] <<"\t"<< sensor[7] <<"\t"<< sensor[13] <<"     \t"<< motor[1] <<"\t"<< motor[7] <<"\t"<< motor[13] <<"    \t" << legPhase[1]<< endl;
-	cout << "Leg2:\t"<< sensor[2] <<"\t"<< sensor[8] <<"\t"<< sensor[14] <<"     \t"<< motor[2] <<"\t"<< motor[8] <<"\t"<< motor[14] <<"    \t" << legPhase[2]<< endl;
-	cout << "Leg3:\t"<< sensor[3] <<"\t"<< sensor[9] <<"\t"<< sensor[15] <<"     \t"<< motor[3] <<"\t"<< motor[9] <<"\t"<< motor[15] <<"    \t" << legPhase[3]<< endl;
-	cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"    \t" << legPhase[4]<< endl;
-	cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"    \t" << legPhase[5] << endl;
+	std::cout << "------------------------------------------------------------------" << std::endl;
+	std::cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << std::endl;
+	std::cout << "     \tCoxa\tFemur\tTibia\t\tCoxa\tFemur\tTibia" << std::endl;
+	std::cout << "Leg0:\t"<< sensor[0] <<"\t"<< sensor[6] <<"\t"<< sensor[12] <<"     \t"<< motor[0] <<"\t"<< motor[6] <<"\t"<< motor[12] <<"    \t" << legPhase[0] << std::endl;
+	std::cout << "Leg1:\t"<< sensor[1] <<"\t"<< sensor[7] <<"\t"<< sensor[13] <<"     \t"<< motor[1] <<"\t"<< motor[7] <<"\t"<< motor[13] <<"    \t" << legPhase[1]<< std::endl;
+	std::cout << "Leg2:\t"<< sensor[2] <<"\t"<< sensor[8] <<"\t"<< sensor[14] <<"     \t"<< motor[2] <<"\t"<< motor[8] <<"\t"<< motor[14] <<"    \t" << legPhase[2]<< std::endl;
+	std::cout << "Leg3:\t"<< sensor[3] <<"\t"<< sensor[9] <<"\t"<< sensor[15] <<"     \t"<< motor[3] <<"\t"<< motor[9] <<"\t"<< motor[15] <<"    \t" << legPhase[3]<< std::endl;
+	std::cout << "Leg4:\t"<< sensor[4] <<"\t"<< sensor[10] <<"\t"<< sensor[16] <<"     \t"<< motor[4] <<"\t"<< motor[10] <<"\t"<< motor[16] <<"    \t" << legPhase[4]<< std::endl;
+	std::cout << "Leg5:\t"<< sensor[5] <<"\t"<< sensor[11] <<"\t"<< sensor[17] <<"     \t"<< motor[5] <<"\t"<< motor[11] <<"\t"<< motor[17] <<"    \t" << legPhase[5] << std::endl;
 	std::cout << "\nTicks: " << ticks_since_init << std::endl;
-	cout << "Contact: " << sensor[25] << ", "<< sensor[31] << ", "<< sensor[37] << ", "<<sensor[43] << ", " << sensor[49] << ", " << sensor[55] << endl;
-	cout << "------------------------------------------------------------------" << endl;
+	std::cout << "Contact: " << sensor[25] << ", "<< sensor[31] << ", "<< sensor[37] << ", "<<sensor[43] << ", " << sensor[49] << ", " << sensor[55] << std::endl;
+	std::cout << "------------------------------------------------------------------" << std::endl;
 */
-
-	// TODO: Make function that write (!) at the end if there is a miss match between motor[] and sensor[]
 
 //	Print sensor values for the stumps.
     std::cout << sensor[DungBotMotorSensor::L0_s0] << " "<< sensor[DungBotMotorSensor::L1_s0] << " "<< sensor[DungBotMotorSensor::L2_s0] << " "

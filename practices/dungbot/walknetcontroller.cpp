@@ -36,27 +36,51 @@ walknetcontroller::~walknetcontroller( void )
 	}
 }
 
-void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std::vector<double>> &angleVector, bool flag  )
+void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std::vector<double>> &angleVector )
 {
+	bool flag = true;
+
 	coordinatingInfluences();
+
+	for( int i = 0; i < 6; i++ )
+	{
+		if( separateLegs[i].startStance == true && separateLegs[i].startSwing == true )
+		{
+			flag = false;
+		}
+	}
+
 	if( flag )
 	{
-		separateLegs[0].set = true;
-		separateLegs[1].set = true;
-		separateLegs[2].set = true;
-		separateLegs[3].set = false;
-		separateLegs[4].set = false;
-		separateLegs[5].set = false;
+		std::cout << "SwitchFlag changes from: " << switchFlag << " to: " << !switchFlag << std::endl;
+		switchFlag = !switchFlag;
+
+		if( switchFlag )
+		{
+			separateLegs[0].startSwing = true;
+			separateLegs[1].startSwing = true;
+			separateLegs[2].startSwing = true;
+			separateLegs[3].startStance = true;
+			separateLegs[4].startStance = true;
+			separateLegs[5].startStance = true;
+		}
+		else
+		{
+			separateLegs[0].startStance = true;
+			separateLegs[1].startStance = true;
+			separateLegs[2].startStance = true;
+			separateLegs[3].startSwing = true;
+			separateLegs[4].startSwing = true;
+			separateLegs[5].startSwing = true;
+		}
+
 	}
-	else
+
+	for( int i = 0; i < 6; i++ )
 	{
-		separateLegs[0].set = false;
-		separateLegs[1].set = false;
-		separateLegs[2].set = false;
-		separateLegs[3].set = true;
-		separateLegs[4].set = true;
-		separateLegs[5].set = true;
+		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
 	}
+
 }
 
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
