@@ -65,16 +65,19 @@ walknetSeparateLeg::~walknetSeparateLeg(void) {
 void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	GCunit = getGroundContact();	//	Check if there is Ground Contact
-	PEPunit = atPosition( PEP , 0.05);	//	Check if the leg is at the PEP.
+	PEPunit = atPosition( PEP , 0.1);	//	Check if the leg is at the PEP.
 
 	RSunit = RSunit + PEPunit - GCunit;	//	Do the logic that tells the leg if it should move.
-	PSunit = PSunit - PEPunit + GCunit;
+	PSunit = PSunit - PEPunit + GCunit + (coordinationRules[0] || coordinationRules[1] || coordinationRules[2]);
 
-	if( coordinationRules[0] || coordinationRules[1] || coordinationRules[2] || RSunit ){
+	if( RSunit > 1 ){ RSunit = 1; }else if( RSunit < 0 ){ RSunit = 0; }
+	if( PSunit > 1 ){ PSunit = 1; }else if( PSunit < 0 ){ PSunit = 0; }
+
+	if( RSunit ){
 		startSwing = true; startStance = false; phase = true;
 		stanceNet2( sensor, viaAngle );
 		swingNet2( sensor, viaAngle );
-	}else if( PSunit == true && coordinationRules[0] == false ){
+	}else if( PSunit == true ){
 		startSwing = false; startStance = true; phase = false;
 		swingNet2( sensor, viaAngle );
 		stanceNet2( sensor, viaAngle );

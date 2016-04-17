@@ -66,7 +66,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
-	if( int( ticks_since_init )%200 == 0 )
+	if( int( ticks_since_init )%100 == 0 )
 	{
 		outputData( sensor, motor );
 	}
