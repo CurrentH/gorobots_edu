@@ -50,6 +50,10 @@ class walknetcontroller
 	private:
 	//	Private methods
 	void coordinatingInfluences( void );
+	void coordinateRule1( void );
+	void coordinateRule2( void );
+	void coordinateRule3( void );
+
 	//	Used for testing the tripod gait
 	bool switchFlag = false;
 
