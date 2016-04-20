@@ -56,7 +56,9 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
-	 selectorNet( sensor, viaAngle );
+	 //selectorNet( sensor, viaAngle );
+	 swingNet2(sensor,viaAngle);
+	 stanceNet2(sensor,viaAngle);
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -356,7 +358,6 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 
 	const double MID_COXA_POS = (AEP[0] + PEP[0]) / 2;
 
-
 	if(startSwing == false){
 		swingState2 = SWING2_DONE;
 	}
@@ -364,6 +365,7 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 	switch(swingState2)
 		{
 			case TO_MID_SWING:
+
 				if( !atPosition(MID,0.01) )
 				{
 					viaAngle[0] = MID[0];
