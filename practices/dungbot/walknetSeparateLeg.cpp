@@ -68,7 +68,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 	PEPunit = atPosition( PEP , 0.1);	//	Check if the leg is at the PEP.
 
 	RSunit = RSunit + PEPunit - GCunit;	//	Do the logic that tells the leg if it should move.
-	PSunit = PSunit - PEPunit + GCunit + (coordinationRules[0] || coordinationRules[1] || coordinationRules[2]);
+	PSunit = PSunit - PEPunit + GCunit + ( coordinationRules[0] && ( coordinationRules[1] || coordinationRules[2]));
 
 	if( RSunit > 1 ){ RSunit = 1; }else if( RSunit < 0 ){ RSunit = 0; }
 	if( PSunit > 1 ){ PSunit = 1; }else if( PSunit < 0 ){ PSunit = 0; }
