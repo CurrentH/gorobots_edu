@@ -32,7 +32,7 @@ class walknetSeparateLeg
 
 	int swingState2; // TODO make get and set
 	int stanceState2; // TODO make get and set
-	enum swingState2 { TO_PEP_SWING, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE };
+	enum swingState2 { TO_PEP_SWING, LIFT, LOWER, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE };
 	enum stanceState2 { TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
 
 	public:

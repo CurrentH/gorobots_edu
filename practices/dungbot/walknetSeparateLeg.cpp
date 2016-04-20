@@ -57,6 +57,8 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 {
 	 extractSensor(sensor, legNum, localSensorArray);
 	 selectorNet( sensor, viaAngle );
+	 //swingNet2(sensor,viaAngle);
+	 //stanceNet2(sensor,viaAngle);
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
@@ -345,72 +347,90 @@ void walknetSeparateLeg::stanceNet2(const sensor* sensor, std::vector<double> &v
 	}
 
 	switch(stanceState2)
-	{
-		case TO_PEP_STANCE:
-			if( !atPosition(PEP,0.01) )
 			{
-				viaAngle[0] = PEP[0];
-				viaAngle[1] = PEP[1];
-				viaAngle[2] = PEP[2];
-			} else {
-				startStance = false;
-				stanceState2 = STANCE2_DONE;
-			}
-			break;
 
-		case STANCE2_DONE:
-			if(startStance){
-				stanceState2 = TO_PEP_STANCE;
-			}
-			break;
+				case TO_PEP_STANCE:
+					if( !atPosition(PEP,0.01) )
+					{
+						viaAngle[0] = PEP[0];
+						viaAngle[1] = PEP[1];
+						viaAngle[2] = PEP[2];
+					} else {
+						startStance = false;
+						stanceState2 = STANCE2_DONE;
+					}
+					break;
 
-		default: cout << "swingState Error!" << endl;
-			break;
-	}
+				case STANCE2_DONE:
+					if(startStance){
+						stanceState2 = TO_PEP_STANCE;
+					}
+					break;
+
+				default: cout << "swingState Error!" << endl;
+					break;
+			}
+
+
 }
-
 void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &viaAngle){
 
 	const double MID_COXA_POS = (AEP[0] + PEP[0]) / 2;
+
 
 	if(startSwing == false){
 		swingState2 = SWING2_DONE;
 	}
 
 	switch(swingState2)
-	{
-		case TO_MID_SWING:
-			if( !atPosition(MID,0.01) )
-			{
-				viaAngle[0] = MID[0];
-				viaAngle[1] = MID[1];
-				viaAngle[2] = MID[2];
-			} else {
-				swingState2 = TO_AEP_SWING;
-			}
-			break;
+		{
+			case LIFT:
+				if( !atAngle(MID[1], 1, 0.01) && !atAngle(MID[2], 2, 0.01))
+				{
+					viaAngle[0] = PEP[0];
+					viaAngle[1] = MID[1];
+					viaAngle[2] = MID[2];
+				} else {
+					swingState2 = TO_AEP_SWING;
+				}
+				break;
 
-		case TO_AEP_SWING:
-			if( !atPosition(AEP,0.01) )
-			{
-				viaAngle[0] = AEP[0];
-				viaAngle[1] = AEP[1];
-				viaAngle[2] = AEP[2];
-			} else {
-				startSwing = false;
-				swingState2 = SWING2_DONE;
-			}
-			break;
+			case TO_AEP_SWING:
+				if( !atAngle(AEP[0], 0, 0.01) )
+				{
+					viaAngle[0] = AEP[0];
+					viaAngle[1] = MID[1];
+					viaAngle[2] = MID[2];
+				} else {
+					swingState2 = LOWER;
+				}
+				break;
 
-		case SWING2_DONE:
-			if(startSwing){
-				swingState2 = TO_MID_SWING;
-			}
-			break;
+			case LOWER:
+				if( !atAngle(AEP[1], 1, 0.01) && !atAngle(AEP[2], 2, 0.01) )
+				{
+					viaAngle[0] = AEP[0];
+					viaAngle[1] = AEP[1];
+					viaAngle[2] = AEP[2];
+				} else {
+					if(!localSensorArray[3]){
+						viaAngle[1] = localSensorArray[1] - 0.08;
+					} else {
+						startSwing = false;
+						swingState2 = SWING2_DONE;
+					}
+				}
+				break;
 
-		default: cout << "swingState Error!" << endl;
-			break;
-	}
+			case SWING2_DONE:
+				if(startSwing){
+					swingState2 = LIFT;
+				}
+				break;
+
+			default: cout << "swingState Error!" << endl;
+				break;
+		}
 }
 
 /*
