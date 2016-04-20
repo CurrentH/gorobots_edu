@@ -43,10 +43,10 @@ class walknetSeparateLeg
 	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &  );
 	//	Used by the walknet to make the control laws for the legs.
 	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
-	void setAEP( double );
+	void setAEP( std::vector<double> & );
 	void setPEP( double );
 	void setRule( int, bool );
-	std::vector<double> getAEP( void );
+	void getAEP( std::vector<double> & );
 	std::vector<double> getPEP( void );
 	bool atPosition( std::vector<double> , double);
 	bool atAngle( double targetPos, int legPartNum, double deadband );
@@ -66,6 +66,7 @@ class walknetSeparateLeg
 	std::vector<double> PEP;
 	std::vector<double> MID;
 	std::vector<double> AEP;
+	std::vector<double> maxAEP;
 	std::vector<double> localSensorArray;
 	std::vector<bool> coordinationRules;
 

@@ -150,11 +150,11 @@ namespace lpzrobots
 	void DungBotSimulation::addPlayground( const OdeHandle& odeHandle, const OsgHandle& osgHandle, GlobalData& global)
 	{
 		// implement playground here.
-	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(5, 0.2, 0.5),1);
+	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.05, 0.4),0.3);
 	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
 	    playground->setGroundColor(Color(0.372, 0.737, 0.360));  //http://doc.instantreality.org/tools/color_calculator/
 	    playground->setColor(Color(0.737, 0.647, 0.360));
-	    playground->setPosition( osg::Vec3( 0, 0, .2 ) );
+	    playground->setPosition( osg::Vec3( -4, 0, .2 ) );
 	    global.obstacles.push_back( playground );
 	}
 

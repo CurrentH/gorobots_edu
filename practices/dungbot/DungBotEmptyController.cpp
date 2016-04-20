@@ -192,7 +192,6 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
     		<< sensor[DungBotMotorSensor::R0_s0] << " "<< sensor[DungBotMotorSensor::R1_s0] << " "<< sensor[DungBotMotorSensor::R2_s0] << std::endl;
 */
 //	Print the phase of each leg
-
     for( int i = 0; i < 6; i++ )
     {
     	std::cout << legPhase[i] << " ";
