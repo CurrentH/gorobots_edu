@@ -98,9 +98,9 @@ void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vect
 	for( int i = 0; i < 6; i++ )
 	{
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
-		std::cout << separateLegs[i].startSwing << " ";
+		//std::cout << separateLegs[i].startSwing << " ";
 	}
-	std::cout << std::endl;
+	//std::cout << std::endl;
 }
 
 void walknetcontroller::getPhase( std::vector<bool> &phaseVector )
@@ -112,6 +112,109 @@ void walknetcontroller::getPhase( std::vector<bool> &phaseVector )
 	}
 }
 
+void walknetcontroller::coordinateRule1( void ){
+	for( int i = 0; i < 6; i++ )
+	{
+		switch(i){
+			case 0:
+			case 1:
+			case 3:
+			case 4:
+				if( separateLegs[i+1].getPhase() == false ){
+					separateLegs[i].setRule(0,true);
+				}else{
+					separateLegs[i].setRule(0,false);
+				}
+				break;
+			case 2:
+			case 5:
+				break;
+			default:
+				std::cout << "Problem in walknet controller rule 1 for leg:" << i << std::endl;
+				break;
+		}
+	}
+}
+void walknetcontroller::coordinateRule2( void ){
+	for( int i = 0; i < 6; i++ )
+	{
+		switch(i){
+			case 0:
+			case 1:
+				if( separateLegs[i+1].getPhase() == false || separateLegs[i+3].getPhase() == false ){
+					separateLegs[i].setRule(1,true);
+				}else{
+					separateLegs[i].setRule(1,false);
+				}
+				break;
+			case 2:
+				if( separateLegs[i+3].getPhase() == false ){
+					separateLegs[i].setRule(1,true);
+				}else{
+					separateLegs[i].setRule(1,false);
+				}
+				break;
+			case 3:
+			case 4:
+				if( separateLegs[i+1].getPhase() == false || separateLegs[i-3].getPhase() == false ){
+					separateLegs[i].setRule(1,true);
+				}else{
+					separateLegs[i].setRule(1,false);
+				}
+				break;
+			case 5:
+				if( separateLegs[i-3].getPhase() == false ){
+					separateLegs[i].setRule(1,true);
+				}else{
+					separateLegs[i].setRule(1,false);
+				}
+				break;
+			default:
+				std::cout << "Problem in walknet controller rule 2 for leg:" << i << std::endl;
+				break;
+		}
+	}
+}
+void walknetcontroller::coordinateRule3( void ){
+	for( int i = 0; i < 6; i++ )
+	{
+		switch(i){
+			case 0:
+				if( separateLegs[i+3].getPhase() == false ){
+					separateLegs[i].setRule(2,true);
+				}else{
+					separateLegs[i].setRule(2,false);
+				}
+				break;
+			case 1:
+			case 2:
+				if( separateLegs[i-1].getPhase() == false || separateLegs[i+3].getPhase() == false ){
+					separateLegs[i].setRule(2,true);
+				}else{
+					separateLegs[i].setRule(2,false);
+				}
+				break;
+			case 3:
+				if( separateLegs[i-3].getPhase() == false ){
+					separateLegs[i].setRule(2,true);
+				}else{
+					separateLegs[i].setRule(2,false);
+				}
+				break;
+			case 4:
+			case 5:
+				if( separateLegs[i-1].getPhase() == false || separateLegs[i-3].getPhase() == false ){
+					separateLegs[i].setRule(2,true);
+				}else{
+					separateLegs[i].setRule(2,false);
+				}
+				break;
+			default:
+				std::cout << "Problem in walknet controller rule 3 for leg:" << i << std::endl;
+				break;
+		}
+	}
+}
 
 void walknetcontroller::coordinatingInfluences( void )
 {
@@ -120,80 +223,9 @@ void walknetcontroller::coordinatingInfluences( void )
 	 * 		Figure out what the legs need to do, and send the
 	 * 		signals to the separate legs.
 	 */
-	for( int i = 0; i < 6; i++ )
-	{
-		switch (i) {
-			case 0://	Front left
-				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(0, true); } else
-							{ separateLegs[i].setRule(0, false); }
 
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01 ) &&
-								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
-
-				break;
-			case 1://	Middle left
-				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(0, true); } else
-							{ separateLegs[i].setRule(0, false); }
-
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01  ) &&
-								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
-
-				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i+3].setRule(2, true); } else
-							{ separateLegs[i+3].setRule(2, false); }
-
-				break;
-
-			case 2://	Rear left
-				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i+3].setRule(2, true); } else
-							{ separateLegs[i+3].setRule(2, false); }
-
-				break;
-
-			case 3://	Front Right
-				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(0, true); } else
-							{ separateLegs[i].setRule(0, false); }
-
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01  ) &&
-								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
-
-				break;
-			case 4://	Middle Right
-				/*Rule1*/ if( separateLegs[i+1].getPhase() == true )
-							{ separateLegs[i].setRule(0, true); } else
-							{ separateLegs[i].setRule(0, false); }
-
-				/*Rule2*/ if( separateLegs[i+1].atPosition( separateLegs[i+1].getAEP(), 0.01  ) &&
-								separateLegs[i+1].getGroundContact() )
-							{ separateLegs[i].setRule(1, true); } else
-							{ separateLegs[i].setRule(1, false); }
-
-				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
-
-				break;
-			case 5://	Rear Right
-				/*Rule3*/ if( separateLegs[i-1].getPhase() == false )
-							{ separateLegs[i].setRule(2, true); } else
-							{ separateLegs[i].setRule(2, false); }
-
-				break;
-
-			default:
-				break;
-		}
-	}
+	coordinateRule1();
+	coordinateRule2();
+	coordinateRule3();
 
 }
-

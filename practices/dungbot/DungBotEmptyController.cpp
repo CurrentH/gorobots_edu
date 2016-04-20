@@ -66,7 +66,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
-	if( int( ticks_since_init )%200 == 0 )
+	if( int( ticks_since_init )%100 == 0 )
 	{
 		outputData( sensor, motor );
 	}
@@ -187,8 +187,17 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 */
 
 //	Print sensor values for the stumps.
+    /*
     std::cout << sensor[DungBotMotorSensor::L0_s0] << " "<< sensor[DungBotMotorSensor::L1_s0] << " "<< sensor[DungBotMotorSensor::L2_s0] << " "
     		<< sensor[DungBotMotorSensor::R0_s0] << " "<< sensor[DungBotMotorSensor::R1_s0] << " "<< sensor[DungBotMotorSensor::R2_s0] << std::endl;
+*/
+//	Print the phase of each leg
+
+    for( int i = 0; i < 6; i++ )
+    {
+    	std::cout << legPhase[i] << " ";
+    }
+    std::cout << std::endl;
 
 	if( writeOutput )
 	{

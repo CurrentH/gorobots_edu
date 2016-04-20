@@ -53,8 +53,6 @@ class walknetSeparateLeg
 	bool getPhase();
 	bool getGroundContact();
 
-
-
 	protected:
 	//	Protected attributes
 
@@ -71,14 +69,10 @@ class walknetSeparateLeg
 	std::vector<double> localSensorArray;
 	std::vector<bool> coordinationRules;
 
-	enum swingState { SET_SWING_HEIGHT, SWING_COXA, RAISE_HEIGHT,
-					  SET_STANCE_HEIGHT, LOWER_HEIGHT, SWING_DONE };
 	int swingState; // TODO make get and set
-
-	enum stanceState { SWING_TO_PEP, GET_GC, STANCE_DONE };
 	int stanceState; // TODO make get and set
-
-
+	enum swingState { SET_SWING_HEIGHT, SWING_COXA, RAISE_HEIGHT, SET_STANCE_HEIGHT, LOWER_HEIGHT, SWING_DONE };
+	enum stanceState { SWING_TO_PEP, GET_GC, STANCE_DONE };
 
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
