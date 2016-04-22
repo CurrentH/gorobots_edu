@@ -46,13 +46,20 @@ class walknetcontroller
 	private:
 	//	Private attributes
 	std::vector<walknetSeparateLeg> separateLegs;
+	std::vector<double> legPos;
+	std::vector<double> nextLegPos;
+	std::vector<double> tmpAEP;
 
 	private:
 	//	Private methods
-	void coordinatingInfluences( void );
+	void coordinatingInfluences( const sensor* );
 	void coordinateRule1( void );
 	void coordinateRule2( void );
 	void coordinateRule3( void );
+	void coordinateRule4( const sensor* sensor );
+
+	double calculateRule4Distance( std::vector<double> &, std::vector<double> & );
+
 
 	//	Used for testing the tripod gait
 	bool switchFlag = false;

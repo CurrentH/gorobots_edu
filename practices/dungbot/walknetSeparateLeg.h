@@ -32,7 +32,7 @@ class walknetSeparateLeg
 
 	int swingState2; // TODO make get and set
 	int stanceState2; // TODO make get and set
-	enum swingState2 { TO_PEP_SWING, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE };
+	enum swingState2 { TO_PEP_SWING, LIFT, LOWER, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE, FINAL_SWING_POS };
 	enum stanceState2 { TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
 
 	public:
@@ -43,10 +43,10 @@ class walknetSeparateLeg
 	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &  );
 	//	Used by the walknet to make the control laws for the legs.
 	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
-	void setAEP( double );
+	void setAEP( std::vector<double> & );
 	void setPEP( double );
 	void setRule( int, bool );
-	std::vector<double> getAEP( void );
+	void getAEP( std::vector<double> & );
 	std::vector<double> getPEP( void );
 	bool atPosition( std::vector<double> , double);
 	bool atAngle( double targetPos, int legPartNum, double deadband );
@@ -63,9 +63,11 @@ class walknetSeparateLeg
 	//	Private attributes
 	int legNum;
 	bool phase = false;
+
 	std::vector<double> PEP;
 	std::vector<double> MID;
 	std::vector<double> AEP;
+	std::vector<double> maxAEP;
 	std::vector<double> localSensorArray;
 	std::vector<bool> coordinationRules;
 
@@ -85,11 +87,15 @@ class walknetSeparateLeg
 	private:
 	//	Private methods
 	void selectorNet( const sensor* sensor, std::vector<double> & );
-	void stanceNet( const sensor* sensor, std::vector<double> & );
-	void swingNet( const sensor* sensor, std::vector<double> & );
-
-	void stanceNet2( const sensor* sensor, std::vector<double> & );
+	void stanceNetSimple( const sensor* sensor, std::vector<double> & );
+	void swingNetSimple( const sensor* sensor, std::vector<double> & );
+	void stanceNet1( const sensor* sensor, std::vector<double> & );
+	void swingNet1( const sensor* sensor, std::vector<double> & );
 	void swingNet2( const sensor* sensor, std::vector<double> & );
+	void swingNet3( const sensor* sensor, std::vector<double> & );
+	void swingNet4( const sensor* sensor, std::vector<double> & );
+	double trajectory( double, int );
+
 
 };
 

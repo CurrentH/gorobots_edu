@@ -51,7 +51,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
-		stand( angleVector );
+		standsimple( angleVector );
 		moveRobot( motor, angleVector );
 		if( int(ticks_since_init)%100==0 )
 			std::cout << (600-ticks_since_init)/100 << std::endl;
@@ -60,7 +60,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	// ----------------------------------
 	//start(motor, 1.0);
-	//stand( angleVector );
+	//standsimple( angleVector );
 	//walknet->stepWalknet( sensor, angleVector );
 	walknet->stepWalknetTripod( sensor, angleVector );
 	moveRobot( motor, angleVector );
@@ -120,6 +120,20 @@ void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVecto
 	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
 	double femur_pos[3]	= {0.2, 0.05, 0.5};
 	double tibia_pos[3]	= {0.6, 0.9, 0.4};
+
+	for( int i = 0; i < 6; i++ )
+	{
+		angleVector[i][0] = coxa_pos[i%3];
+		angleVector[i][1] = femur_pos[i%3];
+		angleVector[i][2] = -tibia_pos[i%3];
+	}
+}
+
+void DungBotEmptyController::standsimple( std::vector<std::vector<double>> &angleVector )
+{
+	double coxa_pos[3] 	= {0.0, 0.0, 0.0}; // Front, Middle, Rear
+	double femur_pos[3]	= {-1.0, -1.0, -1.0};
+	double tibia_pos[3]	= {0.0, 0.0, 0.0};
 
 	for( int i = 0; i < 6; i++ )
 	{
@@ -192,7 +206,6 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
     		<< sensor[DungBotMotorSensor::R0_s0] << " "<< sensor[DungBotMotorSensor::R1_s0] << " "<< sensor[DungBotMotorSensor::R2_s0] << std::endl;
 */
 //	Print the phase of each leg
-
     for( int i = 0; i < 6; i++ )
     {
     	std::cout << legPhase[i] << " ";

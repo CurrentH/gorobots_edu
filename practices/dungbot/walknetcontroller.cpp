@@ -26,6 +26,10 @@ walknetcontroller::walknetcontroller( void )
 	separateLegs.push_back(legFR);
 	separateLegs.push_back(legMR);
 	separateLegs.push_back(legRR);
+
+	nextLegPos.assign( 4 , 0 );
+	legPos.assign( 4 , 0 );
+	tmpAEP.assign( 3 , 0 );
 }
 
 walknetcontroller::~walknetcontroller( void )
@@ -94,13 +98,11 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
 {
-	coordinatingInfluences();
+	coordinatingInfluences( sensor );
 	for( int i = 0; i < 6; i++ )
 	{
 		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i] );
-		//std::cout << separateLegs[i].startSwing << " ";
 	}
-	//std::cout << std::endl;
 }
 
 void walknetcontroller::getPhase( std::vector<bool> &phaseVector )
@@ -216,16 +218,53 @@ void walknetcontroller::coordinateRule3( void ){
 	}
 }
 
-void walknetcontroller::coordinatingInfluences( void )
+void walknetcontroller::coordinateRule4( const sensor* sensor )
+{
+	for( int i = 0; i < 6; i++ )
+	{
+		switch(i){
+			case 0:
+			case 1:
+			case 3:
+			case 4:
+				separateLegs[i].extractSensor( sensor, i, legPos );
+				separateLegs[i+1].extractSensor( sensor, i+1, nextLegPos );
+				separateLegs[i+1].getAEP( tmpAEP );
+				if( calculateRule4Distance( nextLegPos, tmpAEP ) > 0.01 )
+				{
+					tmpAEP[0] -=0.02;
+					separateLegs[i].setAEP( tmpAEP );
+				}
+				break;
+			case 2:
+			case 5:
+				break;
+			default:
+				std::cout << "Problem in walknet controller rule 4 for leg:" << i << std::endl;
+				break;
+		}
+	}
+}
+
+void walknetcontroller::coordinatingInfluences( const sensor* sensor )
 {
 	/**
 	 * 		Do the coordination influences here.
 	 * 		Figure out what the legs need to do, and send the
-	 * 		signals to the separate legs.
+	 * 		signals to the separate legs, including the correction of the AEP.
 	 */
 
 	coordinateRule1();
-	coordinateRule2();
+	//coordinateRule2();
 	coordinateRule3();
+	//coordinateRule4( sensor );
+}
 
+double walknetcontroller::calculateRule4Distance( std::vector<double> & currentPos, std::vector<double> & targetPos )
+{
+	double coxaError = targetPos[0] - currentPos[0];
+	double femurError = targetPos[1] - currentPos[1];
+	double tibiaError = targetPos[2] - currentPos[2];
+
+	return sqrt( pow(coxaError,2) + pow(femurError,2) + pow(tibiaError,2) );
 }
