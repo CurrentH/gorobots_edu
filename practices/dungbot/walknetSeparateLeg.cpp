@@ -60,9 +60,9 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
-	 selectorNet( sensor, viaAngle );
-	 //swingNet2(sensor,viaAngle);
-	 //stanceNet2(sensor,viaAngle);
+	 //selectorNet( sensor, viaAngle );
+	 swingNet2(sensor,viaAngle);
+	 stanceNet2(sensor,viaAngle);
 }
 
 walknetSeparateLeg::~walknetSeparateLeg(void) {
