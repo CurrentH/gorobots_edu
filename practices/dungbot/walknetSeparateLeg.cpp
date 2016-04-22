@@ -82,10 +82,10 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 	if( RSunit == true ){
 		startSwing = true; startStance = false; phase = true;
 		stanceNet1( sensor, viaAngle );
-		swingNet2( sensor, viaAngle );
+		swingNet1( sensor, viaAngle );
 	}else if( PSunit == true ){
 		startSwing = false; startStance = true; phase = false;
-		swingNet2( sensor, viaAngle );
+		swingNet1( sensor, viaAngle );
 		stanceNet1( sensor, viaAngle );
 	}
 }
@@ -191,71 +191,6 @@ void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &v
 		default: cout << "swingState Error!" << endl;
 			break;
 	}
-}
-void walknetSeparateLeg::stanceNet2(const sensor* sensor, std::vector<double> &viaAngle){
-	if(startStance == false){
-		stanceState2 = STANCE2_DONE;
-	}
-
-	switch(stanceState2)
-			{
-
-				case TO_PEP_STANCE:
-					if( !atPosition(PEP,0.01) )
-					{
-						viaAngle[0] = PEP[0];
-						viaAngle[1] = PEP[1];
-						viaAngle[2] = PEP[2];
-					} else {
-						startStance = false;
-						stanceState2 = STANCE2_DONE;
-					}
-					break;
-
-				case STANCE2_DONE:
-					if(startStance){
-						stanceState2 = TO_PEP_STANCE;
-					}
-					break;
-
-				default: cout << "swingState Error!" << endl;
-					break;
-			}
-
-
-}
-
-void walknetSeparateLeg::stanceNet2(const sensor* sensor, std::vector<double> &viaAngle){
-	if(startStance == false){
-		stanceState2 = STANCE2_DONE;
-	}
-
-	switch(stanceState2)
-			{
-
-				case TO_PEP_STANCE:
-					if( !atPosition(PEP,0.01) )
-					{
-						viaAngle[0] = PEP[0];
-						viaAngle[1] = PEP[1];
-						viaAngle[2] = PEP[2];
-					} else {
-						startStance = false;
-						stanceState2 = STANCE2_DONE;
-					}
-					break;
-
-				case STANCE2_DONE:
-					if(startStance){
-						stanceState2 = TO_PEP_STANCE;
-					}
-					break;
-
-				default: cout << "swingState Error!" << endl;
-					break;
-			}
-
-
 }
 void walknetSeparateLeg::swingNet1(const sensor* sensor, std::vector<double> &viaAngle){
 

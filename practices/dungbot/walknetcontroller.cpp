@@ -255,10 +255,9 @@ void walknetcontroller::coordinatingInfluences( const sensor* sensor )
 	 */
 
 	coordinateRule1();
-	coordinateRule2();
+	//coordinateRule2();
 	coordinateRule3();
 	//coordinateRule4( sensor );
-
 }
 
 double walknetcontroller::calculateRule4Distance( std::vector<double> & currentPos, std::vector<double> & targetPos )
