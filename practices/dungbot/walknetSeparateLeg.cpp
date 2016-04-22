@@ -11,8 +11,6 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	swingState = SWING_DONE;
-	stanceState = STANCE_DONE;
 	swingState2 = SWING2_DONE;
 	stanceState2 = STANCE2_DONE;
 
@@ -57,6 +55,9 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 
 }
 
+walknetSeparateLeg::~walknetSeparateLeg(void) {
+}
+
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
@@ -65,100 +66,30 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 	 //stanceNet2(sensor,viaAngle);
 }
 
-walknetSeparateLeg::~walknetSeparateLeg(void) {
-}
-
 void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	GCunit = getGroundContact();	//	Check if there is Ground Contact
 	PEPunit = atPosition( PEP , 0.01);	//	Check if the leg is at the PEP.
 
 	RSunit = RSunit + PEPunit - GCunit;	//	Do the logic that tells the leg if it should move.
-	PSunit = PSunit - PEPunit + GCunit + ( coordinationRules[0] && ( coordinationRules[1] || coordinationRules[2]));
+	PSunit = PSunit - PEPunit + GCunit;// + (coordinationRules[0]);// || coordinationRules[1] || coordinationRules[2]);
 
 	if( RSunit > 1 ){ RSunit = 1; }else if( RSunit < 0 ){ RSunit = 0; }
 	if( PSunit > 1 ){ PSunit = 1; }else if( PSunit < 0 ){ PSunit = 0; }
 
-	if( RSunit == true ){
+	if( swingState2 == START_SWING ){
 		startSwing = true; startStance = false; phase = true;
-		stanceNet1( sensor, viaAngle );
-		swingNet1( sensor, viaAngle );
-	}else if( PSunit == true ){
+	}
+	else if( stanceState2 == START_STANCE ){
 		startSwing = false; startStance = true; phase = false;
-		swingNet1( sensor, viaAngle );
+	}
+
+	if( RSunit || startSwing){
+		//stanceNet1( sensor, viaAngle );
+		swingNet2( sensor, viaAngle );
+	}else if( PSunit || startStance ){
+		//swingNet3( sensor, viaAngle );
 		stanceNet1( sensor, viaAngle );
-	}
-}
-
-void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vector<double> & extractedSensors )
-{
-	//	Set the three first places for the angles for that specific leg.
-	for( int i = 0; i < 3; i++ )
-	{
-		extractedSensors[ i ] = sensor[ leg + i*6 ];
-	}
-
-	//	Set index 3, for the contact sensor
-	extractedSensors[3] = 0.0;
-	for( int i = 0; i < 6; i++ )
-	{
-		if( sensor[25 + 6*leg + i] == true ){
-			extractedSensors[3] = 1.0;
-		}
-	}
-	getGroundContact();
-}
-
-bool walknetSeparateLeg::atAngle( double targetPos, int legPartNum, double deadband )
-{
-	double error = targetPos - localSensorArray[legPartNum];
-
-	if(abs(error) < deadband ){
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool walknetSeparateLeg::atPosition( std::vector<double> targetPos, double deadband )
-{
-	double coxaError = targetPos[0] - localSensorArray[0];
-	double femurError = targetPos[1] - localSensorArray[1];
-	double tibiaError = targetPos[2] - localSensorArray[2];
-
-	if(abs(coxaError) < deadband && abs(femurError) < deadband && abs(tibiaError) < deadband){
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool walknetSeparateLeg::getPhase( void )
-{
-	//TRUE = swing, FALSE = stance
-	return phase;
-}
-bool walknetSeparateLeg::getGroundContact( void )
-{
-	return localSensorArray[3];
-}
-void walknetSeparateLeg::setRule( int index, bool flag )
-{
-	coordinationRules[index] = flag;
-}
-void walknetSeparateLeg::getAEP( std::vector<double> & tmpAEP )
-{
-	tmpAEP = AEP;
-}
-std::vector<double> walknetSeparateLeg::getPEP( void )
-{
-	return PEP;
-}
-void walknetSeparateLeg::setAEP( std::vector<double> & newAEP )
-{
-	if( newAEP[0] < maxAEP[0] && newAEP[1] < maxAEP[1] && newAEP[2] < maxAEP[2] )
-	{
-		AEP = newAEP;
 	}
 }
 
@@ -169,6 +100,9 @@ void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &v
 
 	switch(stanceState2)
 	{
+		case START_STANCE:
+			stanceState2 = TO_PEP_STANCE;
+			break;
 
 		case TO_PEP_STANCE:
 			if( !atPosition(PEP,0.01) )
@@ -183,15 +117,19 @@ void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &v
 			break;
 
 		case STANCE2_DONE:
+			swingState2 = START_SWING;
+			/*
 			if(startStance){
 				stanceState2 = TO_PEP_STANCE;
 			}
+			*/
 			break;
 
 		default: cout << "swingState Error!" << endl;
 			break;
 	}
 }
+
 void walknetSeparateLeg::swingNet1(const sensor* sensor, std::vector<double> &viaAngle){
 
 	const double MID_COXA_POS = (AEP[0] + PEP[0]) / 2;
@@ -248,6 +186,10 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 
 	switch(swingState2)
 		{
+
+			case START_SWING:
+				swingState2 = LIFT;
+				break;
 			case LIFT:
 				if( !atAngle(MID[1], 1, 0.01) && !atAngle(MID[2], 2, 0.01))
 				{
@@ -287,9 +229,11 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 				break;
 
 			case SWING2_DONE:
+				/*
 				if(startSwing){
 					swingState2 = LIFT;
 				}
+				*/
 				break;
 
 			default: cout << "swingState Error!" << endl;
@@ -301,7 +245,6 @@ void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &vi
 
 	const double MID_COXA_POS = (AEP[0] + PEP[0]) / 2;
 
-
 	if(startSwing == false){
 		swingState2 = SWING2_DONE;
 		AEP = maxAEP;
@@ -309,6 +252,10 @@ void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &vi
 
 	switch(swingState2)
 	{
+		case START_SWING:
+			swingState2 = LIFT;
+			break;
+
 		case LIFT:
 			swingState2 = TO_AEP_SWING;
 			break;
@@ -346,9 +293,11 @@ void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &vi
 			break;
 
 		case SWING2_DONE:
+			/*
 			if(startSwing){
 				swingState2 = LIFT;
 			}
+			*/
 			break;
 
 		default: cout << "swingState Error!" << endl;
@@ -475,6 +424,86 @@ double walknetSeparateLeg::trajectory(double height, int legPart)
 
 	return a*localSensorArray[0]*localSensorArray[0]+b*localSensorArray[0]+c;
 }
+
+
+bool walknetSeparateLeg::atAngle( double targetPos, int legPartNum, double deadband )
+{
+	double error = targetPos - localSensorArray[legPartNum];
+
+	if(abs(error) < deadband ){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool walknetSeparateLeg::atPosition( std::vector<double> targetPos, double deadband )
+{
+	double coxaError = targetPos[0] - localSensorArray[0];
+	double femurError = targetPos[1] - localSensorArray[1];
+	double tibiaError = targetPos[2] - localSensorArray[2];
+
+	if(abs(coxaError) < deadband && abs(femurError) < deadband && abs(tibiaError) < deadband){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool walknetSeparateLeg::getPhase( void )
+{
+	//TRUE = swing, FALSE = stance
+	return phase;
+}
+
+bool walknetSeparateLeg::getGroundContact( void )
+{
+	return localSensorArray[3];
+}
+
+void walknetSeparateLeg::setRule( int index, bool flag )
+{
+	coordinationRules[index] = flag;
+}
+
+void walknetSeparateLeg::getAEP( std::vector<double> & tmpAEP )
+{
+	tmpAEP = AEP;
+}
+
+std::vector<double> walknetSeparateLeg::getPEP( void )
+{
+	return PEP;
+}
+
+void walknetSeparateLeg::setAEP( std::vector<double> & newAEP )
+{
+	if( newAEP[0] < maxAEP[0] && newAEP[1] < maxAEP[1] && newAEP[2] < maxAEP[2] )
+	{
+		AEP = newAEP;
+	}
+}
+
+
+void walknetSeparateLeg::extractSensor( const sensor* sensor, int leg, std::vector<double> & extractedSensors )
+{
+	//	Set the three first places for the angles for that specific leg.
+	for( int i = 0; i < 3; i++ )
+	{
+		extractedSensors[ i ] = sensor[ leg + i*6 ];
+	}
+
+	//	Set index 3, for the contact sensor
+	extractedSensors[3] = 0.0;
+	for( int i = 0; i < 6; i++ )
+	{
+		if( sensor[25 + 6*leg + i] == true ){
+			extractedSensors[3] = 1.0;
+		}
+	}
+	getGroundContact();
+}
+
 
 /*
 	RSunit:

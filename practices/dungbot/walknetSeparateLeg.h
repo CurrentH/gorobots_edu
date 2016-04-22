@@ -32,8 +32,8 @@ class walknetSeparateLeg
 
 	int swingState2; // TODO make get and set
 	int stanceState2; // TODO make get and set
-	enum swingState2 { TO_PEP_SWING, LIFT, LOWER, TO_MID_SWING, TO_AEP_SWING, SWING2_DONE, FINAL_SWING_POS };
-	enum stanceState2 { TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
+	enum swingState2 { START_SWING, TO_PEP_SWING, LIFT, LOWER, TO_MID_SWING, TO_AEP_SWING, FINAL_SWING_POS, SWING2_DONE };
+	enum stanceState2 { START_STANCE, TO_PEP_STANCE, TO_MID_STANCE, TO_AEP_STANCE, STANCE2_DONE };
 
 	public:
 	//	Public methods
@@ -69,11 +69,6 @@ class walknetSeparateLeg
 	std::vector<double> maxAEP;
 	std::vector<double> localSensorArray;
 	std::vector<bool> coordinationRules;
-
-	int swingState; // TODO make get and set
-	int stanceState; // TODO make get and set
-	enum swingState { SET_SWING_HEIGHT, SWING_COXA, RAISE_HEIGHT, SET_STANCE_HEIGHT, LOWER_HEIGHT, SWING_DONE };
-	enum stanceState { SWING_TO_PEP, GET_GC, STANCE_DONE };
 
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
