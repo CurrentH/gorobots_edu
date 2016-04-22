@@ -114,6 +114,20 @@ void walknetcontroller::getPhase( std::vector<bool> &phaseVector )
 	}
 }
 
+void walknetcontroller::coordinatingInfluences( const sensor* sensor )
+{
+	/**
+	 * 		Do the coordination influences here.
+	 * 		Figure out what the legs need to do, and send the
+	 * 		signals to the separate legs, including the correction of the AEP.
+	 */
+
+	coordinateRule1();
+	coordinateRule2();
+	coordinateRule3();
+	//coordinateRule4( sensor );
+}
+
 void walknetcontroller::coordinateRule1( void ){
 	for( int i = 0; i < 6; i++ )
 	{
@@ -299,6 +313,7 @@ void walknetcontroller::coordinateRule3( void ){
 }
 
 */
+
 void walknetcontroller::coordinateRule4( const sensor* sensor )
 {
 	for( int i = 0; i < 6; i++ )
@@ -325,20 +340,6 @@ void walknetcontroller::coordinateRule4( const sensor* sensor )
 				break;
 		}
 	}
-}
-
-void walknetcontroller::coordinatingInfluences( const sensor* sensor )
-{
-	/**
-	 * 		Do the coordination influences here.
-	 * 		Figure out what the legs need to do, and send the
-	 * 		signals to the separate legs, including the correction of the AEP.
-	 */
-
-	coordinateRule1();
-	coordinateRule2();
-	coordinateRule3();
-	//coordinateRule4( sensor );
 }
 
 double walknetcontroller::calculateRule4Distance( std::vector<double> & currentPos, std::vector<double> & targetPos )

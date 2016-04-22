@@ -43,7 +43,7 @@
 
 namespace lpzrobots
 {
-	class DungBot : public OdeRobot, public Inspectable
+	class DungBotSimple : public OdeRobot, public Inspectable
 	{
 		DungBotConf conf;
 		public:
@@ -72,7 +72,7 @@ namespace lpzrobots
 		//	Public methods
 			static DungBotConf getDefaultConf( void );
 
-			DungBot( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
+			DungBotSimple( const OdeHandle& odeHandle, const OsgHandle& osgHandle,
 						const DungBotConf &conf = getDefaultConf(),
 						const std::string& name = "DungBot" );
 
@@ -81,7 +81,7 @@ namespace lpzrobots
 			virtual void doInternalStuff( GlobalData& globalData );
 			virtual void update( void );
 			virtual void sense( GlobalData& globalData );
-			virtual ~DungBot();
+			virtual ~DungBotSimple();
 
 			virtual void setMotorsIntern( const double* motors, int motornumber );
 			virtual int getSensorsIntern( sensor* sensors, int sensornumber );

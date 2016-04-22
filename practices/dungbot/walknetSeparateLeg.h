@@ -63,6 +63,7 @@ class walknetSeparateLeg
 	//	Private attributes
 	int legNum;
 	bool phase = false;
+
 	std::vector<double> PEP;
 	std::vector<double> MID;
 	std::vector<double> AEP;
@@ -81,6 +82,8 @@ class walknetSeparateLeg
 	private:
 	//	Private methods
 	void selectorNet( const sensor* sensor, std::vector<double> & );
+	void stanceNetSimple( const sensor* sensor, std::vector<double> & );
+	void swingNetSimple( const sensor* sensor, std::vector<double> & );
 	void stanceNet1( const sensor* sensor, std::vector<double> & );
 	void swingNet1( const sensor* sensor, std::vector<double> & );
 	void swingNet2( const sensor* sensor, std::vector<double> & );
