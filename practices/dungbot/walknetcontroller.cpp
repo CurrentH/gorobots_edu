@@ -246,16 +246,6 @@ void walknetcontroller::coordinateRule4( const sensor* sensor )
 	}
 }
 
-double walknetcontroller::calculateRule4Distance( std::vector<double> & currentPos, std::vector<double> & targetPos )
-{
-	double coxaError = targetPos[0] - currentPos[0];
-	double femurError = targetPos[1] - currentPos[1];
-	double tibiaError = targetPos[2] - currentPos[2];
-
-	return sqrt( pow(coxaError,2) + pow(femurError,2) + pow(tibiaError,2) );
-}
-
-
 void walknetcontroller::coordinatingInfluences( const sensor* sensor )
 {
 	/**
@@ -267,6 +257,15 @@ void walknetcontroller::coordinatingInfluences( const sensor* sensor )
 	coordinateRule1();
 	coordinateRule2();
 	coordinateRule3();
-	coordinateRule4( sensor );
+	//coordinateRule4( sensor );
 
+}
+
+double walknetcontroller::calculateRule4Distance( std::vector<double> & currentPos, std::vector<double> & targetPos )
+{
+	double coxaError = targetPos[0] - currentPos[0];
+	double femurError = targetPos[1] - currentPos[1];
+	double tibiaError = targetPos[2] - currentPos[2];
+
+	return sqrt( pow(coxaError,2) + pow(femurError,2) + pow(tibiaError,2) );
 }
