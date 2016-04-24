@@ -15,7 +15,7 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	stanceState2 = STANCE2_DONE;
 
 	if(true){ // use the simple robot AEP, PEP and MID
-		PEP[0] = -0.4; PEP[1] = -0.6; PEP[2] = 0;
+		PEP[0] = -0.4; PEP[1] = -0.6; PEP[2] = 0.0;
 		AEP[0] = 0.6; AEP[1] = 0.0; AEP[2] = 0.0;
 		MID[0] = 0.0; MID[1] = 0.0; MID[2] = 0.0;
 	} else {
@@ -82,33 +82,24 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	RSunit = RSunit + PEPunit - GCunit;	//	Logic for entering swingNet
 	PSunit = PSunit - PEPunit + GCunit; //  Logic for entering stanceNet
+	//PSunit = PSunit + (coordinationRules[0]) || coordinationRules[1] || coordinationRules[2]);
 
 	//if(legNum == 5)
 	//cout << "  == " << PSunit;
 
-	//PSunit = PSunit + (coordinationRules[0]) || coordinationRules[1] || coordinationRules[2]);
-
 	if( RSunit > 1 ){ RSunit = 1; } else if( RSunit < 0 ){ RSunit = 0; }
 	if( PSunit > 1 ){ PSunit = 1; } else if( PSunit < 0 ){ PSunit = 0; }
 
-	if(legNum == 5){
+	/*if(legNum == 5){
 		cout << "PS/stance: " << PSunit << endl;
 		cout << "RS/swing:  " << RSunit << endl;
-	}
-
-	/*if( swingState2 == SWING2_DONE ){
-		startSwing = true; startStance = false; phase = true;
-	}
-	else if( stanceState2 == STANCE2_DONE ){
-		startSwing = false; startStance = true; phase = false;
 	}*/
 
 	if( RSunit ){
-		startSwing = true; startStance = false;
+		startSwing = true; startStance = false; phase = true;
 		swingNetSimple( sensor, viaAngle );
 	}else if( PSunit ){
-		startSwing = false; startStance = true;
-		//cout << "StanceState: " << stanceState2 << endl;
+		startSwing = false; startStance = true; phase = false;
 		stanceNetSimple( sensor, viaAngle );
 	}
 }
@@ -424,7 +415,7 @@ void walknetSeparateLeg::stanceNetSimple(const sensor* sensor, std::vector<doubl
 			break;
 
 		default: cout << "stanceState Error!" << endl;
-			cout << "state is: " << stanceState2 << endl;
+			//cout << "state is: " << stanceState2 << endl;
 			break;
 	}
 }
