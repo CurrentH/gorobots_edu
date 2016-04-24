@@ -66,36 +66,50 @@ walknetSeparateLeg::~walknetSeparateLeg(void) {
 void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
-	 //selectorNet( sensor, viaAngle );
+	 selectorNet( sensor, viaAngle );
 
-	 swingNetSimple(sensor,viaAngle);
-	 stanceNetSimple(sensor,viaAngle);
+	 //swingNetSimple(sensor,viaAngle);
+	 //stanceNetSimple(sensor,viaAngle);
 }
 
 void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle )
 {
-	GCunit = getGroundContact();	//	Check if there is Ground Contact
-	PEPunit = atPosition( PEP , 0.01);	//	Check if the leg is at the PEP.
+	GCunit = getGroundContact();			//	Check if there is Ground Contact
+	PEPunit = atAngle( PEP[0] , 0, 0.01);	//	Check if the leg is at the PEP.
 
-	RSunit = RSunit + PEPunit - GCunit;	//	Do the logic that tells the leg if it should move.
-	PSunit = PSunit - PEPunit + GCunit;// + (coordinationRules[0]);// || coordinationRules[1] || coordinationRules[2]);
+	//if(legNum == 5)
+	//cout << "RS: " << PSunit << "=" << PSunit << "-" << PEPunit << "+" << GCunit;
 
-	if( RSunit > 1 ){ RSunit = 1; }else if( RSunit < 0 ){ RSunit = 0; }
-	if( PSunit > 1 ){ PSunit = 1; }else if( PSunit < 0 ){ PSunit = 0; }
+	RSunit = RSunit + PEPunit - GCunit;	//	Logic for entering swingNet
+	PSunit = PSunit - PEPunit + GCunit; //  Logic for entering stanceNet
 
-	if( swingState2 == START_SWING ){
+	//if(legNum == 5)
+	//cout << "  == " << PSunit;
+
+	//PSunit = PSunit + (coordinationRules[0]) || coordinationRules[1] || coordinationRules[2]);
+
+	if( RSunit > 1 ){ RSunit = 1; } else if( RSunit < 0 ){ RSunit = 0; }
+	if( PSunit > 1 ){ PSunit = 1; } else if( PSunit < 0 ){ PSunit = 0; }
+
+	if(legNum == 5){
+		cout << "PS/stance: " << PSunit << endl;
+		cout << "RS/swing:  " << RSunit << endl;
+	}
+
+	/*if( swingState2 == SWING2_DONE ){
 		startSwing = true; startStance = false; phase = true;
 	}
-	else if( stanceState2 == START_STANCE ){
+	else if( stanceState2 == STANCE2_DONE ){
 		startSwing = false; startStance = true; phase = false;
-	}
+	}*/
 
-	if( RSunit || startSwing){
-		//stanceNet1( sensor, viaAngle );
-		swingNet2( sensor, viaAngle );
-	}else if( PSunit || startStance ){
-		//swingNet3( sensor, viaAngle );
-		stanceNet1( sensor, viaAngle );
+	if( RSunit ){
+		startSwing = true; startStance = false;
+		swingNetSimple( sensor, viaAngle );
+	}else if( PSunit ){
+		startSwing = false; startStance = true;
+		//cout << "StanceState: " << stanceState2 << endl;
+		stanceNetSimple( sensor, viaAngle );
 	}
 }
 
@@ -165,7 +179,6 @@ void walknetSeparateLeg::swingNet1(const sensor* sensor, std::vector<double> &vi
 				swingState2 = TO_MID_SWING;
 			}
 			break;
-
 		default: cout << "swingState Error!" << endl;
 			break;
 	}
@@ -384,6 +397,7 @@ void walknetSeparateLeg::swingNet4(const sensor* sensor, std::vector<double> &vi
 }
 
 void walknetSeparateLeg::stanceNetSimple(const sensor* sensor, std::vector<double>& viaAngle) {
+
 	if(startStance == false){
 		stanceState2 = STANCE2_DONE;
 	}
@@ -409,7 +423,8 @@ void walknetSeparateLeg::stanceNetSimple(const sensor* sensor, std::vector<doubl
 			}
 			break;
 
-		default: cout << "swingState Error!" << endl;
+		default: cout << "stanceState Error!" << endl;
+			cout << "state is: " << stanceState2 << endl;
 			break;
 	}
 }
@@ -464,6 +479,7 @@ void walknetSeparateLeg::swingNetSimple(const sensor* sensor, std::vector<double
 					break;
 
 				default: cout << "swingState Error!" << endl;
+					cout << "state is: " << swingState2 << endl;
 					break;
 			}
 }
