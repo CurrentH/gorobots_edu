@@ -198,12 +198,14 @@ void walknetcontroller::coordinateRule3( void ){
 				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
 				{
 					separateLegs[i+3].stanceState2 = separateLegs[i+3].START_STANCE;
+					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			case 5:
 				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
 				{
 					separateLegs[i-3].stanceState2 = separateLegs[i-3].START_STANCE;
+					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			case 0:
@@ -212,14 +214,16 @@ void walknetcontroller::coordinateRule3( void ){
 				{
 					separateLegs[i+1].stanceState2 = separateLegs[i+1].START_STANCE;
 					separateLegs[i+3].stanceState2 = separateLegs[i+3].START_STANCE;
+					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			case 3:
 			case 4:
 				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
 				{
-					separateLegs[i-1].stanceState2 = separateLegs[i-1].START_STANCE;
+					separateLegs[i+1].stanceState2 = separateLegs[i+1].START_STANCE;
 					separateLegs[i-3].stanceState2 = separateLegs[i-3].START_STANCE;
+					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			default:
