@@ -74,10 +74,10 @@ class walknetSeparateLeg
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
 
-	bool RSunit 	= false;	//	Return Stroke unit (swing movement)
-	bool PSunit		= false;	//	Power Stroke unit (stance movement)
-	bool GCunit 	= false;	//	Ground Contact
-	bool PEPunit 	= false;	//	Boolean value if the leg is in the PEP position.
+	int RSunit 	= 0;	//	Return Stroke unit (swing movement)
+	int PSunit	= 0;	//	Power Stroke unit (stance movement)
+	int GCunit 	= 0;	//	Ground Contact
+	int PEPunit = 0;	//	Value if the leg is in the PEP position.
 
 	private:
 	//	Private methods
