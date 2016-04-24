@@ -74,6 +74,7 @@ class walknetSeparateLeg
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
 
+
 	int RSunit 	= 0;	//	Return Stroke unit (swing movement)
 	int PSunit	= 0;	//	Power Stroke unit (stance movement)
 	int GCunit 	= 0;	//	Ground Contact
