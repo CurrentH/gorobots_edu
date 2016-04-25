@@ -132,7 +132,7 @@ void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVecto
 void DungBotEmptyController::standsimple( std::vector<std::vector<double>> &angleVector )
 {
 	double coxa_pos[3] 	= {0.6, -0.4, 0.6}; // Front, Middle, Rear
-	double femur_pos[3]	= {-0.6, -0.3, -0.6};
+	double femur_pos[3]	= {-0.6, -0.3, -0.3};
 	double tibia_pos[3]	= {0.0, 0.0, 0.0};
 
 	for( int i = 0; i < 6; i++ )
@@ -208,9 +208,9 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 //	Print the phase of each leg
     for( int i = 0; i < 6; i++ )
     {
-    	std::cout << legPhase[i] << " ";
+    	//std::cout << legPhase[i] << " ";
     }
-    std::cout << std::endl;
+   // std::cout << std::endl;
 
 	if( writeOutput )
 	{
