@@ -157,31 +157,31 @@ void walknetcontroller::coordinateRule2( void ){
 	{
 		switch(i){
 			case 0:
-				if( separateLegs[i].swingState2 == separateLegs[i].START_SWING )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
 				{
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].START_STANCE;
+					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
 				}
 				break;
 			case 3:
-				if( separateLegs[i].swingState2 == separateLegs[i].START_SWING )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
 				{
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].START_STANCE;
+					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
 				}
 				break;
 			case 1:
 			case 2:
-				if( separateLegs[i].swingState2 == separateLegs[i].START_SWING )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
 				{
-					separateLegs[i-1].stanceState2 = separateLegs[i-1].START_STANCE;
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].START_STANCE;
+					separateLegs[i-1].stanceState2 = separateLegs[i-1].STANCE_START;
+					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
 				}
 				break;
 			case 4:
 			case 5:
-				if( separateLegs[i].swingState2 == separateLegs[i].START_SWING )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
 				{
-					separateLegs[i-1].stanceState2 = separateLegs[i-1].START_STANCE;
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].START_STANCE;
+					separateLegs[i-1].stanceState2 = separateLegs[i-1].STANCE_START;
+					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
 				}
 				break;
 			default:
@@ -195,35 +195,35 @@ void walknetcontroller::coordinateRule3( void ){
 	for( int i = 0; i < 6; i++ ){
 		switch(i){
 			case 2:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
 				{
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].START_STANCE;
-					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
+					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
+					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			case 5:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
 				{
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].START_STANCE;
-					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
+					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
+					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			case 0:
 			case 1:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
 				{
-					separateLegs[i+1].stanceState2 = separateLegs[i+1].START_STANCE;
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].START_STANCE;
-					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
+					separateLegs[i+1].stanceState2 = separateLegs[i+1].STANCE_START;
+					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
+					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			case 3:
 			case 4:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING2_DONE )
+				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
 				{
-					separateLegs[i+1].stanceState2 = separateLegs[i+1].START_STANCE;
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].START_STANCE;
-					separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
+					separateLegs[i+1].stanceState2 = separateLegs[i+1].STANCE_START;
+					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
+					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
 				}
 				break;
 			default:
