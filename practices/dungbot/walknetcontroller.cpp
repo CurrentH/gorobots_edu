@@ -129,194 +129,154 @@ void walknetcontroller::coordinatingInfluences( const sensor* sensor )
 }
 
 void walknetcontroller::coordinateRule1( void ){
-	for( int i = 0; i < 6; i++ )
+
+	// Suppress lift-off in leg 0
+	if(separateLegs[1].startSwing == true && separateLegs[1].supress_swing == false)
 	{
-		switch(i){
-			case 0:
-			case 1:
-			case 3:
-			case 4:
-				if( separateLegs[i+1].getPhase() == false ){
-					separateLegs[i].setRule(0,true);
-				}else{
-					separateLegs[i].setRule(0,false);
-				}
-				break;
-			case 2:
-			case 5:
-				break;
-			default:
-				std::cout << "Problem in walknet controller rule 1 for leg:" << i << std::endl;
-				break;
-		};
-	}
+		separateLegs[0].supress_swing = true;
+		//std::cout << "suppressed 0" << std::endl;
+	}else{
+		separateLegs[0].supress_swing = false;
+	};
+
+	// Suppress lift-off in leg 3
+	if(separateLegs[4].startSwing == true && separateLegs[4].supress_swing == false)
+	{
+		separateLegs[3].supress_swing = true;
+		//std::cout << "suppressed 3" << std::endl;
+	}else{
+		separateLegs[3].supress_swing = false;
+	};
+
+	// Suppress lift-off in leg 1
+	if(separateLegs[2].startSwing == true && separateLegs[2].supress_swing == false)
+	{
+		separateLegs[1].supress_swing = true;
+		//std::cout << "suppressed 1" << std::endl;
+	}else{
+		separateLegs[1].supress_swing = false;
+	};
+
+	// Suppress lift-off in leg 4
+	if(separateLegs[5].startSwing == true && separateLegs[5].supress_swing == false)
+	{
+		separateLegs[4].supress_swing = true;
+		//std::cout << "suppressed 4" << std::endl;
+	}else{
+		separateLegs[4].supress_swing = false;
+	};
+
 }
 
 void walknetcontroller::coordinateRule2( void ){
-	for( int i = 0; i < 6; i++ )
+
+	// Upon touch-down of a leg, it facilitates lift-off of the 3 leg
+	if(separateLegs[0].touch_down == true)
 	{
-		switch(i){
-			case 0:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
-				{
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
-				}
-				break;
-			case 3:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
-				{
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
-				}
-				break;
-			case 1:
-			case 2:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
-				{
-					separateLegs[i-1].stanceState2 = separateLegs[i-1].STANCE_START;
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
-				}
-				break;
-			case 4:
-			case 5:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_START )
-				{
-					separateLegs[i-1].stanceState2 = separateLegs[i-1].STANCE_START;
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
-				}
-				break;
-			default:
-				std::cout << "Problem in walknet controller rule 2 for leg:" << i << std::endl;
-				break;
-		};
+		separateLegs[0].touch_down = false;
+		separateLegs[3].startSwing = true;
+		//std::cout << "facilitate swing of 3" << std::endl;
 	}
+
+	// Upon touch-down of a leg, it facilitates lift-off of the 0 leg
+	if(separateLegs[3].touch_down == true)
+	{
+		separateLegs[3].touch_down = false;
+		separateLegs[0].startSwing = true;
+		//std::cout << "facilitate swing of 0" << std::endl;
+	};
+
+	// Upon touch-down of a leg, it facilitates lift-off of the 0 and 4 leg
+	if(separateLegs[1].touch_down == true)
+	{
+		separateLegs[1].touch_down = false;
+		separateLegs[0].startSwing = true;
+		separateLegs[4].startSwing = true;
+		//std::cout << "facilitate swing of 0 & 4" << std::endl;
+	};
+
+	// Upon touch-down of a leg, it facilitates lift-off of the 3 and 1 leg
+	if(separateLegs[4].touch_down == true)
+	{
+		separateLegs[4].touch_down = false;
+		separateLegs[3].startSwing = true;
+		separateLegs[1].startSwing = true;
+		//std::cout << "facilitate swing of 3 & 1" << std::endl;
+	};
+
+	// Upon touch-down of a leg, it facilitates lift-off of the 1 and 5 leg
+	if(separateLegs[2].touch_down == true)
+	{
+		separateLegs[2].touch_down = false;
+		separateLegs[1].startSwing = true;
+		separateLegs[5].startSwing = true;
+		//std::cout << "facilitate swing of 1 & 5" << std::endl;
+	};
+
+	// Upon touch-down of a leg, it facilitates lift-off of the 4 and 2 leg
+	if(separateLegs[5].touch_down == true)
+	{
+		separateLegs[5].touch_down = false;
+		separateLegs[2].startSwing = true;
+		separateLegs[4].startSwing = true;
+		//std::cout << "facilitate swing of 2 & 4" << std::endl;
+	};
 }
+
 
 void walknetcontroller::coordinateRule3( void ){
-	for( int i = 0; i < 6; i++ ){
-		switch(i){
-			case 2:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
-				{
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
-					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
-				}
-				break;
-			case 5:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
-				{
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
-					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
-				}
-				break;
-			case 0:
-			case 1:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
-				{
-					separateLegs[i+1].stanceState2 = separateLegs[i+1].STANCE_START;
-					separateLegs[i+3].stanceState2 = separateLegs[i+3].STANCE_START;
-					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
-				}
-				break;
-			case 3:
-			case 4:
-				if( separateLegs[i].swingState2 == separateLegs[i].SWING_DONE )
-				{
-					separateLegs[i+1].stanceState2 = separateLegs[i+1].STANCE_START;
-					separateLegs[i-3].stanceState2 = separateLegs[i-3].STANCE_START;
-					//separateLegs[i].swingState2 = separateLegs[i].SWING_IDLE;
-				}
-				break;
-			default:
-				std::cout << "Problem in walknet controller rule 3 for leg:" << i << std::endl;
-				break;
-		};
-	}
+
+	// Close to PEP makes the 3 and 1 leg begin its swing
+	if( separateLegs[0].close_to_PEP == true ){
+		separateLegs[0].close_to_PEP = false;
+		if( separateLegs[1].supress_swing != false )
+			separateLegs[1].startSwing = true;
+		if( separateLegs[3].supress_swing != false )
+			separateLegs[3].startSwing = true;
+	};
+
+	// Close to PEP makes the 0 and 4 leg begin its swing
+	if( separateLegs[3].close_to_PEP == true ){
+		separateLegs[3].close_to_PEP = false;
+		if( separateLegs[0].supress_swing != false )
+			separateLegs[0].startSwing = true;
+		if( separateLegs[4].supress_swing != false )
+			separateLegs[4].startSwing = true;
+	};
+
+	// Close to PEP makes the 2 and 4 leg begin its swing
+	if( separateLegs[1].close_to_PEP == true ){
+		separateLegs[1].close_to_PEP = false;
+		if( separateLegs[2].supress_swing != false )
+			separateLegs[2].startSwing = true;
+		if( separateLegs[4].supress_swing != false )
+			separateLegs[4].startSwing = true;
+	};
+
+	// Close to PEP makes the 5 and 1 leg begin its swing
+	if( separateLegs[4].close_to_PEP == true ){
+		separateLegs[4].close_to_PEP = false;
+		if( separateLegs[1].supress_swing != false )
+			separateLegs[1].startSwing = true;
+		if( separateLegs[5].supress_swing != false )
+			separateLegs[5].startSwing = true;
+	};
+
+	// Close to PEP makes the 5 leg begin its swing
+	if( separateLegs[2].close_to_PEP == true ){
+		separateLegs[2].close_to_PEP = false;
+		if( separateLegs[5].supress_swing != false )
+			separateLegs[5].startSwing = true;
+	};
+
+	// Close to PEP makes the 2 leg begin its swing
+	if( separateLegs[5].close_to_PEP == true ){
+		separateLegs[5].close_to_PEP = false;
+		if( separateLegs[2].supress_swing != false )
+			separateLegs[2].startSwing = true;
+	};
 }
 
-/*
-void walknetcontroller::coordinateRule2( void ){
-	for( int i = 0; i < 6; i++ )
-	{
-		switch(i){
-			case 0:
-				if( separateLegs[i+3].getPhase() == false ){
-					separateLegs[i].setRule(1,true);
-				}else{
-					separateLegs[i].setRule(1,false);
-				}
-				break;
-			case 1:
-			case 2:
-				if( separateLegs[i-1].getPhase() == false || separateLegs[i+3].getPhase() == false ){
-					separateLegs[i].setRule(1,true);
-				}else{
-					separateLegs[i].setRule(1,false);
-				}
-				break;
-			case 3:
-				if( separateLegs[i-3].getPhase() == false ){
-					separateLegs[i].setRule(1,true);
-				}else{
-					separateLegs[i].setRule(1,false);
-				}
-				break;
-			case 4:
-			case 5:
-				if( separateLegs[i-1].getPhase() == false || separateLegs[i-3].getPhase() == false ){
-					separateLegs[i].setRule(1,true);
-				}else{
-					separateLegs[i].setRule(1,false);
-				}
-				break;
-			default:
-				std::cout << "Problem in walknet controller rule 3 for leg:" << i << std::endl;
-				break;
-		}
-	}
-}
-
-void walknetcontroller::coordinateRule3( void ){
-	for( int i = 0; i < 6; i++ )
-	{
-		switch(i){
-			case 0:
-			case 1:
-				if( separateLegs[i+1].getPhase() == false || separateLegs[i+3].getPhase() == false ){
-					separateLegs[i].setRule(2,true);
-				}else{
-					separateLegs[i].setRule(2,false);
-				}
-				break;
-			case 2:
-				if( separateLegs[i+3].getPhase() == false ){
-					separateLegs[i].setRule(2,true);
-				}else{
-					separateLegs[i].setRule(2,false);
-				}
-				break;
-			case 3:
-			case 4:
-				if( separateLegs[i+1].getPhase() == false || separateLegs[i-3].getPhase() == false ){
-					separateLegs[i].setRule(2,true);
-				}else{
-					separateLegs[i].setRule(2,false);
-				}
-				break;
-			case 5:
-				if( separateLegs[i-3].getPhase() == false ){
-					separateLegs[i].setRule(2,true);
-				}else{
-					separateLegs[i].setRule(2,false);
-				}
-				break;
-			default:
-				std::cout << "Problem in walknet controller rule 2 for leg:" << i << std::endl;
-				break;
-		}
-	}
-}
-
-*/
 
 void walknetcontroller::coordinateRule4( const sensor* sensor )
 {
@@ -327,20 +287,11 @@ void walknetcontroller::coordinateRule4( const sensor* sensor )
 			case 1:
 			case 3:
 			case 4:
-				separateLegs[i].extractSensor( sensor, i, legPos );
-				separateLegs[i+1].extractSensor( sensor, i+1, nextLegPos );
-				separateLegs[i+1].getAEP( tmpAEP );
-				if( calculateRule4Distance( nextLegPos, tmpAEP ) > 0.01 )
-				{
-					tmpAEP[0] -=0.02;
-					separateLegs[i].setAEP( tmpAEP );
-				}
-				break;
 			case 2:
 			case 5:
 				break;
 			default:
-				std::cout << "Problem in walknet controller rule 4 for leg:" << i << std::endl;
+				std::cout << "Rule 4 error in leg: " << i << std::endl;
 				break;
 		}
 	}

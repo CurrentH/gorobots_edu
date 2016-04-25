@@ -29,12 +29,16 @@ class walknetSeparateLeg
 	//	Public attributes
 	bool startSwing = false;
 	bool startStance = false;
+	bool supress_swing = false;
+	bool pre_touch_down = false;
+	bool touch_down = false;
+	bool close_to_PEP = false;
+
 
 	int swingState2; // TODO make get and set
 	int stanceState2; // TODO make get and set
-
-	enum swingState2 { SWING_START, SWING_TO_PEP, SWING_LIFT, SWING_LOWER, SWING_TO_MID, SWING_TO_AEP, SWING_FINAL_POS, SWING_DONE, SWING_IDLE };
-	enum stanceState2 { STANCE_START, STANCE_TO_PEP, STANCE_LOWER, STANCE_TO_MID, STANCE_TO_AEP, STANCE_DONE, STANCE_IDLE};
+	enum swingState2 { START_SWING, TO_PEP_SWING, LIFT, LOWER, TO_MID_SWING, TO_AEP_SWING, FINAL_SWING_POS, SWING2_DONE };
+	enum stanceState2 { STANCE2_DONE, TO_PEP_STANCE, START_STANCE, TO_MID_STANCE, TO_AEP_STANCE };
 
 	public:
 	//	Public methods
@@ -75,11 +79,16 @@ class walknetSeparateLeg
 	bool STANCE_REACHED	= false;
 	bool SWING_REACHED	= false;
 
+	//bool RSunit 	= false;	//	Return Stroke unit (swing movement)
+	//bool PSunit	= false;	//	Power Stroke unit (stance movement)
+	//bool GCunit 	= false;	//	Ground Contact
+	//bool PEPunit 	= false;	//	Boolean value if the leg is in the PEP position.
 
 	int RSunit 	= 0;	//	Return Stroke unit (swing movement)
 	int PSunit	= 0;	//	Power Stroke unit (stance movement)
 	int GCunit 	= 0;	//	Ground Contact
-	int PEPunit = 0;	//	Value if the leg is in the PEP position.
+	int PEPunit = 0;	//	Boolean value if the leg is in the PEP position.
+
 
 	private:
 	//	Private methods
