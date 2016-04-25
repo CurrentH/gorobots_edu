@@ -96,6 +96,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 	// Used for rule 2
 	if (PSunit == 1 && pre_touch_down == true) {
 		pre_touch_down = false;
+		startSwing = false;
 		touch_down = true;
 	}
 
