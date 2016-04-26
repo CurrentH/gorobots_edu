@@ -161,14 +161,6 @@ void walknetcontroller::coordinateRule2( void ){
 					//std::cout << "facilitate swing of "<< i+3 << std::endl;
 				}
 				break;
-			case 3:
-				// Upon touch-down of a leg, it facilitates lift-off of the 0 leg
-				if(separateLegs[i].touch_down == true){
-					separateLegs[i].touch_down = false;
-					separateLegs[i-3].startSwing = true;
-					//std::cout << "facilitate swing of "<< i-3 << std::endl;
-				}
-				break;
 			case 1:
 				// Upon touch-down of a leg, it facilitates lift-off of the 0 and 4 leg
 			case 2:
@@ -178,6 +170,14 @@ void walknetcontroller::coordinateRule2( void ){
 					separateLegs[i-1].startSwing = true;
 					separateLegs[i+3].startSwing = true;
 					//std::cout << "facilitate swing of "<< i-1 << "&" << i+3 << std::endl;
+				}
+				break;
+			case 3:
+				// Upon touch-down of a leg, it facilitates lift-off of the 0 leg
+				if(separateLegs[i].touch_down == true){
+					separateLegs[i].touch_down = false;
+					separateLegs[i-3].startSwing = true;
+					//std::cout << "facilitate swing of "<< i-3 << std::endl;
 				}
 				break;
 			case 4:
@@ -202,21 +202,6 @@ void walknetcontroller::coordinateRule3( void ){
 	for( int i = 0; i<6; i++)
 	{
 		switch (i) {
-			case 2:
-				if( separateLegs[i].close_to_PEP == true ){
-					separateLegs[i].close_to_PEP = false;
-					if( separateLegs[i+3].supress_swing != false ){
-						separateLegs[i+3].startSwing = true;
-					}
-				}
-				break;
-			case 5:
-				if( separateLegs[i].close_to_PEP == true ){
-					separateLegs[i].close_to_PEP = false;
-					if( separateLegs[i-3].supress_swing != false )
-						separateLegs[i-3].startSwing = true;
-				}
-				break;
 			case 0:
 			case 1:
 				if( separateLegs[i].close_to_PEP == true ){
@@ -227,6 +212,14 @@ void walknetcontroller::coordinateRule3( void ){
 						separateLegs[i+3].startSwing = true;
 				};
 				break;
+			case 2:
+				if( separateLegs[i].close_to_PEP == true ){
+					separateLegs[i].close_to_PEP = false;
+					if( separateLegs[i+3].supress_swing != false ){
+						separateLegs[i+3].startSwing = true;
+					}
+				}
+				break;
 			case 3:
 			case 4:
 				if( separateLegs[i].close_to_PEP == true ){
@@ -236,6 +229,13 @@ void walknetcontroller::coordinateRule3( void ){
 					if( separateLegs[i-3].supress_swing != false )
 						separateLegs[i-3].startSwing = true;
 				};
+				break;
+			case 5:
+				if( separateLegs[i].close_to_PEP == true ){
+					separateLegs[i].close_to_PEP = false;
+					if( separateLegs[i-3].supress_swing != false )
+						separateLegs[i-3].startSwing = true;
+				}
 				break;
 			default:
 				break;
