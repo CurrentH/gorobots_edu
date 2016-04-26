@@ -76,6 +76,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 {
 	GCunit = getGroundContact();			//	Check if there is Ground Contact
 	PEPunit = atAngle( PEP[0] , 0, 0.01);	//	Check if the leg is at the PEP.
+	//PEPunit = PEPunit + !supress_swing +
 
 	//if(legNum == 4)
 	//	cout << "PS: " << PSunit << "=" << PSunit << "-" << PEPunit << "+" << GCunit;

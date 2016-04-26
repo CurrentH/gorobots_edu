@@ -67,7 +67,7 @@ namespace lpzrobots
 		global.odeConfig.setParam( "gravity", -9.8 );
 
 	    // add playground
-		addPlayground(odeHandle,osgHandle,global);
+		//addPlayground(odeHandle,osgHandle,global);
 
 		// Configure simulation
 		simulation_time_seconds = 200;
