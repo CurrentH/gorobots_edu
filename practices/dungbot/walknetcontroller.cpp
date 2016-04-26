@@ -136,7 +136,7 @@ void walknetcontroller::coordinateRule1( void ){
 			case 2:
 			case 4:
 			case 5:
-				if( separateLegs[i].startSwing == true && separateLegs[1].supress_swing == false ){
+				if( separateLegs[i].startSwing == true && separateLegs[i].supress_swing == false ){
 					separateLegs[i-1].supress_swing = true;
 					//std::cout << "suppressed" << i-1 << std::endl;
 				}else{
