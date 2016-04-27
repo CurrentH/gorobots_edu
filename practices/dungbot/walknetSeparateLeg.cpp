@@ -15,48 +15,30 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	stanceState2 = STANCE2_DONE;
 
 	if(true){ // use the simple robot AEP, PEP and MID
-		PEP[0] = -0.4; PEP[1] = -0.6; PEP[2] = 0.0;
-		AEP[0] = 0.6; AEP[1] = 0.0; AEP[2] = 0.0;
-		MID[0] = 0.0; MID[1] = 0.0; MID[2] = 0.0;
-	} else {
-		switch (newlegNum)
-		{
-			case 0: case 3: PEP[0] = -0.5; PEP[1] = 0.9; PEP[2] = -0.4; // ok (but needs a bit visual tweak)
-				break;
-			case 1: case 4: PEP[0] = -0.9; PEP[1] = 0.15; PEP[2] = -0.55;
-				break;
-			case 2: case 5: PEP[0] = -0.75; PEP[1] = 0.0; PEP[2] = -0.55;
-				break;
-			default: cout << "LEG UNKNOWN";
-				break;
-		}
-
-		switch( newlegNum )
-		{
-			case 0: case 3: MID[0] =  0.3; MID[1] = 1.0; MID[2] = -0.5; // ok (but needs a bit visual tweak)
-				break;
-			case 1: case 4: MID[0] = -0.5; MID[1] = 0.8; MID[2] = -0.6;
-				break;
-			case 2: case 5: MID[0] = -0.5; MID[1] = 1.0; MID[2] = -0.7;
-				break;
-			default: cout << "LEG UNKNOWN";
-				break;
-		}
-
-		switch( newlegNum )
-		{
-			case 0: case 3: AEP[0] =  0.4; AEP[1] = 0.0; AEP[2] = -0.6; // ok (but needs a bit visual tweak)
-							maxAEP = AEP;
-				break;
-			case 1: case 4: AEP[0] = 0.1; AEP[1] = 0.6; AEP[2] = -0.55;
-							maxAEP = AEP;
-				break;
-			case 2: case 5: AEP[0] = -0.2; AEP[1] = 0.9; AEP[2] = -0.7;
-							maxAEP = AEP;
-				break;
-			default: cout << "LEG UNKNOWN";
-				break;
-		}
+		switch (newlegNum){
+			case 0: case 3: PEP[0] = -0.4; 	PEP[1] = -0.6; 	PEP[2] = 0.0;
+							AEP[0] = 0.4; 	AEP[1] = -0.2; 	AEP[2] = 0.0; break;
+			case 1: case 4: PEP[0] = -0.4; 	PEP[1] = -0.6;	PEP[2] = 0.0;
+							AEP[0] = 0.7; 	AEP[1] = -0.2; 	AEP[2] = 0.0; break;
+			case 2: case 5: PEP[0] = -0.4; 	PEP[1] = -0.6; 	PEP[2] = 0.0;
+							AEP[0] = 0.7; 	AEP[1] = -0.2; 	AEP[2] = 0.0; break;
+			default: cout << "LEG UNKNOWN"; break;}
+	}
+	else{
+		switch (newlegNum){
+			case 0: case 3:
+				PEP[0] = -0.5; 	PEP[1] = 0.90;	PEP[2] = -0.40;
+				MID[0] =  0.3; 	MID[1] = 1.0;	MID[2] = -0.5;
+				AEP[0] =  0.4; 	AEP[1] = 0.0; 	AEP[2] = -0.6; break;
+			case 1: case 4:
+				PEP[0] = -0.9; 	PEP[1] = 0.15; 	PEP[2] = -0.55;
+				MID[0] = -0.5; 	MID[1] = 0.8; 	MID[2] = -0.6;
+				AEP[0] =  0.1; 	AEP[1] = 0.6; 	AEP[2] = -0.5; break;
+			case 2: case 5:
+				PEP[0] = -0.75; PEP[1] = 0.0; 	PEP[2] = -0.55;
+				MID[0] = -0.5; 	MID[1] = 1.0; 	MID[2] = -0.7;
+				AEP[0] = -0.2; 	AEP[1] = 0.9; 	AEP[2] = -0.7; break;
+			default: cout << "LEG UNKNOWN"; break;}
 	}
 }
 
@@ -76,14 +58,24 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 {
 	GCunit = getGroundContact();			//	Check if there is Ground Contact
 	PEPunit = atAngle( PEP[0] , 0, 0.01);	//	Check if the leg is at the PEP.
-	//PEPunit = PEPunit + !supress_swing +
+
+	PEPunit = PEPunit - rule1 + rule2 + rule3;
+
+	if( PEPunit > 1 ){ PEPunit = 1; } else if( PEPunit < 0 ){ PEPunit = 0; }
+
+	//if(legNum == 5)
+	//	cout << "Rule3: " << rule3 << endl;
+	//	cout << "Rule1: " << rule1 << " Rule2: " << rule2 << " PEPunit: " << PEPunit << endl;
+
+	if ( PEPunit && GCunit ) {
+		viaAngle[1] = localSensorArray[1] + 0.1;
+	}
 
 	//if(legNum == 4)
 	//	cout << "PS: " << PSunit << "=" << PSunit << "-" << PEPunit << "+" << GCunit;
 
 	RSunit = RSunit + PEPunit - GCunit;	//	Logic for entering swingNet
 	PSunit = PSunit - PEPunit + GCunit; //  Logic for entering stanceNet
-	//PSunit = PSunit + (coordinationRules[0]) || coordinationRules[1] || coordinationRules[2]);
 
 	//if(legNum == 4)
 	//	cout << " == " << PSunit;
@@ -101,25 +93,27 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		touch_down = true;
 	}
 
-	// Used for rule 3
-	if ( atAngle( PEP[0], 0, 0.1 ) && close_to_PEP == false){
-		close_to_PEP = true;
-	}else{
-		close_to_PEP = false;
-	}
-
-	if (legNum == 4) {
+	/*if (legNum == 4) {
 		cout << "startSwing:  " << startSwing << endl;
 		cout << "startStance: " << startStance << endl;
-	}
+	}*/
 
 
-	if( RSunit || startSwing == true ){
+	if( RSunit ){
 		startSwing = true; startStance = false; phase = true;
 		swingNetSimple( sensor, viaAngle );
-	}else if( PSunit || startStance == true ){
+	}else if( PSunit ){
 		startSwing = false; startStance = true; phase = false;
 		stanceNetSimple( sensor, viaAngle );
+
+		// Used for rule 3
+		if ( atPosition( PEP, 0.001 ) && close_to_PEP == false)
+		{
+			close_to_PEP = true;
+		}
+		else {
+			close_to_PEP = false;
+		}
 	}
 }
 
@@ -191,7 +185,7 @@ void walknetSeparateLeg::swingNetSimple(const sensor* sensor, std::vector<double
 				case LOWER:
 
 						if(!localSensorArray[3]){
-							viaAngle[1] = localSensorArray[1] - 0.2;
+							viaAngle[1] = localSensorArray[1] - 0.3;
 							pre_touch_down = true;
 						} else {
 							touch_down = true;

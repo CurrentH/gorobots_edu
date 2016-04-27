@@ -34,6 +34,7 @@ class walknetSeparateLeg
 	bool touch_down = false;
 	bool close_to_PEP = false;
 
+	int rule1 = 0, rule2 = 0, rule3 = 0, rule4 = 0;
 
 	int swingState2; // TODO make get and set
 	int stanceState2; // TODO make get and set
@@ -88,7 +89,6 @@ class walknetSeparateLeg
 	int PSunit	= 0;	//	Power Stroke unit (stance movement)
 	int GCunit 	= 0;	//	Ground Contact
 	int PEPunit = 0;	//	Boolean value if the leg is in the PEP position.
-
 
 	private:
 	//	Private methods
