@@ -14,7 +14,7 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	swingState2 = SWING2_DONE;
 	stanceState2 = STANCE2_DONE;
 
-	if(true){ // use the simple robot AEP, PEP and MID
+	if(false){ //TODO SIMPLE
 		switch (newlegNum){
 			case 0: case 3: PEP[0] = -0.4; 	PEP[1] = -0.6; 	PEP[2] = 0.0;
 							AEP[0] = 0.4; 	AEP[1] = -0.2; 	AEP[2] = 0.0; break;
@@ -101,10 +101,10 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	if( RSunit ){
 		startSwing = true; startStance = false; phase = true;
-		swingNetSimple( sensor, viaAngle );
+		swingNet3( sensor, viaAngle ); //TODO SIMPLE
 	}else if( PSunit ){
 		startSwing = false; startStance = true; phase = false;
-		stanceNetSimple( sensor, viaAngle );
+		stanceNet1( sensor, viaAngle ); //TODO SIMPLE
 
 		// Used for rule 3
 		if ( atPosition( PEP, 0.001 ) && close_to_PEP == false)

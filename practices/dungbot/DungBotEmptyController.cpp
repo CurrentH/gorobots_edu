@@ -51,7 +51,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
-		standsimple( angleVector );
+		stand( angleVector ); //TODO SIMPLE
 		moveRobot( motor, angleVector );
 		if( int(ticks_since_init)%100==0 )
 			std::cout << (600-ticks_since_init)/100 << std::endl;

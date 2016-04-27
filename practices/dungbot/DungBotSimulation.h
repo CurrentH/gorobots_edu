@@ -21,7 +21,7 @@
 #include <ode_robots/playground.h>
 #include <ode_robots/passivebox.h>
 
-#include "dungbotSimple.h"
+#include "dungbot.h"
 #include "DungBotEmptyController.h"
 
 namespace lpzrobots
@@ -42,7 +42,7 @@ namespace lpzrobots
 			int number_of_runs;
 			int trial_number;
 			OdeAgent* agent;
-			DungBotSimple* robot;
+			DungBot* robot;
 			DungBotEmptyController* controller;
 			lpzrobots::Joint* robotfixator;
 

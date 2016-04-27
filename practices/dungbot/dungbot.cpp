@@ -296,8 +296,7 @@ namespace lpzrobots
 								femurCenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
 			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
-			tibia->setTexture( "tebia.jpg" );
-			OsgHandle osgHandleTibia = osgHandle.changeColor(199,21,133,1);
+			OsgHandle osgHandleTibia = osgHandle.changeColor(247,0,255,1);
 			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandleTibia );
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;

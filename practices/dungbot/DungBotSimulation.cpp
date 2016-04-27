@@ -78,8 +78,8 @@ namespace lpzrobots
 	void DungBotSimulation::instantiateAgent( GlobalData& global )
 	{
 		// Instantiate robot
-		DungBotConf conf = DungBotSimple::getDefaultConf();
-		robot = new DungBotSimple( odeHandle, osgHandle, conf, "Dungbot_Robot" );
+		DungBotConf conf = DungBot::getDefaultConf();
+		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );
 		robot->place( Pos( 0.0, 0.0, 1 ) ); // CONTROLS THE HEIGHT
 
 		// Instantiate controller
