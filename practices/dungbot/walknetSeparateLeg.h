@@ -72,6 +72,7 @@ class walknetSeparateLeg
 
 	std::vector<double> PEP;
 	std::vector<double> MID;
+	std::vector<double> STM;
 	std::vector<double> AEP;
 	std::vector<double> maxAEP;
 	std::vector<double> localSensorArray;

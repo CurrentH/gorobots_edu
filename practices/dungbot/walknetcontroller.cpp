@@ -96,6 +96,7 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 
 }
 
+
 void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vector<double>> &angleVector  )
 {
 	coordinatingInfluences( sensor );
