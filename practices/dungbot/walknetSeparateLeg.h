@@ -36,10 +36,10 @@ class walknetSeparateLeg
 
 	int rule1 = 0, rule2 = 0, rule3 = 0, rule4 = 0;
 
-	int swingState2; // TODO make get and set
-	int stanceState2; // TODO make get and set
-	enum swingState2 { START_SWING, TO_PEP_SWING, LIFT, LOWER, TO_MID_SWING, TO_AEP_SWING, FINAL_SWING_POS, SWING2_DONE };
-	enum stanceState2 { STANCE2_DONE, TO_PEP_STANCE, START_STANCE, TO_MID_STANCE, TO_AEP_STANCE };
+	int swingState2;
+	int stanceState2;
+	enum swingState2 { LIFT, LOWER, TO_AEP_SWING, FINAL_SWING_POS, IDLE_SWING };
+	enum stanceState2 { IDLE_STANCE, TO_PEP_STANCE, TO_MID_STANCE };
 
 	public:
 	//	Public methods
@@ -97,7 +97,6 @@ class walknetSeparateLeg
 	void stanceNetSimple( const sensor* sensor, std::vector<double> & );
 	void swingNetSimple( const sensor* sensor, std::vector<double> & );
 	void stanceNet1( const sensor* sensor, std::vector<double> & );
-	void swingNet1( const sensor* sensor, std::vector<double> & );
 	void swingNet2( const sensor* sensor, std::vector<double> & );
 	void swingNet3( const sensor* sensor, std::vector<double> & );
 	void swingNet4( const sensor* sensor, std::vector<double> & );
