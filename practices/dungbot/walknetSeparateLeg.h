@@ -97,6 +97,7 @@ class walknetSeparateLeg
 	void stanceNetSimple( const sensor* sensor, std::vector<double> & );
 	void swingNetSimple( const sensor* sensor, std::vector<double> & );
 	void stanceNet1( const sensor* sensor, std::vector<double> & );
+	void stanceNet2( const sensor* sensor, std::vector<double> & );
 	void swingNet2( const sensor* sensor, std::vector<double> & );
 	void swingNet3( const sensor* sensor, std::vector<double> & );
 	void swingNet4( const sensor* sensor, std::vector<double> & );
