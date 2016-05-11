@@ -144,6 +144,7 @@ namespace lpzrobots
 
 			//	For tarsus contact
 			TarsusContactMap tarsusContactSensors;
+			std::vector<RelativePositionSensor> bodyPartSensors;
 
 		private:
 		//	Private methods

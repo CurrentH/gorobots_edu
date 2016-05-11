@@ -51,7 +51,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
-		stand( angleVector ); //TODO SIMPLE
+		standsimple( angleVector );
 		moveRobot( motor, angleVector );
 
 		if( int(ticks_since_init)%100==0 )
@@ -135,7 +135,7 @@ void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVecto
 void DungBotEmptyController::standsimple( std::vector<std::vector<double>> &angleVector )
 {
 	double coxa_pos[3] 	= {-0.4, -0.4, -0.4}; // Front, Middle, Rear
-	double femur_pos[3]	= {-0.6, -0.6, -0.6};
+	double femur_pos[3]	= {0.6, 0.6, 0.6};
 	double tibia_pos[3]	= {0.0, 0.0, 0.0};
 
 	for( int i = 0; i < 6; i++ )
@@ -174,7 +174,6 @@ void DungBotEmptyController::moveRobot( motor* motor, std::vector<std::vector<do
 			motor[i*6+j] = angleVector[j][i];
 		}
 	}
-
 }
 
 void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
@@ -252,15 +251,14 @@ void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
 		*/
 
 		//	Print position of Head, Thorax, and abdomen.
-//	Print position of Legs.
-for( int i = DungBotMotorSensor::RPS_Leg1Cx; i <= DungBotMotorSensor::RPS_Leg6Taz; i++ ){
-	outputFile << sensor[i] << ",";
-}
-for( int i = DungBotMotorSensor::RPS_REARx; i <= DungBotMotorSensor::RPS_HEADz; i++ ){
-	outputFile << sensor[i] << ",";
-}
-outputFile << std::endl;
-
+		//	Print position of Legs.
+		for( int i = DungBotMotorSensor::RPS_Leg1Cx; i <= DungBotMotorSensor::RPS_Leg6Taz; i++ ){
+			outputFile << sensor[i] << ",";
+		}
+		for( int i = DungBotMotorSensor::RPS_REARx; i <= DungBotMotorSensor::RPS_HEADz; i++ ){
+			outputFile << sensor[i] << ",";
+		}
+		outputFile << std::endl;
 	}
 	else
 	{
