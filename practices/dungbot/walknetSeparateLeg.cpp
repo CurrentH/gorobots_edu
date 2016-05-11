@@ -136,7 +136,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 
 	if( RSunit ){
 		startSwing = true; startStance = false; phase = true;
-		swingNet1( sensor, viaAngle ); //TODO SIMPLE
+		swingNet2( sensor, viaAngle ); //TODO SIMPLE
 	}else if( PEPunit && GCunit ) {
 		viaAngle[1] = localSensorArray[1] + 0.06; //TODO Edit?
 		viaAngle[2] = localSensorArray[2] - 0.03; //TODO Edit
@@ -294,11 +294,11 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 			break;
 		case 1: case 4: //MIDDLELEGS
 			coxaspeed = 0.15;
-			femurUp = 0.30; femurDown = 0.05;
-			tibiaUp = 0.30; tibiaDown = 0.12;
+			femurUp = 0.20; femurDown = 0.15;
+			tibiaUp = 0.20; tibiaDown = 0.15;
 			break;
 		case 2: case 5: //HINDLEGS
-			coxaspeed = 0.1;
+			coxaspeed = 0.08;
 			femurUp = 1.0; femurDown = 0.02;
 			tibiaUp = 1.0; tibiaDown = 0.08;
 			break;
