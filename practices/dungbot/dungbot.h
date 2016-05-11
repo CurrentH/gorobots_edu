@@ -23,6 +23,7 @@
 
 // include sensors
 #include <ode_robots/contactsensor.h>
+#include <ode_robots/relativepositionsensor.h>
 
 // include joints
 #include <ode_robots/joint.h>
@@ -129,6 +130,7 @@ namespace lpzrobots
 			typedef std::map< MotorName, OneAxisServo* > MotorMap;
 			typedef std::map< std::pair< LegPos, int >, ContactSensor* > TarsusContactMap;
 			typedef std::vector< OneAxisServo* > ServoList;
+
 
 			//	For legs
 			std::vector< std::shared_ptr< OneAxisServoVel > > tarsussprings;

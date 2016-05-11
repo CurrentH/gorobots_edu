@@ -107,12 +107,6 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		close_to_PEP = false;
 	}
 
-	if (legNum == 4) {
-		cout << "startSwing:  " << startSwing << endl;
-		cout << "startStance: " << startStance << endl;
-	}
-
-
 	if( RSunit || startSwing == true ){
 		startSwing = true; startStance = false; phase = true;
 		swingNetSimple( sensor, viaAngle );

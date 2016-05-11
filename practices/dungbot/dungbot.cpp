@@ -124,6 +124,9 @@ namespace lpzrobots
 				}
 			}
 		}
+
+
+
     }
 
     void DungBot::sense( GlobalData& globalData )
@@ -143,6 +146,8 @@ namespace lpzrobots
 				}
 			}
 		}
+
+
     }
 
     void DungBot::create( const Matrix& pose )

@@ -54,7 +54,7 @@ namespace lpzrobots {
     virtual std::list<sensor> getList() const;
 
     /**
-       Sets the reference object we use for relative position measureing.
+       Sets the reference object we use for relative position measuring.
        If not set or 0 then the origin is used.
        This can be another robot an obstacle (light source) and such like
        This must be called before first sense() or get() call.
