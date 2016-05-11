@@ -67,8 +67,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
-	if( int( ticks_since_init )%10 == 0 && outputFlag )
-	{
+	if( int( ticks_since_init )%50 == 0 && outputFlag ){
 		outputFlag = false;
 		outputData( sensor, motor );
 		outputFlag = true;
@@ -187,6 +186,52 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
 
     cout.setf(ios::fixed, ios::floatfield);
     cout.precision(2);
+
+	if( writeOutput )
+	{
+		collectData( sensor, motor );
+	}
+}
+
+void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
+{
+	if( outputFile.is_open() && writeOutput)
+	{
+		//	Print all motor and sensor values here.
+	/*
+		outputFile << ticks_since_init;
+		for( unsigned int i = 0; i < motorInput.size(); i++ )
+		{
+			outputFile << "," << motor[i] << "," << sensor[i];
+		}
+		outputFile << std::endl;
+	*/
+
+		//	Print the contact sensors for the stump.
+	/*
+		outputFile << ticks_since_init << "," << sensor[DungBotMotorSensor::L0_s0] << "," << sensor[DungBotMotorSensor::L1_s0] << "," << sensor[DungBotMotorSensor::L2_s0] << ","
+		    		<< sensor[DungBotMotorSensor::R0_s0] << "," << sensor[DungBotMotorSensor::R1_s0] << "," << sensor[DungBotMotorSensor::R2_s0];
+		outputFile << std::endl;
+	*/
+
+		/**
+		 * Print position of Head, Thorax, and abdomen.
+		 * Print position of Legs.
+		 */
+		for( int i = DungBotMotorSensor::RPS_Leg1Cx; i <= DungBotMotorSensor::RPS_Leg6Taz; i++ ){
+			outputFile << sensor[i] << ",";
+		}
+		for( int i = DungBotMotorSensor::RPS_REARx; i <= DungBotMotorSensor::RPS_HEADz; i++ ){
+			outputFile << sensor[i] << ",";
+		}
+		outputFile << std::endl;
+	}
+	else
+	{
+		std::cout << "DungBot controller: File not open" << std::endl;
+	}
+}
+
 /*
 	std::cout << "------------------------------------------------------------------" << std::endl;
 	std::cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << std::endl;
@@ -223,45 +268,3 @@ void DungBotEmptyController::outputData( const sensor* sensor, motor* motor )
    std::cout << std::endl;
     */
 
-	if( writeOutput )
-	{
-		collectData( sensor, motor );
-	}
-}
-
-void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
-{
-	if( outputFile.is_open() && writeOutput)
-	{
-		//	Print all motor and sensor values here.
-		/*
-		outputFile << ticks_since_init;
-		for( unsigned int i = 0; i < motorInput.size(); i++ )
-		{
-			outputFile << "," << motor[i] << "," << sensor[i];
-		}
-		outputFile << std::endl;
-		*/
-
-		//	Print the contact sensors for the stump.
-		/*
-		outputFile << ticks_since_init << "," << sensor[DungBotMotorSensor::L0_s0] << "," << sensor[DungBotMotorSensor::L1_s0] << "," << sensor[DungBotMotorSensor::L2_s0] << ","
-		    		<< sensor[DungBotMotorSensor::R0_s0] << "," << sensor[DungBotMotorSensor::R1_s0] << "," << sensor[DungBotMotorSensor::R2_s0];
-		outputFile << std::endl;
-		*/
-
-		//	Print position of Head, Thorax, and abdomen.
-		//	Print position of Legs.
-		for( int i = DungBotMotorSensor::RPS_Leg1Cx; i <= DungBotMotorSensor::RPS_Leg6Taz; i++ ){
-			outputFile << sensor[i] << ",";
-		}
-		for( int i = DungBotMotorSensor::RPS_REARx; i <= DungBotMotorSensor::RPS_HEADz; i++ ){
-			outputFile << sensor[i] << ",";
-		}
-		outputFile << std::endl;
-	}
-	else
-	{
-		std::cout << "DungBot controller: File not open" << std::endl;
-	}
-}
