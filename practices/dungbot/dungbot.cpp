@@ -313,9 +313,13 @@ namespace lpzrobots
 								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
 								femurCenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
+
+			Substance surface(0,100000,10000,0);
+
 			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
 			OsgHandle osgHandleTibia = osgHandle.changeColor(247,0,255,1);
 			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandleTibia );
+			tibia->setSubstance( surface );
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;
 			odeHandle.addIgnoredPair(tibia, front);
@@ -399,6 +403,9 @@ namespace lpzrobots
 			OsgHandle osgHandleTarsus = osgHandle.changeColor(0,0,255,1);
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandleTarsus );
 			tarsus->setPose( tarsusCenter );
+
+			tarsus->setSubstance( surface );
+
 			legs[leg].tarsus = tarsus;
 			objects.push_back( tarsus );
 			tarsusParts.push_back( tarsus );

@@ -52,20 +52,20 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 		}
 
 
-		std::cout << (separateLegs[i].startStance == true || separateLegs[i].startSwing == true) << " ";
+		//std::cout << (separateLegs[i].startStance == true || separateLegs[i].startSwing == true) << " ";
 	}
 	if( switchFlag )
 	{
-		std::cout << " F: " << switchFlag << " SW ST SW ST SW ST " << std::endl;
+		//std::cout << " F: " << switchFlag << " SW ST SW ST SW ST " << std::endl;
 	}
 	else
 	{
-		std::cout << " F: " << switchFlag << " ST SW ST SW ST SW" << std::endl;
+		//std::cout << " F: " << switchFlag << " ST SW ST SW ST SW" << std::endl;
 	}
 
 	if( flag )
 	{
-		std::cout << "SwitchFlag changes from: " << switchFlag << " to: " << !switchFlag << std::endl;
+		//std::cout << "SwitchFlag changes from: " << switchFlag << " to: " << !switchFlag << std::endl;
 		switchFlag = !switchFlag;
 
 		if( switchFlag )

@@ -29,8 +29,8 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	else{
 		switch (newlegNum){
 			case 0: case 3:
-				PEP[0] = -1.0; 	PEP[1] = 0.8;	PEP[2] = -0.4; //OK
-				STM[0] = -0.5; 	STM[1] = 0.85;	STM[2] = -0.4; //OK  -0.5 0.85 -0.4
+				PEP[0] = -1.0; 	PEP[1] = 0.8;	PEP[2] = -0.4;  //OK
+				STM[0] = -0.5; 	STM[1] = 0.85;	STM[2] = -0.4;  //OK
 				MID[0] =  0.3; 	MID[1] = 0.8;	MID[2] = -0.7;
 				AEP[0] =  0.0;	AEP[1] = 0.4; 	AEP[2] = -0.6;  //OK
 				break;
@@ -58,36 +58,8 @@ void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vecto
 {
 	 extractSensor(sensor, legNum, localSensorArray);
 	 selectorNet( sensor, viaAngle );
-
-	 /*switch(swingState2)
-		{
-			case SWING2_DONE:
-				if( !atPosition(PEP,0.01) )
-				{
-					 viaAngle[0] = PEP[0];
-					 viaAngle[1] = PEP[1];
-					 viaAngle[2] = PEP[2];
-				} else swingState2 = TO_AEP_SWING;
-				break;
-
-			case TO_AEP_SWING:
-				if( !atPosition(STM,0.01) )
-				{
-					 viaAngle[0] = STM[0];
-					 viaAngle[1] = STM[1];
-					 viaAngle[2] = STM[2];
-				} else swingState2 = LOWER;
-				break;
-
-			case LOWER:
-				if( !atPosition(AEP,0.01) )
-				{
-					 viaAngle[0] = AEP[0];
-					 viaAngle[1] = AEP[1];
-					 viaAngle[2] = AEP[2];
-				} else swingState2 = SWING2_DONE;
-				break;
-		};*/
+	 //stanceNet2(sensor,viaAngle);
+	 //swingNet2(sensor,viaAngle);
 }
 
 void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle )
@@ -104,24 +76,12 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		viaAngle[2] = localSensorArray[2] - 0.2;
 	}else
 
-	//if(legNum == 5)
-	//	cout << "Rule3: " << rule3 << endl;
-	//	cout << "Rule1: " << rule1 << " Rule2: " << rule2 << " PEPunit: " << PEPunit << endl;
-
-	//if(legNum == 4)
-	//	cout << "PS: " << PSunit << "=" << PSunit << "-" << PEPunit << "+" << GCunit;
-
 	RSunit = RSunit + PEPunit - GCunit;	//	Logic for entering swingNet
 	PSunit = PSunit - PEPunit + GCunit; //  Logic for entering stanceNet
 
-	//if(legNum == 4)
-	//	cout << " == " << PSunit;
 
 	if( RSunit > 1 ){ RSunit = 1; } else if( RSunit < 0 ){ RSunit = 0; }
 	if( PSunit > 1 ){ PSunit = 1; } else if( PSunit < 0 ){ PSunit = 0; }
-
-	//if(legNum == 4)
-	//	cout << " == " << PSunit << "  RS = " << RSunit << endl;
 
 	// Used for rule 2
 	if (PSunit == 1 && pre_touch_down == true) {
@@ -130,13 +90,10 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 		touch_down = true;
 	}
 
-	if (legNum == 5) {
-		//cout << "Swing/Stance :  " << RSunit << " / "<< PSunit << endl;
-	}
 
 	if( RSunit ){
 		startSwing = true; startStance = false; phase = true;
-		swingNet2( sensor, viaAngle ); //TODO SIMPLE
+		swingNet1( sensor, viaAngle ); //TODO SIMPLE
 	}else if( PEPunit && GCunit ) {
 		viaAngle[1] = localSensorArray[1] + 0.06; //TODO Edit?
 		viaAngle[2] = localSensorArray[2] - 0.03; //TODO Edit
@@ -288,18 +245,18 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 	switch( legNum )
 	{
 		case 0: case 3: //FRONTLEGS
-			coxaspeed = 0.14;
+			coxaspeed = 0.17;
 			femurUp = 0.20; femurDown = 0.32;
-			tibiaUp = 0.05; tibiaDown = 0.03;
+			tibiaUp = 0.05; tibiaDown = 0.08;
 			break;
 		case 1: case 4: //MIDDLELEGS
-			coxaspeed = 0.15;
+			coxaspeed = 0.17;
 			femurUp = 0.20; femurDown = 0.15;
 			tibiaUp = 0.20; tibiaDown = 0.15;
 			break;
 		case 2: case 5: //HINDLEGS
 			coxaspeed = 0.08;
-			femurUp = 1.0; femurDown = 0.02;
+			femurUp = 1.0; femurDown = 0.08;
 			tibiaUp = 1.0; tibiaDown = 0.08;
 			break;
 		default: cout << "LEG UNKNOWN";

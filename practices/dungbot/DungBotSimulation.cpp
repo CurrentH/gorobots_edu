@@ -70,7 +70,7 @@ namespace lpzrobots
 		//addPlayground(odeHandle,osgHandle,global);
 
 		// Configure simulation
-		simulation_time_seconds = 200;
+		simulation_time_seconds = 300;
 		number_of_runs = 1;
 		instantiateAgent( global );
 	}
