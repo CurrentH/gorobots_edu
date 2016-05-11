@@ -67,7 +67,7 @@ namespace lpzrobots
 		global.odeConfig.setParam( "gravity", -9.8 );
 
 	    // add playground
-		addPlayground(odeHandle,osgHandle,global);
+		//addPlayground(odeHandle,osgHandle,global);
 
 		// Configure simulation
 		simulation_time_seconds = 200;
@@ -78,8 +78,8 @@ namespace lpzrobots
 	void DungBotSimulation::instantiateAgent( GlobalData& global )
 	{
 		// Instantiate robot
-		DungBotConf conf = DungBotSimple::getDefaultConf();
-		robot = new DungBotSimple( odeHandle, osgHandle, conf, "Dungbot_Robot" );
+		DungBotConf conf = DungBot::getDefaultConf();
+		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );
 		robot->place( Pos( 0.0, 0.0, 1 ) ); // CONTROLS THE HEIGHT
 
 		// Instantiate controller

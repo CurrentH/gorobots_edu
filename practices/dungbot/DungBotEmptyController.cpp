@@ -51,7 +51,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
-		standsimple( angleVector );
+		stand( angleVector ); //TODO SIMPLE
 		moveRobot( motor, angleVector );
 
 		if( int(ticks_since_init)%100==0 )
@@ -134,15 +134,15 @@ void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVecto
 
 void DungBotEmptyController::standsimple( std::vector<std::vector<double>> &angleVector )
 {
-	double coxa_pos[3] 	= {0.6, -0.4, 0.6}; // Front, Middle, Rear
-	double femur_pos[3]	= {-0.6, -0.3, -0.3};
+	double coxa_pos[3] 	= {-0.4, -0.4, -0.4}; // Front, Middle, Rear
+	double femur_pos[3]	= {-0.6, -0.6, -0.6};
 	double tibia_pos[3]	= {0.0, 0.0, 0.0};
 
 	for( int i = 0; i < 6; i++ )
 	{
 		angleVector[i][0] = coxa_pos[i%3];
 		angleVector[i][1] = femur_pos[i%3];
-		angleVector[i][2] = -tibia_pos[i%3];
+		angleVector[i][2] = tibia_pos[i%3];
 	}
 }
 
