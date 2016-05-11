@@ -321,7 +321,7 @@ void walknetSeparateLeg::swingNet4(const sensor* sensor, std::vector<double> &vi
 			break;
 		case 1: case 4: //MIDDLELEGS
 			coxaspeed = 0.15;
-			femurUp = 0.30; femurDown = 0.1;
+			femurUp = 0.30; femurDown = 0.05;
 			tibiaUp = 0.30; tibiaDown = 0.12;
 			break;
 		case 2: case 5: //HINDLEGS
