@@ -968,15 +968,11 @@ namespace lpzrobots
 		//TODO Measure the correct height.
 		double totalLength = 3.75+9.111+10.324;
 		conf.scale = totalLength;
-<<<<<<< HEAD
-		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 2.5/totalLength};
-		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 3.25/totalLength };
-		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 3.5/totalLength };
-=======
+
 		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 2.9/totalLength};
 		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 4.3/totalLength };
 		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 4.9/totalLength };
->>>>>>> cb9eedde76e0e24136fe48befed546173c25853d
+
 
 		double totalMass = 106.402/10;
 		conf.massHead = 14.826/totalMass;
