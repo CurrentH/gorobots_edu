@@ -71,7 +71,7 @@ namespace lpzrobots
 
 		// Configure simulation
 		simulation_time_seconds = 200;
-		number_of_runs = 2;
+		number_of_runs = 1;
 		instantiateAgent( global );
 	}
 

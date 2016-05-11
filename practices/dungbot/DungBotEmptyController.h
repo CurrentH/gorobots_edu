@@ -57,6 +57,7 @@ class DungBotEmptyController : public AbstractController
 		void standsimple( std::vector<std::vector<double>> &);
 		void moveRobot( motor* motor, std::vector<std::vector<double>> );
 
+		bool outputFlag = true;
 		bool writeOutput = true;
 		std::vector<std::vector<double>>angleVector;
 

@@ -23,6 +23,7 @@
 
 // include sensors
 #include <ode_robots/contactsensor.h>
+#include <ode_robots/relativepositionsensor.h>
 
 // include joints
 #include <ode_robots/joint.h>
@@ -140,8 +141,9 @@ namespace lpzrobots
 			ServoList passiveServos;
 			MotorMap servos;
 
-			//	For tarsus contact
+			//	For sensors
 			TarsusContactMap tarsusContactSensors;
+			std::vector<RelativePositionSensor> bodyPartSensors;
 
 		private:
 		//	Private methods

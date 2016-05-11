@@ -36,10 +36,10 @@ class walknetSeparateLeg
 
 	int rule1 = 0, rule2 = 0, rule3 = 0, rule4 = 0;
 
-	int swingState2;
-	int stanceState2;
-	enum swingState2 { LIFT, LOWER, TO_AEP_SWING, FINAL_SWING_POS, IDLE_SWING };
-	enum stanceState2 { IDLE_STANCE, TO_PEP_STANCE, TO_MID_STANCE };
+	int swingState;
+	int stanceState;
+	enum swingState { LIFT, LOWER, TO_AEP_SWING, FINAL_SWING_POS, IDLE_SWING };
+	enum stanceState { IDLE_STANCE, TO_PEP_STANCE, TO_MID_STANCE };
 
 	public:
 	//	Public methods

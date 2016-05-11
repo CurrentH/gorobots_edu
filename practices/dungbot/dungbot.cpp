@@ -124,6 +124,9 @@ namespace lpzrobots
 				}
 			}
 		}
+
+
+
     }
 
     void DungBot::sense( GlobalData& globalData )
@@ -143,6 +146,8 @@ namespace lpzrobots
 				}
 			}
 		}
+
+
     }
 
     void DungBot::create( const Matrix& pose )
@@ -179,7 +184,20 @@ namespace lpzrobots
 		makeBodyHingeJoint( front, rear, nullpos*osg::Matrix::translate( conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * frontPos, conf.rearDimension[1] );
 		makeHeadHingeJoint( front, head, nullpos*osg::Matrix::translate( -conf.frontDimension[0] / 2, 0, 0 ) * frontPos, Axis( 0, 1, 0 ) * headPos, conf.headDimension[1] );
 
-	    /************************************
+		/************************************
+		 * 	Make position sensors
+		 ***********************************/
+		RelativePositionSensor rearBodySensor( 1, 1, Sensor::XYZ, false );
+		bodyPartSensors.push_back( rearBodySensor );
+		bodyPartSensors.back().init(rear);
+		RelativePositionSensor frontBodySensor( 1, 1, Sensor::XYZ, false );
+		bodyPartSensors.push_back( frontBodySensor );
+		bodyPartSensors.back().init(front);
+		RelativePositionSensor headBodySensor( 1, 1, Sensor::XYZ, false );
+		bodyPartSensors.push_back( headBodySensor );
+		bodyPartSensors.back().init(head);
+
+		/************************************
 	     * Make all the legs
 	     ***********************************/
 		makeAllLegs( pose , rear, front , head);
@@ -444,6 +462,22 @@ namespace lpzrobots
 				}
 			}
 			tarsusParts.clear();
+
+			/*
+			 * 	Making the position sensors for each leg.
+			 */
+			RelativePositionSensor tarsusSensor( 1, 1, Sensor::XYZ, false );
+			bodyPartSensors.push_back( tarsusSensor );
+			bodyPartSensors.back().init(tarsus);
+			RelativePositionSensor tibiaSensor( 1, 1, Sensor::XYZ, false );
+			bodyPartSensors.push_back( tibiaSensor );
+			bodyPartSensors.back().init(tibia);
+			RelativePositionSensor femurSensor( 1, 1, Sensor::XYZ, false );
+			bodyPartSensors.push_back( femurSensor );
+			bodyPartSensors.back().init(femurThorax);
+			RelativePositionSensor coxaSensor( 1, 1, Sensor::XYZ, false );
+			bodyPartSensors.push_back( coxaSensor );
+			bodyPartSensors.back().init(coxaThorax);
 	    }
     }
 
@@ -651,7 +685,161 @@ namespace lpzrobots
 			sensors[DungBotMotorSensor::R2_s0] = tarsusContactSensors[std::make_pair(R2,0)]->get();
 			sensors[DungBotMotorSensor::L2_s0] = tarsusContactSensors[std::make_pair(L2,0)]->get();
 		}
+		//	Position sensors
+		if( true )
+		{
+			//	Make for loop that makes all these
+			for( int i = DungBotMotorSensor::RPS_REARx; i < DungBotMotorSensor::DUNGBOT_SENSOR_MAX; i++ ){
+				sensors[i] = 0;
+			}
 
+			//Rear body
+			std::vector<RelativePositionSensor>::iterator it = bodyPartSensors.begin(); //we only use one goal sensor
+			std::list<sensor> gls_val = it->getList();
+			sensors[DungBotMotorSensor::RPS_REARx] = gls_val.back(); gls_val.pop_back();
+			sensors[DungBotMotorSensor::RPS_REARy] = gls_val.back(); gls_val.pop_back();
+			sensors[DungBotMotorSensor::RPS_REARz] = gls_val.back(); gls_val.pop_back();
+
+			//Front body
+			it++;	gls_val = it->getList();
+			sensors[DungBotMotorSensor::RPS_FRONTx] = gls_val.back(); gls_val.pop_back();
+			sensors[DungBotMotorSensor::RPS_FRONTy] = gls_val.back(); gls_val.pop_back();
+			sensors[DungBotMotorSensor::RPS_FRONTz] = gls_val.back(); gls_val.pop_back();
+
+			//Head
+			it++;	gls_val = it->getList();
+			sensors[DungBotMotorSensor::RPS_HEADx] = gls_val.back(); gls_val.pop_back();
+			sensors[DungBotMotorSensor::RPS_HEADy] = gls_val.back(); gls_val.pop_back();
+			sensors[DungBotMotorSensor::RPS_HEADz] = gls_val.back(); gls_val.pop_back();
+
+			//	Leg1
+				//	Coxa
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg1Cx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Cy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Cz] = gls_val.back(); gls_val.pop_back();
+				//	Femur
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg1Fx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Fy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Fz] = gls_val.back(); gls_val.pop_back();
+				//	Tibia
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg1Tix] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Tiy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Tiz] = gls_val.back(); gls_val.pop_back();
+				//	Tarsus
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg1Tax] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Tay] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg1Taz] = gls_val.back(); gls_val.pop_back();
+			//	Leg2
+				//	Coxa
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg2Cx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Cy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Cz] = gls_val.back(); gls_val.pop_back();
+				//	Femur
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg2Fx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Fy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Fz] = gls_val.back(); gls_val.pop_back();
+				//	Tibia
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg2Tix] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Tiy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Tiz] = gls_val.back(); gls_val.pop_back();
+				//	Tarsus
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg2Tax] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Tay] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg2Taz] = gls_val.back(); gls_val.pop_back();
+			//	Leg3
+				//	Coxa
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg3Cx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Cy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Cz] = gls_val.back(); gls_val.pop_back();
+				//	Femur
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg3Fx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Fy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Fz] = gls_val.back(); gls_val.pop_back();
+				//	Tibia
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg3Tix] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Tiy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Tiz] = gls_val.back(); gls_val.pop_back();
+				//	Tarsus
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg3Tax] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Tay] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg3Taz] = gls_val.back(); gls_val.pop_back();
+			//	Leg4
+					//	Coxa
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg4Cx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Cy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Cz] = gls_val.back(); gls_val.pop_back();
+				//	Femur
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg4Fx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Fy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Fz] = gls_val.back(); gls_val.pop_back();
+				//	Tibia
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg4Tix] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Tiy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Tiz] = gls_val.back(); gls_val.pop_back();
+				//	Tarsus
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg4Tax] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Tay] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg4Taz] = gls_val.back(); gls_val.pop_back();
+			//	Leg5
+				//	Coxa
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg5Cx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Cy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Cz] = gls_val.back(); gls_val.pop_back();
+				//	Femur
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg5Fx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Fy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Fz] = gls_val.back(); gls_val.pop_back();
+				//	Tibia
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg5Tix] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Tiy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Tiz] = gls_val.back(); gls_val.pop_back();
+				//	Tarsus
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg5Tax] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Tay] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg5Taz] = gls_val.back(); gls_val.pop_back();
+			//	Leg6
+				//	Coxa
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg6Cx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Cy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Cz] = gls_val.back(); gls_val.pop_back();
+				//	Femur
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg6Fx] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Fy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Fz] = gls_val.back(); gls_val.pop_back();
+				//	Tibia
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg6Tix] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Tiy] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Tiz] = gls_val.back(); gls_val.pop_back();
+				//	Tarsus
+					it++;	gls_val = it->getList();
+					sensors[DungBotMotorSensor::RPS_Leg6Tax] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Tay] = gls_val.back(); gls_val.pop_back();
+					sensors[DungBotMotorSensor::RPS_Leg6Taz] = gls_val.back(); gls_val.pop_back();
+
+		}
 		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
 	}
 
@@ -780,9 +968,15 @@ namespace lpzrobots
 		//TODO Measure the correct height.
 		double totalLength = 3.75+9.111+10.324;
 		conf.scale = totalLength;
+<<<<<<< HEAD
 		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 2.5/totalLength};
 		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 3.25/totalLength };
 		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 3.5/totalLength };
+=======
+		conf.headDimension 	= { 3.75/totalLength, 4.568/totalLength, 2.9/totalLength};
+		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 4.3/totalLength };
+		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 4.9/totalLength };
+>>>>>>> cb9eedde76e0e24136fe48befed546173c25853d
 
 		double totalMass = 106.402/10;
 		conf.massHead = 14.826/totalMass;

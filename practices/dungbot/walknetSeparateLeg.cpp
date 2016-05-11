@@ -12,8 +12,8 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 	localSensorArray.assign( 4, 0 );
 	coordinationRules.assign( 3, 0);
 
-	swingState2 = IDLE_SWING;
-	stanceState2 = IDLE_STANCE;
+	swingState = IDLE_SWING;
+	stanceState = IDLE_STANCE;
 
 	if(false){ //TODO SIMPLE
 		switch (newlegNum){
@@ -134,7 +134,7 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 	}
 
 	if (legNum == 5) {
-		cout << "Swing/Stance :  " << RSunit << " / "<< PSunit << endl;
+		//cout << "Swing/Stance :  " << RSunit << " / "<< PSunit << endl;
 	}
 
 	if( RSunit ){
@@ -161,10 +161,10 @@ void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> 
 void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &viaAngle){
 
 	if(startStance == false){
-		stanceState2 = IDLE_STANCE;
+		stanceState = IDLE_STANCE;
 	}
 
-	switch(stanceState2)
+	switch(stanceState)
 	{
 		case TO_MID_STANCE:
 			if( !atPosition(STM,0.05) && !atPosition(PEP,0.1) )
@@ -172,7 +172,7 @@ void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &v
 				viaAngle[0] = STM[0];
 				viaAngle[1] = STM[1];
 				viaAngle[2] = STM[2];
-			} else stanceState2 = TO_PEP_STANCE;
+			} else stanceState = TO_PEP_STANCE;
 		break;
 
 		case TO_PEP_STANCE:
@@ -183,13 +183,13 @@ void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &v
 				viaAngle[2] = PEP[2];
 			} else {
 				startStance = false;
-				stanceState2 = IDLE_STANCE;
+				stanceState = IDLE_STANCE;
 			}
 			break;
 
 		case IDLE_STANCE:
 			if(startStance){
-				stanceState2 = TO_MID_STANCE;
+				stanceState = TO_MID_STANCE;
 			}
 			break;
 
@@ -202,10 +202,10 @@ void walknetSeparateLeg::stanceNet1(const sensor* sensor, std::vector<double> &v
 void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &viaAngle){
 
 	if(startSwing == false){
-		swingState2 = IDLE_SWING;
+		swingState = IDLE_SWING;
 	}
 
-	switch(swingState2)
+	switch(swingState)
 		{
 			case LIFT:
 				if( !atAngle(MID[1], 1, 0.01) && !atAngle(MID[2], 2, 0.01) )
@@ -214,7 +214,7 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 					viaAngle[1] = MID[1];
 					viaAngle[2] = MID[2];
 				} else {
-					swingState2 = TO_AEP_SWING;
+					swingState = TO_AEP_SWING;
 				}
 				break;
 
@@ -225,7 +225,7 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 					viaAngle[1] = MID[1];
 					viaAngle[2] = MID[2];
 				} else {
-					swingState2 = LOWER;
+					swingState = LOWER;
 				}
 				break;
 
@@ -235,13 +235,13 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 				} else {
 					touch_down = true;
 					startSwing = false;
-					swingState2 = IDLE_SWING;
+					swingState = IDLE_SWING;
 				}
 				break;
 
 			case IDLE_SWING:
 				if(startSwing){
-					swingState2 = LIFT;
+					swingState = LIFT;
 				}
 				break;
 
@@ -253,13 +253,13 @@ void walknetSeparateLeg::swingNet2(const sensor* sensor, std::vector<double> &vi
 void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &viaAngle){
 
 	if(startSwing == false){
-		swingState2 = IDLE_SWING;
+		swingState = IDLE_SWING;
 	}
 
-	switch(swingState2)
+	switch(swingState)
 	{
 		case LIFT:
-			swingState2 = TO_AEP_SWING;
+			swingState = TO_AEP_SWING;
 			break;
 
 		case TO_AEP_SWING:
@@ -269,7 +269,7 @@ void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &vi
 				viaAngle[1] = trajectory(5,1);
 				viaAngle[2] = trajectory(-1,2);
 			} else {
-				swingState2 = FINAL_SWING_POS;
+				swingState = FINAL_SWING_POS;
 			}
 			break;
 
@@ -280,7 +280,7 @@ void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &vi
 				viaAngle[1] = AEP[1];
 				viaAngle[2] = AEP[2];
 			} else{
-				swingState2 = LOWER;
+				swingState = LOWER;
 			}
 			break;
 
@@ -290,13 +290,13 @@ void walknetSeparateLeg::swingNet3(const sensor* sensor, std::vector<double> &vi
 				viaAngle[1] = localSensorArray[2] + 0.06;
 			} else {
 				startSwing = false;
-				swingState2 = IDLE_SWING;
+				swingState = IDLE_SWING;
 			}
 			break;
 
 		case IDLE_SWING:
 			if(startSwing){
-				swingState2 = LIFT;
+				swingState = LIFT;
 			}
 			break;
 
@@ -335,13 +335,13 @@ void walknetSeparateLeg::swingNet4(const sensor* sensor, std::vector<double> &vi
 
 
 	if(startSwing == false){
-		swingState2 = IDLE_SWING;
+		swingState = IDLE_SWING;
 	}
 
-	switch(swingState2)
+	switch(swingState)
 	{
 		case LIFT:
-			swingState2 = TO_AEP_SWING;
+			swingState = TO_AEP_SWING;
 			break;
 
 		case TO_AEP_SWING:
@@ -365,7 +365,7 @@ void walknetSeparateLeg::swingNet4(const sensor* sensor, std::vector<double> &vi
 				}
 
 			} else {
-				swingState2 = LOWER;
+				swingState = LOWER;
 			}
 			break;
 
@@ -375,13 +375,13 @@ void walknetSeparateLeg::swingNet4(const sensor* sensor, std::vector<double> &vi
 			} else {
 				touch_down = true;
 				startSwing = false;
-				swingState2 = IDLE_SWING;
+				swingState = IDLE_SWING;
 			}
 			break;
 
 		case IDLE_SWING:
 			if(startSwing){
-				swingState2 = LIFT;
+				swingState = LIFT;
 			}
 			break;
 
@@ -394,10 +394,10 @@ void walknetSeparateLeg::swingNet4(const sensor* sensor, std::vector<double> &vi
 void walknetSeparateLeg::stanceNetSimple(const sensor* sensor, std::vector<double>& viaAngle) {
 
 	if(startStance == false){
-		stanceState2 = IDLE_STANCE;
+		stanceState = IDLE_STANCE;
 	}
 
-	switch(stanceState2)
+	switch(stanceState)
 	{
 
 		case TO_PEP_STANCE:
@@ -408,13 +408,13 @@ void walknetSeparateLeg::stanceNetSimple(const sensor* sensor, std::vector<doubl
 				viaAngle[2] = PEP[2];
 			} else {
 				startStance = false;
-				stanceState2 = IDLE_STANCE;
+				stanceState = IDLE_STANCE;
 			}
 			break;
 
 		case IDLE_STANCE:
 			if(startStance){
-				stanceState2 = TO_PEP_STANCE;
+				stanceState = TO_PEP_STANCE;
 			}
 			break;
 
@@ -429,10 +429,10 @@ void walknetSeparateLeg::swingNetSimple(const sensor* sensor, std::vector<double
 
 
 		if(startSwing == false || supress_swing == true){
-			swingState2 = IDLE_SWING;
+			swingState = IDLE_SWING;
 		}
 
-		switch(swingState2)
+		switch(swingState)
 			{
 				case LIFT:
 					if( !atAngle(MID[1], 1, 0.01) )
@@ -441,7 +441,7 @@ void walknetSeparateLeg::swingNetSimple(const sensor* sensor, std::vector<double
 						viaAngle[1] = MID[1];
 						viaAngle[2] = MID[2];
 					} else {
-						swingState2 = TO_AEP_SWING;
+						swingState = TO_AEP_SWING;
 					}
 					break;
 
@@ -452,7 +452,7 @@ void walknetSeparateLeg::swingNetSimple(const sensor* sensor, std::vector<double
 						viaAngle[1] = MID[1];
 						viaAngle[2] = MID[2];
 					} else {
-						swingState2 = LOWER;
+						swingState = LOWER;
 					}
 					break;
 
@@ -465,18 +465,18 @@ void walknetSeparateLeg::swingNetSimple(const sensor* sensor, std::vector<double
 						PEP[2] = localSensorArray[2];
 						touch_down = true;
 						startSwing = false;
-						swingState2 = IDLE_SWING;
+						swingState = IDLE_SWING;
 					}
 					break;
 
 				case IDLE_SWING:
 					if(startSwing){
-						swingState2 = LIFT;
+						swingState = LIFT;
 					}
 					break;
 
 				default: cout << "swingState Error!" << endl;
-					cout << "state is: " << swingState2 << endl;
+					cout << "state is: " << swingState << endl;
 					break;
 			}
 }
@@ -608,4 +608,3 @@ void walknetSeparateLeg::setAEP( std::vector<double> & newAEP )
 	false - false + true = 1;	Have just walked	Is at PEP		Touches ground			Do: StanceNet
 	false - false + false = 0;	Have just walked	Is not at PEP	Does not touch ground	Do: Nothing
 */
-
