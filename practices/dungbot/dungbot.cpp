@@ -171,10 +171,10 @@ namespace lpzrobots
     	osg::Matrix rearPos = osg::Matrix::translate( ( conf.rearDimension[0] / 2 ), 0, 0) * pose;
     	auto rear = makeBody( rearPos, conf.massRear, conf.rearDimension );
 
-    	osg::Matrix frontPos = osg::Matrix::translate( ( -conf.frontDimension[0] / 2 ), 0, (-conf.rearDimension[2]/2+conf.frontDimension[2]/2)) * pose;
+    	osg::Matrix frontPos = osg::Matrix::translate( ( -conf.frontDimension[0] / 2 ), 0, (-conf.rearDimension[2]/2.4 +conf.frontDimension[2]/2)) * pose;
 		auto front = makeBody( frontPos, conf.massFront, conf.frontDimension );
 
-		osg::Matrix headPos = osg::Matrix::translate( ( -conf.frontDimension[0] - conf.headDimension[0]/2 ), 0, (-conf.rearDimension[2]/2+conf.headDimension[2]/2)) * pose;
+		osg::Matrix headPos = osg::Matrix::translate( ( -conf.frontDimension[0] - conf.headDimension[0]/2 ), 0, (-conf.rearDimension[2]/2.4+conf.headDimension[2]/2)) * pose;
 		auto head = makeHead( headPos, conf.massHead, conf.headDimension );
 
 		//	Representation of the origin
@@ -313,13 +313,13 @@ namespace lpzrobots
 								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
 								femurCenter;
 			osg::Matrix tibiaCenter = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2 ) * c3;
-
-			Substance surface(0,100000,10000,0);
-
 			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
 			OsgHandle osgHandleTibia = osgHandle.changeColor(247,0,255,1);
 			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandleTibia );
-			tibia->setSubstance( surface );
+
+			//Substance surface(0,100000,10000,0);
+			//tibia->setSubstance( surface );
+
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;
 			odeHandle.addIgnoredPair(tibia, front);
@@ -404,7 +404,7 @@ namespace lpzrobots
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandleTarsus );
 			tarsus->setPose( tarsusCenter );
 
-			tarsus->setSubstance( surface );
+			//tarsus->setSubstance( surface );
 
 			legs[leg].tarsus = tarsus;
 			objects.push_back( tarsus );
