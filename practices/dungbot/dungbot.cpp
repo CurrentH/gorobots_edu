@@ -942,6 +942,17 @@ namespace lpzrobots
 			backboneServo->setMaxVel( conf.backMaxVel );
 			backboneServo->setMinMax( conf.backJointLimitU, conf.backJointLimitD );
 		}
+
+		if( headServo && (conf.testHead || conf.testNo) )
+		{
+			headServo->setPower( conf.head_Kp );
+			headServo->setDamping( conf.head_Kd );
+			headServo->setIntegration( conf.head_Ki );
+
+			headServo->setMaxVel( conf.headMaxVel );
+			headServo->setMinMax( conf.headJointLimitU, conf.headJointLimitD );
+		}
+
 		//TODO: Make the same as above, but for the head
 
 		return rv;
@@ -1038,6 +1049,9 @@ namespace lpzrobots
 		conf.backJointLimitD = M_PI / 180 * 45.0;
 		conf.backJointLimitU =	-M_PI / 180 * 0.0;
 
+		conf.headJointLimitD = M_PI / 180 * 45.0;
+		conf.headJointLimitU =	-M_PI / 180 * 0.0;
+
 		double rotationScale = 0.9;
 
 		double coxaFront = 95.7878*rotationScale;
@@ -1084,19 +1098,23 @@ namespace lpzrobots
 
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
-		conf.back_Kp 	= 4.0;
+	    conf.head_Kp	= 1.5;
+	    conf.back_Kp 	= 4.0;
 		conf.coxa_Kp 	= 2.5;
 		conf.femur_Kp	= 2.5;
 		conf.tibia_Kp 	= 2.5;
 		conf.tarsus_Kp 	= 0.0;
 
+
 		// Kd and Ki parameters are not used anymore
+		conf.head_Kd	= 0.0;
 		conf.back_Kd 	= 0.0;
 		conf.coxa_Kd 	= 0.5;
 		conf.femur_Kd 	= 0.5;
 		conf.tibia_Kd 	= 0.5;
 		conf.tarsus_Kd	= 0.0;
 
+		conf.head_Ki	= 0.5;
 		conf.back_Ki 	= 0.0;
 		conf.coxa_Ki 	= 0.5;
 		conf.femur_Ki 	= 0.5;

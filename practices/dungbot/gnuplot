@@ -1,0 +1,12 @@
+#!/bin/bash
+
+gnuplot
+set title 'Can be changed'
+set ylabel 'This is y axis'
+set xlabel 'This is x axis'
+set grid
+set term png
+set output 'gnuplot_output_file.ong'
+plot 'output.csv'
+
+

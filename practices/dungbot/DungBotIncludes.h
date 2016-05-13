@@ -50,24 +50,28 @@ namespace lpzrobots
 		std::vector<double> tarsusRadius;
 
 		//	Motor settings
+		double head_Kp;
 		double back_Kp;
 		double coxa_Kp;
 		double femur_Kp;
 		double tibia_Kp;
 		double tarsus_Kp;
 
+		double head_Kd;
 		double back_Kd;
 		double coxa_Kd;
 		double femur_Kd;
 		double tibia_Kd;
 		double tarsus_Kd;
 
+		double head_Ki;
 		double back_Ki;
 		double coxa_Ki;
 		double femur_Ki;
 		double tibia_Ki;
 		double tarsus_Ki;
 
+		double headMaxVel;
 		double backMaxVel;
 		double coxaMaxVel;
 		double femurMaxVel;
@@ -76,6 +80,8 @@ namespace lpzrobots
 		double tarsusMaxVel;
 
 		//	Joint limits
+		double headJointLimitD;
+		double headJointLimitU;
 		double backJointLimitD;
 		double backJointLimitU;
 		double fCoxaJointLimitF;
