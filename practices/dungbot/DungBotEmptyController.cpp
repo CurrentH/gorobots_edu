@@ -51,7 +51,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 
 	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
-		standsimple( angleVector );
+		stand( angleVector );
 		moveRobot( motor, angleVector );
 
 		if( int(ticks_since_init)%100==0 )
@@ -89,7 +89,7 @@ void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* r
 
 	if( writeOutput )
 	{
-		outputFile.open( "output.csv" );
+		outputFile.open( "11_output2.csv" );
 	}
 
 	initialised = true;
