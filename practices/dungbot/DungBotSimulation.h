@@ -20,6 +20,7 @@
 #include <selforg/one2onewiring.h>
 #include <ode_robots/playground.h>
 #include <ode_robots/passivebox.h>
+#include <ode_robots/passivesphere.h>
 
 #include "dungbot.h"
 #include "DungBotEmptyController.h"

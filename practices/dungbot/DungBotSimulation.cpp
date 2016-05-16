@@ -16,7 +16,7 @@ namespace lpzrobots
 	DungBotSimulation::DungBotSimulation( void )
 	{
 		setTitle("DungBot simulation");
-		setGroundTexture("Images/whiteground.jpg");
+		setGroundTexture("sand_texture.jpg");
 		simulation_time_seconds = 0.0;
 		trial_number = 0;
 		agent = NULL;
@@ -70,7 +70,7 @@ namespace lpzrobots
 		//addPlayground(odeHandle,osgHandle,global);
 
 		// Configure simulation
-		simulation_time_seconds = 300;
+		simulation_time_seconds = 60;
 		number_of_runs = 1;
 		instantiateAgent( global );
 	}
@@ -80,7 +80,7 @@ namespace lpzrobots
 		// Instantiate robot
 		DungBotConf conf = DungBot::getDefaultConf();
 		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );
-		robot->place( Pos( 0.0, 0.0, 1 ) ); // CONTROLS THE HEIGHT
+		robot->place( Pos( 0.0, 0.0, 0.8 ) ); // CONTROLS THE HEIGHT
 
 		// Instantiate controller
 		controller = new DungBotEmptyController( "DungBotEmptyController" );
@@ -96,6 +96,18 @@ namespace lpzrobots
 
 		setSimulationDuration( simulation_time_seconds );
 
+
+		if(true){
+		PassiveSphere* s1 = new PassiveSphere(odeHandle, osgHandle, 0.42);
+	    s1->setPosition(osg::Vec3(0.2, 0.0, -0.1)); // If ball stand = 0.03 ~ If roll stand = 0.2
+	    s1->setTexture("ground_texture3.jpg");
+		Substance surface(10000,0,10000,0);
+		s1->setSubstance( surface );
+	    global.obstacles.push_back(s1);
+	    FixedJoint* fixator1 = new  FixedJoint(s1->getMainPrimitive(), global.environment);
+	    fixator1->init(odeHandle, osgHandle);
+		}
+
 		// create a fixed joint to hold the robot in the air at the beginning
 		robotfixator = new lpzrobots::FixedJoint(robot->getMainPrimitive(),global.environment);
 		robotfixator->init(odeHandle, osgHandle, true);
@@ -105,11 +117,14 @@ namespace lpzrobots
 		global.agents.push_back(agent);
 		global.configs.push_back(controller);
 
-	    std::cout << "\n"
-	        << "################################\n"
-	        << "#   Press x to free DungBot!   #\n"
-	        << "################################\n"
-	        << "\n" << std::endl;
+		std::cout << "\n"
+		<<" ____                    ____        _     ____  _           \n"
+		<<"|  _ \\ _   _ _ __   __ _| __ )  ___ | |_  / ___|(_)_ __ ___  \n"
+		<<"| | | | | | | '_ \\ / _` |  _ \\ / _ \\| __| \\___ \\| | '_ ` _ \\ \n"
+		<<"| |_| | |_| | | | | (_| | |_) | (_) | |_   ___) | | | | | | |\n"
+		<<"|____/ \\__,_|_| |_|\\__, |____/ \\___/ \\__| |____/|_|_| |_| |_|\n"
+		<<"                   |___/       "
+				<< "Press X to free DungBot!\n" << std::endl;
 	}
 
 
