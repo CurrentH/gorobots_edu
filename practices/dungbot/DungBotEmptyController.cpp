@@ -62,10 +62,12 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	// ----------------------------------
 	//start(motor, 1.0);
 	//standsimple( angleVector );
-	//walknet->stepWalknet( sensor, angleVector );
 	//walknet->stepWalknetTripod( sensor, angleVector );
+	walknet->stepWalknet( sensor, angleVector );
 	//ballstand( angleVector );
-	rollstand( angleVector );
+	//rollstand( angleVector );
+	//headstand( angleVector );
+	//motor[18] = -1;
 	moveRobot( motor, angleVector );
 	// ----------------------------------
 
@@ -91,7 +93,7 @@ void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* r
 
 	if( writeOutput )
 	{
-		outputFile.open( "22_gait5.csv" );
+		outputFile.open( "12_output5.csv" );
 	}
 
 	initialised = true;
@@ -147,14 +149,17 @@ void DungBotEmptyController::ballstand( std::vector<std::vector<double>> &angleV
 		angleVector[i][1] = femur_pos[i%3];
 		angleVector[i][2] = -tibia_pos[i%3];
 	}
+
+	// Backjoint
+
 }
 
 void DungBotEmptyController::rollstand( std::vector<std::vector<double>> &angleVector )
 {
 	// 						Front		 Middle		 Rear
-	double coxa_pos[3] 	= { 0.2, 		-0.25, 		-0.6};  // Coxa
-	double femur_pos[3]	= {	0.2, 		 0.4, 		 0.3};	// Femur
-	double tibia_pos[3]	= { 0.5, 		 0.3, 		 0.4};  // Tibia
+	double coxa_pos[3] 	= { 0.4, 		-0.25, 		-0.2};  // Coxa
+	double femur_pos[3]	= {	0.2, 		 0.2, 		 0.5};	// Femur
+	double tibia_pos[3]	= { 0.7, 		 0.2, 		 0.2};  // Tibia
 
 	for( int i = 0; i < 6; i++ )
 	{
@@ -162,6 +167,26 @@ void DungBotEmptyController::rollstand( std::vector<std::vector<double>> &angleV
 		angleVector[i][1] = femur_pos[i%3];
 		angleVector[i][2] = -tibia_pos[i%3];
 	}
+}
+
+void DungBotEmptyController::headstand( std::vector<std::vector<double>> &angleVector )
+{
+	// 						Front		 Middle		 Rear
+	double coxa_pos[3] 	= { 0.0, 		-0.2, 		-0.5};  // Coxa
+	double femur_pos[3]	= {	0.2, 		 0.05, 		 0.5};	// Femur
+	double tibia_pos[3]	= { 0.6, 		 0.9, 		 0.4};  // Tibia
+
+	for( int i = 0; i < 6; i++ )
+	{
+		angleVector[i][0] = coxa_pos[i%3];
+		angleVector[i][1] = femur_pos[i%3];
+		angleVector[i][2] = -tibia_pos[i%3];
+	}
+
+	//angleVector[3][0] = 1;
+	//angleVector[3][1] = 1;
+	//angleVector[3][2] = 0;
+
 }
 
 void DungBotEmptyController::standsimple( std::vector<std::vector<double>> &angleVector )
@@ -241,17 +266,17 @@ void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
 	*/
 
 		//	Print the contact sensors for the stump.
-
+		/*
 		outputFile << sensor[DungBotMotorSensor::L0_s0] << "," << sensor[DungBotMotorSensor::L1_s0] << "," << sensor[DungBotMotorSensor::L2_s0] << ","
 		    		<< sensor[DungBotMotorSensor::R0_s0] << "," << sensor[DungBotMotorSensor::R1_s0] << "," << sensor[DungBotMotorSensor::R2_s0];
 		outputFile << std::endl;
-
+		*/
 
 		/**
 		 * Print position of Head, Thorax, and abdomen.
 		 * Print position of Legs.
 		 */
-		/*
+
 		for( int i = DungBotMotorSensor::RPS_Leg1Cx; i <= DungBotMotorSensor::RPS_Leg6Taz; i++ ){
 			outputFile << sensor[i] << ",";
 		}
@@ -259,7 +284,7 @@ void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
 			outputFile << sensor[i] << ",";
 		}
 		outputFile << std::endl;
-		*/
+
 	}
 	else
 	{

@@ -538,7 +538,7 @@ namespace lpzrobots
     	if( conf.testBody || conf.testNo )
     	{
     		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
-			hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
+			hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
 			joints.push_back( hinge );
 			OneAxisServo * bodyMotor = new OneAxisServo( hinge, -1.0, 1.0, 1.0, 0.2, 1, 10.0, 1.3, true );
 			servos[DungBotMotorSensor::BJ_m] = bodyMotor;
@@ -1053,8 +1053,8 @@ namespace lpzrobots
 
 
 		//Joint Limits
-		conf.backJointLimitD = M_PI / 180 * 45.0;
-		conf.backJointLimitU =	-M_PI / 180 * 0.0;
+		conf.backJointLimitD = M_PI / 180 * 0.0;
+		conf.backJointLimitU =	-M_PI / 180 * 45.0;
 
 		conf.headJointLimitD = M_PI / 180 * 45.0;
 		conf.headJointLimitU =	-M_PI / 180 * 0.0;

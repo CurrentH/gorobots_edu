@@ -16,7 +16,7 @@ namespace lpzrobots
 	DungBotSimulation::DungBotSimulation( void )
 	{
 		setTitle("DungBot simulation");
-		setGroundTexture("sand_texture.jpg");
+		setGroundTexture("sand_texture.jpg"); //sand_texture.jpg //whiteground_crosses.jpg
 		simulation_time_seconds = 0.0;
 		trial_number = 0;
 		agent = NULL;
@@ -70,7 +70,7 @@ namespace lpzrobots
 		//addPlayground(odeHandle,osgHandle,global);
 
 		// Configure simulation
-		simulation_time_seconds = 60;
+		simulation_time_seconds = 300; // Gaittest - 60s. Walk 300s.
 		number_of_runs = 1;
 		instantiateAgent( global );
 	}
@@ -80,7 +80,7 @@ namespace lpzrobots
 		// Instantiate robot
 		DungBotConf conf = DungBot::getDefaultConf();
 		robot = new DungBot( odeHandle, osgHandle, conf, "Dungbot_Robot" );
-		robot->place( Pos( 0.0, 0.0, 0.8 ) ); // CONTROLS THE HEIGHT
+		robot->place( Pos( 0.0, 0.0, 1 ) ); // If ball stand = 0.8 ~ If roll stand = 0.7 ~ standard = 1.0
 
 		// Instantiate controller
 		controller = new DungBotEmptyController( "DungBotEmptyController" );
@@ -97,9 +97,9 @@ namespace lpzrobots
 		setSimulationDuration( simulation_time_seconds );
 
 
-		if(true){
-		PassiveSphere* s1 = new PassiveSphere(odeHandle, osgHandle, 0.42);
-	    s1->setPosition(osg::Vec3(0.2, 0.0, -0.1)); // If ball stand = 0.03 ~ If roll stand = 0.2
+		if(false){
+		PassiveSphere* s1 = new PassiveSphere(odeHandle, osgHandle, 0.35); // If ball stand = 0.42 ~ If roll stand = 0.3
+	    s1->setPosition(osg::Vec3(0.3, 0.0, -0.1)); // If ball stand = 0.032 ~ If roll stand = 0.3
 	    s1->setTexture("ground_texture3.jpg");
 		Substance surface(10000,0,10000,0);
 		s1->setSubstance( surface );
