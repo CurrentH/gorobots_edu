@@ -1,7 +1,7 @@
 /*****************************************************************************
 *   "THE BEER-WARE LICENSE" (Revision 43):
-*   This software was written by Theis Str�m-Hansen <thstroemhansen@gmail.com>
-*   and Mathias Thor <mathias.thor@gmail.com>
+*   This software was written by Mathias Thor <mathias_thor@hotmail.com>
+*   and Theis Strom-Hansen <thstroemhansen@gmail.com>
 *   As long as you retain this notice you can do whatever you want with it.
 *   If we meet some day, and you think this stuff is worth it, you can buy me
 *   a beer in return.
@@ -81,19 +81,10 @@ namespace lpzrobots
         nameMotor(DungBotMotorSensor::BJ_m, "BJ motor");
     }
 
-    DungBot::~DungBot()
-    {
-    	// TODO: Should we add a delete func like in amos?
-    }
+    DungBot::~DungBot(){}
 
     void DungBot::placeIntern( const Matrix& pose )
     {
-        /**
-            This is some (x,y,z) vector, with the position being the center of the body.
-            So make some calculation for how the body looks like, so that the z-equation is
-            in the third position.
-        **/
-
         osg::Matrix initialPose = pose * osg::Matrix::translate(0, 0, conf.rearDimension[2]+conf.coxaRadius[0]*1.2);
         create( initialPose );
     }
@@ -124,9 +115,6 @@ namespace lpzrobots
 				}
 			}
 		}
-
-
-
     }
 
     void DungBot::sense( GlobalData& globalData )
@@ -135,7 +123,7 @@ namespace lpzrobots
 
     	for( int i = 0; i < LEG_POS_MAX; i++ )
 		{
-			for( int j = 0; j < 6; j++ ) //TODO TODO TODO TODO TODO TODO TODO
+			for( int j = 0; j < 6; j++ )
 			{
 				if( conf.testTarsusSensor )
 				{
@@ -220,34 +208,32 @@ namespace lpzrobots
 		//	The purpose of this for-loop is to get all the leg-trunk-connections
 		for (int i = 0; i < LEG_POS_MAX; i++) // Run through all of the legs
 		{
-			LegPos leg = LegPos(i);	// Give a value to leg (0-6), then if (leg == 'something') is true = 1
+			LegPos leg = LegPos(i);	// Give a value to leg (0-6)
 
 			// Make the right legs have a negative sign
 			const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
-			// Hind legs
-			//const double lr2 = leg==L1 || leg==R1 || leg==L2 || leg==R2;
 
-			// create 3d-coordinates for the leg-trunk connection:
+			// Create 3d-coordinates for the leg-body connection:
 			double tempScale = conf.scale;
 			switch (i)
 			{
 				case L0:
 				case R0:
 					xPosition = conf.coxaRadius[1]-2.8689/tempScale;
-					yPosition = lr * 2.5409/tempScale;// +0.5*lr;
-					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale;// + 1;
+					yPosition = lr * 2.5409/tempScale;
+					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale;
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.coxaRadius[1]+0/tempScale;
-					yPosition = lr * 2.5883/tempScale;// +0.5*lr;
-					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale;// + 1;
+					yPosition = lr * 2.5883/tempScale;
+					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale;
 					break;
 				case L2:
 				case R2:
 					xPosition = conf.coxaRadius[1]+3.1666/tempScale;
-					yPosition = lr * 4.7496/tempScale;// +0.5*lr;
-					zPosition = -conf.rearDimension[2]/2 + 0/tempScale;// + 1;
+					yPosition = lr * 4.7496/tempScale;
+					zPosition = -conf.rearDimension[2]/2 + 0/tempScale;
 					break;
 
 				default:
@@ -255,8 +241,7 @@ namespace lpzrobots
 			}
 
 			Pos pos = Pos( xPosition, yPosition, zPosition );
-
-			legTrunkConnections[leg] = osg::Matrix::translate(pos) * pose;
+			legTrunkConnections[leg] = osg::Matrix::translate(pos) * pose; // save the leg trunk connection for later use
 		}
 
 		std::vector<Primitive*> tarsusParts;
@@ -273,7 +258,9 @@ namespace lpzrobots
 	        const double frontLeg = ( leg == R0 ) - ( leg == L0 );
 	        const double lr = (leg == L0 || leg == L1 || leg == L2) - (leg == R0 || leg == R1 || leg == R2);
 
-			//	Coxa placement
+	    	/************************************
+	         * Coxa Placement
+	         ***********************************/
 	        osg::Matrix c1 = osg::Matrix::rotate( M_PI/180*(180+95.7143), lr*hindLegOnly, 0 , 0 ) *
 								osg::Matrix::rotate( M_PI/180*(180+110.4237), lr*middleLegOnly, 0 , 0 ) *
 								osg::Matrix::rotate( M_PI/180*(180+112.5464), lr*frontLegOnly, 0 , 0 ) *
@@ -283,22 +270,21 @@ namespace lpzrobots
 	        					legTrunkConnections[leg];
 			osg::Matrix coxaCenter = osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) * c1; //Position of Center of Mass
 			Primitive* coxaThorax = new Capsule( conf.coxaRadius[i%3], conf.coxaLength[i%3] );
-			//coxaThorax->setTexture( "coxa1.jpg" );
 			OsgHandle osgHandleCoxa = osgHandle.changeColor(255,255,0,1);
 			coxaThorax->init( odeHandle, conf.coxaMass[i%3], osgHandleCoxa );
 			coxaThorax->setPose( coxaCenter );
 			legs[leg].coxa = coxaThorax;
 			objects.push_back( coxaThorax );
 
-			//	Femur placement
+	    	/************************************
+	         * Femur placement
+	         ***********************************/
 			osg::Matrix c2 = osg::Matrix::rotate( M_PI/2, 0, 0, lr ) *
 								osg::Matrix::rotate( M_PI/180*120, lr, 0, 0 ) *
-
 								osg::Matrix::translate( 0, 0, -conf.coxaLength[i%3]/2 ) *
 								coxaCenter;
 			osg::Matrix femurCenter = osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) * c2;
 			Primitive* femurThorax = new Capsule( conf.femurRadius[i%3], conf.femurLength[i%3]  );
-			//femurThorax->setTexture( "femur.jpg" );
 			OsgHandle osgHandleFemur = osgHandle.changeColor(0,191,255,1);
 			femurThorax->init( odeHandle, conf.femurMass[i%3], osgHandleFemur );
 			femurThorax->setPose( femurCenter );
@@ -308,7 +294,9 @@ namespace lpzrobots
 			odeHandle.addIgnoredPair(femurThorax, front);
 			objects.push_back( femurThorax );
 
-			//	Tibia placement
+	    	/************************************
+	         * Tibia placement
+	         ***********************************/
 			osg::Matrix c3 = osg::Matrix::rotate( M_PI/180*85, 0, 1, 0 ) *
 								osg::Matrix::translate( 0, 0, -conf.femurLength[i%3] / 2 ) *
 								femurCenter;
@@ -316,10 +304,8 @@ namespace lpzrobots
 			Primitive* tibia = new Capsule( conf.tibiaRadius[i%3], conf.tibiaLength[i%3] );
 			OsgHandle osgHandleTibia = osgHandle.changeColor(247,0,255,1);
 			tibia->init( odeHandle, conf.tibiaMass[i%3], osgHandleTibia );
-
 			//Substance surface(0,100000,10000,0);
 			//tibia->setSubstance( surface );
-
 			tibia->setPose( tibiaCenter );
 			legs[leg].tibia = tibia;
 			odeHandle.addIgnoredPair(tibia, front);
@@ -329,7 +315,9 @@ namespace lpzrobots
 			objects.push_back( tibia );
 
 
-			//	Calculate anchor and axis for the joints.
+	    	/********************************************
+	         * Calculate anchor and axis for the joints.
+	         ********************************************/
 			const osg::Vec3 anchor1 = nullpos * c1;
 	        Axis axis1 = Axis( 0, 0, backLeg+frontLeg )*c1;
 
@@ -339,7 +327,9 @@ namespace lpzrobots
 			const osg::Vec3 anchor3 = nullpos * c3;
 	        Axis axis3 = Axis( 0, 1, 0 )*c3;
 
-	        //	Torso coxa hinge joint.
+	    	/********************************************
+	         * BC-Joint placement (hinge-joint)
+	         ********************************************/
 	        if( conf.testCoxa || conf.testNo )
 	        {
 	        	HingeJoint* j = new HingeJoint( (leg == L0 || leg == R0) ? front : rear, coxaThorax, anchor1, -axis1 ); // Only L0 and R0 should be attached to front
@@ -357,7 +347,9 @@ namespace lpzrobots
 				joints.push_back( j );
 	        }
 
-	        // Coxa femur hinge joint.
+	    	/********************************************
+	         * CF-Joint placement (hinge-joint)
+	         ********************************************/
 	        if( conf.testFemur || conf.testNo )
 	        {
 	        	HingeJoint* k = new HingeJoint( coxaThorax, femurThorax, anchor2, -axis2 );
@@ -375,7 +367,9 @@ namespace lpzrobots
 				joints.push_back( k );
 	        }
 
-	        // Femur tibia hinge joint.
+	    	/********************************************
+	         * FT-Joint placement (hinge-joint)
+	         ********************************************/
 	        if( conf.testTibia || conf.testNo )
 	        {
 	        	HingeJoint* l = new HingeJoint( tibia, femurThorax, anchor3, -axis3 );
@@ -393,30 +387,31 @@ namespace lpzrobots
 	        	joints.push_back( l );
 	        }
 
-	        // Tarsus
-
-			//	Tarsus placement
+	    	/********************************************
+	         * Tarsus placement
+	         ********************************************/
 			osg::Matrix c4 = osg::Matrix::translate( 0, 0, -conf.tibiaLength[i%3] / 2  ) *
 								tibiaCenter;
-			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;	//TODO:Depending on the amount of tarsus joints, increase "5" here
+			osg::Matrix tarsusCenter = osg::Matrix::translate( 0, 0, -(conf.tarsusLength[i%3] / 5)/2 ) * c4;
 			Primitive *tarsus = new Capsule( conf.tarsusRadius[i%3], conf.tarsusLength[i%3] / 5 );
 			OsgHandle osgHandleTarsus = osgHandle.changeColor(0,0,255,1);
 			tarsus->init( odeHandle, conf.tarsusMass, osgHandleTarsus );
 			tarsus->setPose( tarsusCenter );
-
 			//tarsus->setSubstance( surface );
-
 			legs[leg].tarsus = tarsus;
 			objects.push_back( tarsus );
 			tarsusParts.push_back( tarsus );
 
 			const osg::Vec3 anchor4 = nullpos * c4;
 
-			//	Tibia tarsus fixed joint.
+	    	/********************************************
+	         * TT-Joint placement (fixed-joint)
+	         ********************************************/
 			FixedJoint* q = new FixedJoint( tarsus, tibia, anchor4 );
 			q->init( odeHandle, osgHandle.changeColor("joint"), true, conf.tarsusRadius[i%3] * 2.1 );
 			joints.push_back(q);
 
+			// Contact sensor
 			if( conf.testTarsusSensor )
 			{
 				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ] = new ContactSensor(true, 65, 2.5 * conf.tarsusRadius[i%3], false, true, Color(0,255,0));
@@ -424,6 +419,9 @@ namespace lpzrobots
 				tarsusContactSensors[ std::make_pair( LegPos(i), 0) ]->init(tarsusParts.at(0));
 			}
 
+	    	/********************************************
+	         * The five tartsus parts
+	         ********************************************/
 			if( conf.testTarsus )
 			{
 				double angle = M_PI/16;
@@ -439,7 +437,6 @@ namespace lpzrobots
 				for( int j = 1; j < 6; j++ )
 				{
 					 section = new Capsule( radius, partLength );
-					 //section->setTexture( "tarsus.jpg" );
 					 section->init( odeHandle, mass, osgHandleTarsus );
 
 					 m6 = osg::Matrix::rotate(i%2==0 ? angle : -angle,0,i%2==0 ? -1 : 1,0) *
@@ -460,6 +457,7 @@ namespace lpzrobots
 					 tarsussprings.push_back( servo );
 					 addMotor( spring );
 
+					 //Contact sensor
 					 if( conf.testTarsusSensor )
 					 {
 						 tarsusContactSensors[ std::make_pair( LegPos(i), j) ] = new ContactSensor(true, 1, 1.5 * radius, false, true, Color(0,255,0));
@@ -470,9 +468,9 @@ namespace lpzrobots
 			}
 			tarsusParts.clear();
 
-			/*
-			 * 	Making the position sensors for each leg.
-			 */
+	    	/********************************************
+	         * Making the position sensors for each leg.
+	         ********************************************/
 			RelativePositionSensor tarsusSensor( 1, 1, Sensor::XYZ, false );
 			bodyPartSensors.push_back( tarsusSensor );
 			bodyPartSensors.back().init(tarsus);
@@ -490,11 +488,15 @@ namespace lpzrobots
 
     lpzrobots::Primitive* DungBot::makeHead( const osg::Matrix& pose, const double mass, const std::vector<double> dimension )
     {
-    	//lpzrobots::Primitive* head = new Cylinder( dimension[2], dimension[0] );
+    	// Allocate object
     	lpzrobots::Primitive* head = new Box( dimension[0], dimension[1], dimension[2] );
+    	// Set texture from Image library
     	head->setTexture( "body.jpg" );
+    	// Initialize the primitive
     	head->init( odeHandle, mass, osgHandle );
+    	// Set pose
     	head->setPose( pose );
+    	// Add to objects
     	objects.push_back( head );
 
     	return head;
@@ -506,7 +508,6 @@ namespace lpzrobots
         auto bodyPart = new Box( dimension[0], dimension[1], dimension[2] );
         // Set texture from Image library
         bodyPart->setTexture( "body.jpg");
-        //OsgHandle osgHandleBody = osgHandle.changeColor(0,150,0,1);
         // Initialize the primitive
         bodyPart->init( odeHandle, mass, osgHandle );
         // Set pose
@@ -517,26 +518,13 @@ namespace lpzrobots
         return bodyPart;
     }
 
-    lpzrobots::Primitive* DungBot::makeLegPart( const osg::Matrix& pose, const double mass, const double legRadius, const double legHeight )
-    {
-    	// Allocate object
-    	lpzrobots::Primitive* leg = new Cylinder( legRadius, legHeight );
-    	// Set texture from Image library
-    	leg->setTexture( "Images/red_velour.rgb" );
-    	// Initialize the primitive
-    	leg->init( odeHandle, mass, osgHandle );
-    	// Set pose
-    	leg->setPose( pose );
-    	// Add to objects
-    	objects.push_back( leg );
-
-    	return leg;
-    }
-
     void DungBot::makeBodyHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
     {
     	if( conf.testBody || conf.testNo )
     	{
+	    	/********************************************
+	         * Hinge joint
+	         ********************************************/
     		HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 			hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
 			joints.push_back( hinge );
@@ -546,6 +534,9 @@ namespace lpzrobots
     	}
     	else
     	{
+	    	/********************************************
+	         * Fixed joint
+	         ********************************************/
     		FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
     		hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
 			joints.push_back( hinge );
@@ -556,6 +547,9 @@ namespace lpzrobots
 	{
     	if( conf.testHead || conf.testNo )
 		{
+	    	/********************************************
+	         * Hinge joint
+	         ********************************************/
 			HingeJoint* hinge = new HingeJoint( frontLimb, rearLimb, position, axis );
 			hinge->init( odeHandle, osgHandle, true, Y * 1.05 );
 			joints.push_back( hinge );
@@ -565,25 +559,14 @@ namespace lpzrobots
 		}
 		else
 		{
+	    	/********************************************
+	         * Fixed joint
+	         ********************************************/
 			FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
 			hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
 			joints.push_back( hinge );
 		}
 	}
-
-    void DungBot::makeFixedJoint(Primitive* frontLimb, Primitive* rearLimb, const Pos position, const double Y)
-    {
-		FixedJoint* fixed = new FixedJoint( frontLimb, frontLimb, position);
-		fixed->init( odeHandle, osgHandle, false, Y * 1.00 );
-		joints.push_back( fixed );
-    }
-
-    void DungBot::makeHingeJoint( Primitive* frontLimb, Primitive* rearLimb, const Pos position, Axis axis, const double Y )
-    {
-    	FixedJoint* hinge = new FixedJoint( frontLimb, rearLimb, position );
-        hinge->init( odeHandle, osgHandle, false, Y * 1.05 );
-        joints.push_back( hinge );
-    }
 
 	void DungBot::nameMotor( const int motorNumber, const char* name )
 	{
@@ -602,7 +585,6 @@ namespace lpzrobots
 		{
 			MotorName const name = it->first;
 			OneAxisServo * const servo = it->second;
-			//We multiple with -1 to map to real hexapod
 			if( servo )
 			{
 				servo->set( -motors[ name ] );
@@ -692,7 +674,9 @@ namespace lpzrobots
 			sensors[DungBotMotorSensor::R2_s0] = tarsusContactSensors[std::make_pair(R2,0)]->get();
 			sensors[DungBotMotorSensor::L2_s0] = tarsusContactSensors[std::make_pair(L2,0)]->get();
 		}
-		//	Position sensors
+    	/********************************************
+         * Position sensors
+         ********************************************/
 		if( true )
 		{
 			//	Make for loop that makes all these
@@ -887,7 +871,6 @@ namespace lpzrobots
 	{
 	    bool rv = Configurable::setParam(key, val);
 
-	    //	We set all parameters here
 	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
 			Spring * const tarsusSpring = it->second.tarsusSpring;
@@ -960,8 +943,6 @@ namespace lpzrobots
 			headServo->setMinMax( conf.headJointLimitU, conf.headJointLimitD );
 		}
 
-		//TODO: Make the same as above, but for the head
-
 		return rv;
 	}
 
@@ -969,9 +950,9 @@ namespace lpzrobots
 	{
 		DungBotConf conf;
 
-		/**
-		 * 	Test of the legs
-		 */
+    	/********************************************
+         * What to test?
+         ********************************************/
 		conf.testNo = false;	//	If true, then all hinges exist.
 		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
 		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
@@ -982,8 +963,9 @@ namespace lpzrobots
 		conf.testTarsus = false; // If true, then tarsus is created, else it is not created
 		conf.testTarsusSensor = true;
 
-		//	----------- Body dimensions -------
-		//TODO Measure the correct height.
+    	/********************************************
+         * Body dimensions
+         ********************************************/
 		double totalLength = 3.75+9.111+10.324;
 		conf.scale = totalLength;
 
@@ -991,13 +973,14 @@ namespace lpzrobots
 		conf.frontDimension = { 5.146/totalLength, 9.111/totalLength, 4.3/totalLength };
 		conf.rearDimension 	= { 9.028/totalLength, 10.324/totalLength, 4.9/totalLength };
 
-
 		double totalMass = 106.402/10;
 		conf.massHead = 14.826/totalMass;
 		conf.massFront = 23.823/totalMass;
 		conf.massRear = 30.439/totalMass;
 
-		// ------------ Leg dimensions --------
+    	/********************************************
+         * Leg dimensions
+         ********************************************/
 		//	Coxa
 		conf.coxaLength = {
 							2.46037/totalLength,
@@ -1049,10 +1032,12 @@ namespace lpzrobots
 							0.250162/totalLength/2,
 							0.247163/totalLength/2,
 							0.25316/totalLength/2 };
-		conf.tarsusMass = 0.01;							//TODO: Find a proper mass for the tarsus
+		conf.tarsusMass = 0.01;	//TODO: Find a proper mass for the tarsus
 
 
-		//Joint Limits
+    	/********************************************
+         * Range of motion for the joints (D=DOWN U=UP)
+         ********************************************/
 		conf.backJointLimitD = M_PI / 180 * 0.0;
 		conf.backJointLimitU =	-M_PI / 180 * 45.0;
 
@@ -1102,9 +1087,9 @@ namespace lpzrobots
 	    conf.rTibiaJointLimitD =  M_PI / 180.0 * C;
 	    conf.rTibiaJointLimitU = -M_PI / 180.0 * ( tibia-C );
 
-
-		// This is the maximum force for the motors (should just be height enough)
-	    // Consider using another conf. var
+    	/********************************************
+         * PID VALUES
+         ********************************************/
 	    conf.head_Kp	= 1.5;
 	    conf.back_Kp 	= 4.0;
 		conf.coxa_Kp 	= 2.5;
@@ -1112,8 +1097,6 @@ namespace lpzrobots
 		conf.tibia_Kp 	= 2.5;
 		conf.tarsus_Kp 	= 0.0;
 
-
-		// Kd and Ki parameters are not used anymore
 		conf.head_Kd	= 0.0;
 		conf.back_Kd 	= 0.0;
 		conf.coxa_Kd 	= 0.5;
@@ -1128,12 +1111,10 @@ namespace lpzrobots
 		conf.tibia_Ki 	= 0.5;
 		conf.tarsus_Ki	= 0.0;
 
-		// The following sets the max output for the motor. It scales the input to fit this
-		// So that 1 = maxVel TODO REFACTOR THIS VAR
-		conf.backMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
+		conf.backMaxVel 	= 2.0;
+		conf.coxaMaxVel 	= 2.0;
+		conf.femurMaxVel 	= 2.0;
+		conf.tibiaMaxVel 	= 2.0;
 
 		return conf;
 	}
