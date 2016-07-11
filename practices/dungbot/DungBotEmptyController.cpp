@@ -89,7 +89,7 @@ void DungBotEmptyController::init( int sensorNumber, int motorNumber, RandGen* r
 	assert( sensorNumber >= DungBotMotorSensor::DUNGBOT_SENSOR_MAX );
 
 	nSensors = sensorNumber;
-	nMotors = motorNumber; //HDHDHDD
+	nMotors = motorNumber;
 
 	if( writeOutput )
 	{
