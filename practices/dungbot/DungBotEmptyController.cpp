@@ -9,15 +9,19 @@
 *   Should this software ever become self-aware, remember: I am your master
 *****************************************************************************/
 
+/*
+ * The motor can take both position and velocity
+ * Both should be between -1.0 and 1.0
+ * To use the motor with position set: pos_vel = True;	(uses the vector angleVectors and ignores velocityVector)
+ * To use the motor with velocity set: pos_vel = False; (uses the vector velocityVector and ignores angleVectors)
+ */
+
 #include "DungBotEmptyController.h"
 #include "walknetcontroller.h"
 
 //using namespace matrix;
 using namespace std;
 
-// The constructor implements the AbstractController interface. A trial number can be
-// passed to the constructor in order to automate variations in the controller setup
-// over different trials.
 DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 : AbstractController( name, "1.0" )
 {
@@ -29,6 +33,7 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 	nMotors = 0;
 
 	angleVector.assign( 6 , vector<double>( 3 , 0 ) );
+	velocityVector.assign( 6 , vector<double>( 3 , 0 ) );
 
 	walknet = new walknetcontroller();
 }
@@ -52,7 +57,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	if( int(ticks_since_init) < 600 ) // Start after 1000 ticks in init position. Please drop before times run out
 	{
 		stand( angleVector );
-		moveRobot( motor, angleVector );
+		moveRobot( motor, angleVector, velocityVector );
 
 		if( int(ticks_since_init)%100==0 )
 			std::cout << (600-ticks_since_init)/100 << std::endl;
@@ -68,7 +73,7 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	//rollstand( angleVector );
 	//headstand( angleVector );
 	//motor[18] = -1;
-	moveRobot( motor, angleVector );
+	moveRobot( motor, angleVector, velocityVector );
 	// ----------------------------------
 
 	if( int( ticks_since_init )%50 == 0 && outputFlag ){
@@ -222,13 +227,18 @@ void DungBotEmptyController::start( motor* motor, double vel ) {
 	}
 }
 
-void DungBotEmptyController::moveRobot( motor* motor, std::vector<std::vector<double>> angleVector ) {
+void DungBotEmptyController::moveRobot( motor* motor, std::vector<std::vector<double>> angleVector, std::vector<std::vector<double>> velocityVector ) {
 
 	for( int i = 0; i < 3; i++ )
 	{
 		for(int j = 0; j < 6; j ++)
 		{
-			motor[i*6+j] = angleVector[j][i];
+			if ( pos_vel ) {
+				motor[i*6+j] = saturate(angleVector[j][i], -1.0, 1.0);
+			}
+			else {
+				motor[i*6+j] = saturate(velocityVector[j][i] + 10, 9.0, 11.0)*-1; // Minus 1 because motor array reverses the sign
+			}
 		}
 	}
 }
@@ -292,6 +302,17 @@ void DungBotEmptyController::collectData( const sensor* sensor, motor* motor )
 	}
 }
 
+double DungBotEmptyController::saturate(double input, double thres_low, double thres_high) {
+	if ( input > thres_high ) {
+		return thres_high;
+	}
+	else if ( input < thres_low ) {
+		return thres_low;
+	}
+	else {
+		return input;
+	}
+}
 /*
 	std::cout << "------------------------------------------------------------------" << std::endl;
 	std::cout << "     \t   \tCurrent\t     \t\t    \tDesired\t    \t\tPhase\t    " << std::endl;

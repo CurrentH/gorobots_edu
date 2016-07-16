@@ -59,11 +59,15 @@ class DungBotEmptyController : public AbstractController
 		void headstand( std::vector<std::vector<double>> &);
 
 		void standsimple( std::vector<std::vector<double>> &);
-		void moveRobot( motor* motor, std::vector<std::vector<double>> );
+		void moveRobot( motor* motor, std::vector<std::vector<double>>, std::vector<std::vector<double>> );
+
+		double saturate ( double input, double thres_low, double thres_high );
 
 		bool outputFlag = true;
 		bool writeOutput = true;
+		bool pos_vel = true;
 		std::vector<std::vector<double>>angleVector;
+		std::vector<std::vector<double>>velocityVector;
 
 		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
 
