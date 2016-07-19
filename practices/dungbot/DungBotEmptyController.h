@@ -24,6 +24,7 @@
 #include <vector>
 #include <cmath>
 
+class kinematicsController;
 class walknetcontroller;
 class DungBotEmptyController : public AbstractController
 {
@@ -63,6 +64,8 @@ class DungBotEmptyController : public AbstractController
 
 		double saturate ( double input, double thres_low, double thres_high );
 
+		bool testFlag = true;
+
 		bool outputFlag = true;
 		bool writeOutput = true;
 		bool pos_vel = true;
@@ -71,8 +74,8 @@ class DungBotEmptyController : public AbstractController
 
 		double state[DungBotMotorSensor::DUNGBOT_MOTOR_MAX][2];
 
+		kinematicsController * invKin;
 		walknetcontroller * walknet;
-
 };
 
 
