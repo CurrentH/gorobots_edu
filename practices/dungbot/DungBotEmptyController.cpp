@@ -17,6 +17,7 @@
  */
 
 #include "DungBotEmptyController.h"
+#include "kinematicsController.h"
 #include "walknetcontroller.h"
 
 //using namespace matrix;
@@ -40,7 +41,9 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 		velocityVector[i][3] = 1;
 	};
 
+	invKin = new kinematicsController();
 	walknet = new walknetcontroller();
+
 }
 
 DungBotEmptyController::~DungBotEmptyController()
@@ -74,6 +77,13 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	//standsimple( angleVector );
 	//walknet->stepWalknetTripod( sensor, angleVector );
 	walknet->stepWalknet( sensor, angleVector, velocityVector );
+	//walknet->stepWalknet( sensor, angleVector );
+
+	if( testFlag ){
+		testFlag = false;
+		invKin->stepKinematicsController( sensor, angleVector );
+		testFlag = true;
+	}
 	//ballstand( angleVector );
 	//rollstand( angleVector );
 	//headstand( angleVector );
@@ -132,9 +142,9 @@ bool DungBotEmptyController::restore( FILE* f )
 
 void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVector )
 {
-	double coxa_pos[3] 	= {0.0, -0.2, -0.5}; // Front, Middle, Rear
-	double femur_pos[3]	= {0.2, 0.05, 0.5};
-	double tibia_pos[3]	= {0.6, 0.9, 0.4};
+	double coxa_pos[3] 	= {0.1, 0.1, 0.1}; // Front, Middle, Rear
+	double femur_pos[3]	= {0.1, 0.1, 0.1};
+	double tibia_pos[3]	= {0.1, 0.1, 0.1};
 
 	for( int i = 0; i < 6; i++ )
 	{

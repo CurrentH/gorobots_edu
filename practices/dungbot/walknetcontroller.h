@@ -60,7 +60,6 @@ class walknetcontroller
 
 	double calculateRule4Distance( std::vector<double> &, std::vector<double> & );
 
-
 	//	Used for testing the tripod gait
 	bool switchFlag = false;
 
