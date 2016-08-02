@@ -54,16 +54,16 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 walknetSeparateLeg::~walknetSeparateLeg(void) {
 }
 
-void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle )
+void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle, std::vector<double> &jointVel )
 {
 	 extractSensor(sensor, legNum, localSensorArray);
 	 //stanceNet_maxmin(sensor, viaAngle );
-	 selectorNet( sensor, viaAngle );
+	 selectorNet( sensor, viaAngle, jointVel );
 	 //stanceNet2(sensor,viaAngle);
 	 //swingNet2(sensor,viaAngle);
 }
 
-void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle )
+void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle, std::vector<double> &jointVel )
 {
 	GCunit = getGroundContact();			//	Check if there is Ground Contact
 	PEPunit = atAngle( PEP[0] , 0, 0.01);	//	Check if the leg is at the PEP.
@@ -185,8 +185,14 @@ void walknetSeparateLeg::stanceNet2(const sensor* sensor, std::vector<double> &v
 
 }
 
-void walknetSeparateLeg::swingNet1(const sensor* sensor, std::vector<double> &viaAngle){
+void walknetSeparateLeg::stanceNet3(const sensor* sensor, std::vector<double> &viaAngle, std::vector<double> &jointVel){
+	// TODO
+	/*
+	 *
+	 */
+}
 
+void walknetSeparateLeg::swingNet1(const sensor* sensor, std::vector<double> &viaAngle){
 	if(startSwing == false){
 		swingState = IDLE_SWING;
 	}
@@ -221,12 +227,16 @@ void walknetSeparateLeg::swingNet1(const sensor* sensor, std::vector<double> &vi
 				} else {
 					touch_down = true;
 					startSwing = false;
+					end = clock();
+					double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+					//cout << "Leg #" << legNum << ": "<< time_spent << endl; // TODO
 					swingState = IDLE_SWING;
 				}
 				break;
 
 			case IDLE_SWING:
 				if(startSwing){
+					begin = clock();
 					swingState = LIFT;
 				}
 				break;

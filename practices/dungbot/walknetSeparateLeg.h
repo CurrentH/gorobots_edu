@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <math.h>
+#include <time.h>
 
 
 class walknetSeparateLeg
@@ -34,6 +35,9 @@ class walknetSeparateLeg
 	bool touch_down = false;
 	bool close_to_PEP = false;
 
+	clock_t begin = 0;
+	clock_t end = 0;
+
 	int rule1 = 0, rule2 = 0, rule3 = 0, rule4 = 0;
 
 	int swingState;
@@ -46,7 +50,7 @@ class walknetSeparateLeg
 	walknetSeparateLeg( );
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
-	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &  );
+	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &, std::vector<double> &  );
 	//	Used by the walknet to make the control laws for the legs.
 	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
 	void setAEP( std::vector<double> & );
@@ -93,11 +97,12 @@ class walknetSeparateLeg
 
 	private:
 	//	Private methods
-	void selectorNet( const sensor* sensor, std::vector<double> & );
+	void selectorNet( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	void stanceNetSimple( const sensor* sensor, std::vector<double> & );
 	void swingNetSimple( const sensor* sensor, std::vector<double> & );
 	void stanceNet1( const sensor* sensor, std::vector<double> & );
 	void stanceNet2( const sensor* sensor, std::vector<double> & );
+	void stanceNet3( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	void stanceNet_maxmin( const sensor* sensor, std::vector<double> & );
 	void swingNet1( const sensor* sensor, std::vector<double> & );
 	void swingNet2( const sensor* sensor, std::vector<double> & );

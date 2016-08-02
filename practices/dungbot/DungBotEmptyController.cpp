@@ -32,8 +32,13 @@ DungBotEmptyController::DungBotEmptyController( const std::string& name  )
 	nSensors = 0;
 	nMotors = 0;
 
-	angleVector.assign( 6 , vector<double>( 3 , 0 ) );
-	velocityVector.assign( 6 , vector<double>( 3 , 0 ) );
+	angleVector.assign( 6 , vector<double>( 4 , 0 ) );
+	velocityVector.assign( 6 , vector<double>( 4 , 0 ) );
+
+	for(int i = 0; i < 6; i++) {
+		angleVector[i][3] = 0;
+		velocityVector[i][3] = 1;
+	};
 
 	walknet = new walknetcontroller();
 }
@@ -68,11 +73,10 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	//start(motor, 1.0);
 	//standsimple( angleVector );
 	//walknet->stepWalknetTripod( sensor, angleVector );
-	walknet->stepWalknet( sensor, angleVector );
+	walknet->stepWalknet( sensor, angleVector, velocityVector );
 	//ballstand( angleVector );
 	//rollstand( angleVector );
 	//headstand( angleVector );
-	//motor[18] = -1;
 	moveRobot( motor, angleVector, velocityVector );
 	// ----------------------------------
 
@@ -233,11 +237,15 @@ void DungBotEmptyController::moveRobot( motor* motor, std::vector<std::vector<do
 	{
 		for(int j = 0; j < 6; j ++)
 		{
-			if ( pos_vel ) {
+			if ( angleVector[j][3] == 0 && velocityVector[j][3] == 1 ) {
 				motor[i*6+j] = saturate(angleVector[j][i], -1.0, 1.0);
 			}
-			else {
+			else if (  angleVector[j][3] == 1 && velocityVector[j][3] == 0 ){
 				motor[i*6+j] = saturate(velocityVector[j][i] + 10, 9.0, 11.0)*-1; // Minus 1 because motor array reverses the sign
+			}
+			else {
+				cout << "[FAILED] Can use the motor as both velocity and position controlled!" << endl;
+				exit(1);
 			}
 		}
 	}
