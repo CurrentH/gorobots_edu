@@ -98,15 +98,15 @@ class walknetSeparateLeg
 	private:
 	//	Private methods
 	void selectorNet( const sensor* sensor, std::vector<double> &, std::vector<double> & );
-	void stanceNetSimple( const sensor* sensor, std::vector<double> & );
-	void swingNetSimple( const sensor* sensor, std::vector<double> & );
-	void stanceNet1( const sensor* sensor, std::vector<double> & );
-	void stanceNet2( const sensor* sensor, std::vector<double> & );
+	void stanceNetSimple( const sensor* sensor, std::vector<double> &, std::vector<double> & );
+	void swingNetSimple(  const sensor* sensor, std::vector<double> &, std::vector<double> & );
+	void stanceNet1( const sensor* sensor, std::vector<double> &, std::vector<double> & );
+	void stanceNet2( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	void stanceNet3( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	void stanceNet_maxmin( const sensor* sensor, std::vector<double> & );
-	void swingNet1( const sensor* sensor, std::vector<double> & );
-	void swingNet2( const sensor* sensor, std::vector<double> & );
-	void swingNet3( const sensor* sensor, std::vector<double> & );
+	void swingNet1( const sensor* sensor, std::vector<double> &, std::vector<double> & );
+	void swingNet2( const sensor* sensor, std::vector<double> &, std::vector<double> & );
+	void swingNet3( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	double trajectory( double, int );
 
 
