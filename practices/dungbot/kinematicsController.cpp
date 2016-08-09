@@ -45,20 +45,136 @@ void kinematicsController::stepKinematicsController( const sensor* sensor, std::
 	std::cout << "COUNTER IS: " << counter << std::endl;
 
 	for( int i = 0; i < 6; i++ ){
-		legPositionControl( sensor, angleVector, i );
+		legPositionControl( sensor, angleVector, 1 );
+		break; //Remove
 	}
-
+/*
 	for( int i = 0; i<6; i++ ){
 		std::cout << targetPositionPointer[i] << " ";
 	}
 	std::cout << std::endl;
-
+*/
 	counter++;
 	std::cout << "$$$$$$$$$$$$$$$$$$$$$" << std::endl;
 
 }
 
 void kinematicsController::legPositionControl( const sensor* sensor, std::vector<std::vector<double>> &angleVector, int legNum ) {
+	/**
+	 * 	We want to set the "arm" at some (x,y,z) coordinate.
+	 * 	(0,0,0) is the place where the coxa and femur is connected.
+	 *
+	 * 	Will be 2D for a starter
+	 *
+	 * 	We want to give it a position. We know the current position.
+	 * 	We then want to find the difference, from the current POS
+	 * 	to the target POS.
+	 *
+	 * 	Then we want to use the Jacobian matrix, to get to the
+	 * 	target POS.
+	 */
+
+	//	Define the stepsize //TODO: Maybe in .h, or a proper define.
+	double stepsize = 0.01;
+	double femurLength = 0.13994910502;
+	double tibiaLength = 0.20226137589;
+
+	//	Write the target position. (load from file)
+	std::vector<double> targetPos;
+	targetPos.push_back( 0.27 ); //x
+	targetPos.push_back( 0.17 ); //y
+
+	//	Do forward kinematics to find the current position.
+	std::vector<double> currentPos;
+	currentPos.push_back( femurLength*cos( sensor[7] ) + tibiaLength*cos( sensor[7] + sensor[13] ) );
+	currentPos.push_back( femurLength*sin( sensor[7] ) + tibiaLength*sin( sensor[7] + sensor[13] ) );
+
+	//	Find the error between the target- and current position.
+	std::vector<double> errorPos;
+	errorPos.push_back( targetPos[0]-currentPos[0] );
+	errorPos.push_back( targetPos[1]-currentPos[1] );
+
+	//	Find the distance from the start.
+	double dist_start = sqrt( pow(errorPos[0],2) + pow(errorPos[1],2) );
+
+	//	Step we want to take
+	std::vector<double> deltaStep;
+	deltaStep.push_back( errorPos[0]*stepsize );
+	deltaStep.push_back( errorPos[1]*stepsize );
+
+	//	Position we want to hit
+	std::vector<double> stepPosition;
+	stepPosition.push_back( currentPos[0] + deltaStep[0] );
+	stepPosition.push_back( currentPos[1] + deltaStep[1] );
+
+	//	Now that we have the position we want to hit, we try
+	//	to rotate the joints, to the positions.
+	std::cout << std::endl;
+	std::cout << "*******" << std::endl;
+	std::cout << "cx: " << currentPos[0] << " cy: " << currentPos[1] << std::endl;
+	std::cout << "dx: " << stepPosition[0] << " dy: " << stepPosition[1] << std::endl;
+	std::cout << "tx: " << targetPos[0] << " ty: " << targetPos[1] << std::endl;
+	std::cout << "*******" << std::endl;
+	std::cout << std::endl;
+
+	//	joint 1-
+	std::vector<double> cal1;
+	cal1.push_back( femurLength*cos( sensor[7]-stepsize ) +tibiaLength*cos( sensor[7]-stepsize + sensor[13] ) );
+	cal1.push_back( femurLength*sin( sensor[7]-stepsize ) +tibiaLength*sin( sensor[7]-stepsize + sensor[13] ) );
+	//	joint 1+
+	std::vector<double> cal2;
+	cal2.push_back( femurLength*cos( sensor[7]+stepsize ) +tibiaLength*cos( sensor[7]+stepsize + sensor[13] ) );
+	cal2.push_back( femurLength*sin( sensor[7]+stepsize ) +tibiaLength*sin( sensor[7]+stepsize + sensor[13] ) );
+	//	joint 2-
+	std::vector<double> cal3;
+	cal3.push_back( femurLength*cos( sensor[7] ) +tibiaLength*cos( sensor[7] + sensor[13]-stepsize ) );
+	cal3.push_back( femurLength*sin( sensor[7] ) +tibiaLength*sin( sensor[7] + sensor[13]-stepsize ) );
+	//	joint 2+
+	std::vector<double> cal4;
+	cal4.push_back( femurLength*cos( sensor[7] ) +tibiaLength*cos( sensor[7] + sensor[13]+stepsize ) );
+	cal4.push_back( femurLength*sin( sensor[7] ) +tibiaLength*sin( sensor[7] + sensor[13]+stepsize ) );
+
+	//	Now we need to calculate the distance to the point, with the different joint moves.
+	std::vector<double> lenghtTest;
+	lenghtTest.push_back( sqrt( pow(stepPosition[0] - cal1[0],2) + pow(stepPosition[1] - cal1[1],2)) );
+	lenghtTest.push_back( sqrt( pow(stepPosition[0] - cal2[0],2) + pow(stepPosition[1] - cal2[1],2)) );
+	lenghtTest.push_back( sqrt( pow(stepPosition[0] - cal3[0],2) + pow(stepPosition[1] - cal3[1],2)) );
+	lenghtTest.push_back( sqrt( pow(stepPosition[0] - cal4[0],2) + pow(stepPosition[1] - cal4[1],2)) );
+
+	if( (lenghtTest[0] < lenghtTest[1]) && (lenghtTest[0] < lenghtTest[2]) && (lenghtTest[0] < lenghtTest[3]) ){
+		std::cout << "CASE 0" << std::endl;
+		angleVector[legNum][1] = sensor[7]-stepsize;
+		angleVector[legNum][2] = sensor[13];
+	}
+	else if( (lenghtTest[1] < lenghtTest[0]) && (lenghtTest[1] < lenghtTest[2]) && (lenghtTest[1] < lenghtTest[3]) ){
+		std::cout << "CASE 1" << std::endl;
+		angleVector[legNum][1] = sensor[7]+stepsize;
+		angleVector[legNum][2] = sensor[13];
+	}
+	else if( (lenghtTest[2] < lenghtTest[0]) && (lenghtTest[2] < lenghtTest[1]) && (lenghtTest[2] < lenghtTest[3]) ){
+		std::cout << "CASE 2" << std::endl;
+		angleVector[legNum][1] = sensor[7];
+		angleVector[legNum][2] = sensor[13]-stepsize;
+	}
+	else if( (lenghtTest[3] < lenghtTest[0]) && (lenghtTest[3] < lenghtTest[1]) && (lenghtTest[3] < lenghtTest[2]) ){
+		std::cout << "CASE 3" << std::endl;
+		angleVector[legNum][1] = sensor[7];
+		angleVector[legNum][2] = sensor[13]+stepsize;
+	}
+	else{
+		std::cout << "DEFAULT CASE" << std::endl;
+	}
+
+	std::vector<double> nextPos;
+	nextPos.push_back( femurLength*cos( angleVector[legNum][1] ) +tibiaLength*cos( angleVector[legNum][1] + angleVector[legNum][2] ) );
+	nextPos.push_back( femurLength*cos( angleVector[legNum][1] ) +tibiaLength*cos( angleVector[legNum][1] + angleVector[legNum][2] ) );
+
+	double dist_fin = sqrt( pow(targetPos[0] - nextPos[0],2) + pow(targetPos[1] - nextPos[1],2) );
+
+	std::cout << dist_fin << "-" << dist_start << "=" << dist_fin-dist_start << std::endl;
+
+
+	/*
 	std::vector<double> temp_vec;
 
 	for( int i = 0; i < 3; i++ ){
@@ -111,9 +227,7 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 			std::cout << "error 2" << std::endl;
 			break;
 	}
-	/*
-	 * Else keep the same
-	 */
+	*/
 }
 
 bool kinematicsController::legAtPosition( std::vector<double> currentPos, double deadband, int legNum )
@@ -275,4 +389,3 @@ void kinematicsController::loadPositionVectors(void) {
 		m++;	//	Increment m for the rows for the vectors.
 	}
 }
-

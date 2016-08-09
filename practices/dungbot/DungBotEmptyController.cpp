@@ -76,14 +76,14 @@ void DungBotEmptyController::stepNoLearning( const sensor* sensor, int sensorNum
 	//start(motor, 1.0);
 	//standsimple( angleVector );
 	//walknet->stepWalknetTripod( sensor, angleVector, velocityVector );
-	walknet->stepWalknet( sensor, angleVector, velocityVector );
-	/*
+	//walknet->stepWalknet( sensor, angleVector, velocityVector );
+
 	if( testFlag ){
 		testFlag = false;
 		invKin->stepKinematicsController( sensor, angleVector );
 		testFlag = true;
 	}
-	*/
+
 	//ballstand( angleVector );
 	//rollstand( angleVector );
 	//headstand( angleVector );
