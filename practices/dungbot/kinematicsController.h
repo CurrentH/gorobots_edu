@@ -65,10 +65,14 @@ class kinematicsController
 
 	private:
 	//	Private methods
+	void rotate( std::vector<std::vector<double>> &, double, double, double );
+	void matrixMulti( std::vector<std::vector<double>> &, std::vector<std::vector<double>>, std::vector<std::vector<double>> );
+	void kinematic( std::vector<double> &, std::vector<double>, int );
+	void homo( std::vector<std::vector<double>> &, std::vector<std::vector<double>>, std::vector<double> );
+
 	void loadPositionVectors( void );
 	void legPositionControl( const sensor*, std::vector<std::vector<double>> &, int );
 	bool legAtPosition( std::vector<double>, double, int );
-
 };
 
 #endif

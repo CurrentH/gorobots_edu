@@ -142,9 +142,11 @@ bool DungBotEmptyController::restore( FILE* f )
 
 void DungBotEmptyController::stand( std::vector<std::vector<double>> &angleVector )
 {
-	double coxa_pos[3] 	= {0.1, 0.1, 0.1}; // Front, Middle, Rear
-	double femur_pos[3]	= {0.1, 0.1, 0.1};
-	double tibia_pos[3]	= {0.1, 0.1, 0.1};
+	double coxa_pos[3] 	= {0.1, 0, 0.1}; // Front, Middle, Rear
+	double femur_pos[3]	= {0.1, 0, 0.1};
+	double tibia_pos[3]	= {0.1, 0, 0.1};
+
+
 
 	for( int i = 0; i < 6; i++ )
 	{
