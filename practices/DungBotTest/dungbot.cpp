@@ -264,7 +264,7 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo1 = new OneAxisServoVel(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
+			OneAxisServo * servo1 = new OneAxisServoVelocityControlled(odeHandle, j, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].tcServo = servo1;
 
 			// create the joint from first to second limb (coxa to second)
@@ -275,7 +275,7 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo2 = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
+			OneAxisServo * servo2 = new OneAxisServoVelocityControlled(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].ctrServo = servo2;
 
 			// springy knee joint
@@ -286,7 +286,7 @@ namespace lpzrobots
 	        // create motor, overwrite the jointLimit argument with 1.0
 	        // because it is less obscure and setMinMax makes mistakes
 	        // otherwise. Parameters are set later
-			OneAxisServo * servo3 = new OneAxisServoVel(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
+			OneAxisServo * servo3 = new OneAxisServoVelocityControlled(odeHandle, l, -1, 1, 1, 0.01, 0, 1.0); //TODO VIGTIGT SKAL VIRKE ASAP Noget med noget moter funk der skal med
 			legs[leg].ftiServo = servo3;
 
 

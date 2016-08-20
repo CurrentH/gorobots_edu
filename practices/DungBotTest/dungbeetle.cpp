@@ -614,7 +614,7 @@ namespace lpzrobots {
       k->init(odeHandle, osgHandleJoint, true, conf.width * 1.05);
       joints.push_back(k);
       // parameters are set later
-      OneAxisServo* servo = new OneAxisServoVel(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
+      OneAxisServo* servo = new OneAxisServoVelocityControlled(odeHandle, k, -1, 1, 1, 0.01, 0, 1.0);
       servos[BJ_m] = servo;
       backboneServo = servo;
 
@@ -1134,7 +1134,7 @@ namespace lpzrobots {
 							 Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHTarsus, true, lengthS/16 * 2.1);
 					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+					 auto servo = std::make_shared<OneAxisServoVelocityControlled>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
 					 joints.push_back(k);
 					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
 					 tarsussprings.push_back(servo);
@@ -1148,7 +1148,7 @@ namespace lpzrobots {
 							 Axis(i%2==0 ? -1 : 1,0,0) * m7);
 					 k->init(odeHandle, osgHTarsus, true, lengthS/16 * 2.1);
 					 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
+					 auto servo = std::make_shared<OneAxisServoVelocityControlled>(odeHandle,k, -1, 1, 1, 0.05); // parameters are set later
 					 joints.push_back(k);
 					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
 					 tarsussprings.push_back(servo);
@@ -1163,7 +1163,7 @@ namespace lpzrobots {
         					 Axis(i%2==0 ? -1 : 1,0,0) * m7);
         			 k->init(odeHandle, osgHTarsus, true, lengthS/16 * 2.1);
         			 // servo used as a spring
-					 auto servo = std::make_shared<OneAxisServoVel>(odeHandle,k, -1, 1, 1, 0.01); // parameters are set later
+					 auto servo = std::make_shared<OneAxisServoVelocityControlled>(odeHandle,k, -1, 1, 1, 0.01); // parameters are set later
 					 joints.push_back(k);
 					 auto spring = std::make_shared<ConstantMotor>(servo, 0.0);
 					 tarsussprings.push_back(servo);
