@@ -69,6 +69,10 @@ class kinematicsController
 	void matrixMulti( std::vector<std::vector<double>> &, std::vector<std::vector<double>>, std::vector<std::vector<double>> );
 	void kinematic( std::vector<double> &, std::vector<double>, int );
 	void homo( std::vector<std::vector<double>> &, std::vector<std::vector<double>>, std::vector<double> );
+	void preOffset( std::vector<double> &, int );
+	void postOffset( std::vector<std::vector<double>> &, int );
+	double preScale( double );
+	double postScale( double );
 
 	void loadPositionVectors( void );
 	void legPositionControl( const sensor*, std::vector<std::vector<double>> &, int );

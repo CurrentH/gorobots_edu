@@ -101,14 +101,12 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 
 	double scale = 3.75+9.111+10.324;
 
-	//todo: multiply with -1 on one side.
-	//todo: translate the tc joint.
-	//todo: rotations and translations for the rest.
+	//	todo: multiply with -1 on one side.
 
 	switch (legNum) {
 		case 0: case 3:
 		//	TC offset.
-			tc = {0,0,0};
+			tc = {conf.coxaRadius[1]-2.8689/tempScale, lr * 2.5409/tempScale, -conf.rearDimension[2]/2 + 0.4841/tempScale};
 		//	Limb lengths
 			coxa = {0, 0, 2.46037/scale};
 			femur = {0, 0, 3.24472/scale};
@@ -116,7 +114,7 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 			break;
 		case 1: case 4:
 		//	TC offset.
-			tc = {0,0,0};
+			tc = {conf.coxaRadius[1]+0/tempScale, lr * 2.5883/tempScale, -conf.rearDimension[2]/2 + 0.5672/tempScale};
 		//	Limb lengths
 			coxa = {0, 0, 2.11888/scale};
 			femur = {0, 0, 4.23025/scale};
@@ -128,7 +126,7 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 		//	Joint limits
 			break;
 		case 2: case 5:
-			tc = {0,0,0};
+			tc = {conf.coxaRadius[1]+3.1666/tempScale, lr * 4.7496/tempScale, -conf.rearDimension[2]/2 + 0/tempScale};
 			coxa = {0, 0, 4.05514/scale};
 			femur = {0, 0, 4.63394/scale};
 			tibia = {0, 0, 5.54793/scale};
@@ -175,6 +173,102 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 	newAngle.push_back(temp3[2][3]);
 }
 
+void kinematicsController::preOffset( std::vector<double> &angleVector, int legNum ){
+	/**
+	 *	Here we need to go from the joint values, to angles that makes sense.
+	 *	"Small to large"
+	 */
+
+	//	todo: Matlab check the offset here. Possible some minus offset, then multiply.
+
+	double scale = 0.9;
+	std::vector<double> tc;
+	std::vector<double> cf;
+	std::vector<double> ft;
+	std::vector<double> temp;
+	switch (legNum) {
+		//todo: cf and ft might need to be turned around 1->2 2->1
+		case 0: case 3:
+			tc = { 95.7878*scale, 	-M_PI / 180.0 * 80, 	M_PI / 180.0 * (95.7878*scale - 80) };
+			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			break;
+		case 1: case 4:
+			tc = { 116.1153*scale, 	-M_PI / 180.0 * 50, 	M_PI / 180.0 * (116.1153*scale - 50) };
+			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			break;
+		case 2: case 5:
+			tc = { 160.8514*scale, 	-M_PI / 180.0 * 50, 	M_PI / 180.0 * (160.8514*scale - 50) };
+			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			break;
+		default:
+			break;
+	}
+	std::cout << "***********************-PRE" << std::endl;
+	std::cout << angleVector[0] << " " << angleVector[1] << " " << angleVector[2] << std::endl;
+
+	angleVector[legNum][0] = angleVector[legNum][0] * preScale( tc[0] ) + ( tc[1]+tc[2] )/2;
+	angleVector[legNum][1] = angleVector[legNum][1] * preScale( cf[0] ) + ( cf[1]+cf[2] )/2;
+	angleVector[legNum][2] = angleVector[legNum][2] * preScale( ft[0] ) + ( ft[1]+ft[2] )/2;
+
+	std::cout << angleVector[0] << " " << angleVector[1] << " " << angleVector[2] << std::endl;
+	std::cout << "***********************" << std::endl;
+
+}
+
+void kinematicsController::postOffset( std::vector<std::vector<double>> &angleVector, int legNum ){
+	/**
+	 * 	Here we need to go from the angles that makes sense, back to the angles that the joints "understand".
+	 * 	"Large to small"
+	 */
+
+	double scale = 0.9;
+	std::vector<double> tc;
+	std::vector<double> cf;
+	std::vector<double> ft;
+	std::vector<double> temp;
+	switch (legNum) {
+		//todo: cf and ft might need to be turned around 1->2 2->1
+		case 0: case 3:
+			tc = { 95.7878*scale, 	-M_PI / 180.0 * 80, 	M_PI / 180.0 * (95.7878*scale - 80) };
+			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			break;
+		case 1: case 4:
+			tc = { 116.1153*scale, 	-M_PI / 180.0 * 50, 	M_PI / 180.0 * (116.1153*scale - 50) };
+			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			break;
+		case 2: case 5:
+			tc = { 160.8514*scale, 	-M_PI / 180.0 * 50, 	M_PI / 180.0 * (160.8514*scale - 50) };
+			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			break;
+		default:
+			break;
+	}
+	std::cout << "***********************-POST" << std::endl;
+	std::cout << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
+
+	angleVector[legNum][0] = angleVector[legNum][0] * postScale( tc[0] ) + ( tc[1]+tc[2] )/2;
+	angleVector[legNum][1] = angleVector[legNum][1] * postScale( cf[0] ) + ( cf[1]+cf[2] )/2;
+	angleVector[legNum][2] = angleVector[legNum][2] * postScale( ft[0] ) + ( ft[1]+ft[2] )/2;
+
+	std::cout << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
+	std::cout << "***********************" << std::endl;
+
+}
+
+double kinematicsController::postScale( double x ){
+	return ( 2 * M_PI / 360 * x ) / (2 * M_PI/360 * 360);
+}
+
+double kinematicsController::preScale( double x ){
+	return ( 2 * M_PI / 360 * 360 ) / (2 * M_PI/360 * x);
+}
+
 void kinematicsController::stepKinematicsController( const sensor* sensor, std::vector<std::vector<double>> &angleVector ) {
 	/**
 	 * 	For each step, we need to take a look at the position each leg is in now.
@@ -195,7 +289,8 @@ void kinematicsController::stepKinematicsController( const sensor* sensor, std::
 
 	for( int i = 0; i < 6; i++ ){
 		legPositionControl( sensor, angleVector, 1 );
-		break; //Remove
+		break; //todo: Remove when done
+		legPositionControl( sensor, angleVector, i );
 	}
 
 	counter++;
@@ -204,15 +299,54 @@ void kinematicsController::stepKinematicsController( const sensor* sensor, std::
 }
 
 void kinematicsController::legPositionControl( const sensor* sensor, std::vector<std::vector<double>> &angleVector, int legNum ) {
-	//	Define the stepsize //TODO: Maybe in .h, or a proper define.
 		double stepsize = 0.005;
 
 	//	Write the target position. (load from file)
 		std::vector<double> targetPos;
 		targetPos.push_back( 0.05 ); targetPos.push_back( 0.05 ); targetPos.push_back( 0.2 );
-
-	//	The current sensor values for the leg.
+/*todo: incomment when complete
+		std::vector<double> targetPos = {0, 0, 0};
+		switch(legNum){
+			case 0:
+				for( int i = 0; i < 3; i++ ){
+					targetPos[i] = positionListL0[ targetPositionPointer[legNum] % positionListL0.size() ][i];
+				}
+				break;
+			case 1:
+				for( int i = 0; i < 3; i++ ){
+					targetPos[i] = positionListL1[ targetPositionPointer[legNum] % positionListL1.size() ][i];
+				}
+				break;
+			case 2:
+				for( int i = 0; i < 3; i++ ){
+					targetPos[i] = positionListL2[ targetPositionPointer[legNum] % positionListL2.size() ][i];
+				}
+				break;
+			case 3:
+				for( int i = 0; i < 3; i++ ){
+					targetPos[i] = positionListR0[ targetPositionPointer[legNum] % positionListR0.size() ][i];
+				}
+				break;
+			case 4:
+				for( int i = 0; i < 3; i++ ){
+					targetPos[i] = positionListR1[ targetPositionPointer[legNum] % positionListR1.size() ][i];
+				}
+				break;
+			case 5:
+				for( int i = 0; i < 3; i++ ){
+					targetPos[i] = positionListR2[ targetPositionPointer[legNum] % positionListR2.size() ][i];
+				}
+				break;
+			default:
+				std::cout << "error 2" << std::endl;
+				break;
+		}
+*/
+	//	The current sensor values for the leg. (non-offset)
 		std::vector<double> legSensor = { sensor[legNum], sensor[6+legNum], sensor[12+legNum] };
+
+	//	Do the offset so that the angles fit correctly.
+		preOffset( legSensor, legNum );
 
 	//	Do forward kinematics to find the current position.
 		std::vector<double> currentPos;
@@ -346,55 +480,26 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 		std::cout << "AngleVec: " << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
 		std::cout << "Traveled: " << dist_fin << "-" << dist_start << "=" << dist_fin-dist_start << std::endl << std::endl;
 
+		/**
+		 * 	The last thing before leaving, is making sure that the joints behave as we want them too.
+		 * 	All joints are limited, and then offset. Where a unlimited joint can move in a full circle
+		 * 	the dung beetles joints are limited. LPZ takes this limit, and then sets 0 to the middle of
+		 * 	this limit
+		 */
 
-	/*
-	if( legAtPosition( temp, 0.001, legNum ) )
-	{
-		targetPositionPointer[legNum] = targetPositionPointer[legNum]+1;
-		std::cout << "TRUE TRUE TRUE" << std::endl;
-		std::cout << "leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << std::endl;
-	}
-	else{
-		std::cout << "FALSE FALSE FALSE" << std::endl;
-		std::cout << "leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << std::endl;
-	}
+		postOffset( angleVector, legNum );
 
-	switch(legNum){
-		case 0:
-			for( int i = 0; i < 3; i++ ){
-				angleVector[legNum][i] = positionListL0[(targetPositionPointer[legNum]) % positionListL0.size()][i];
-			}
-			break;
-		case 1:
-			for( int i = 0; i < 3; i++ ){
-				angleVector[legNum][i] = positionListL1[(targetPositionPointer[legNum]) % positionListL1.size()][i];
-			}
-			break;
-		case 2:
-			for( int i = 0; i < 3; i++ ){
-				angleVector[legNum][i] = positionListL2[(targetPositionPointer[legNum]) % positionListL2.size()][i];
-			}
-			break;
-		case 3:
-			for( int i = 0; i < 3; i++ ){
-				angleVector[legNum][i] = positionListR0[(targetPositionPointer[legNum]) % positionListR0.size()][i];
-			}
-			break;
-		case 4:
-			for( int i = 0; i < 3; i++ ){
-				angleVector[legNum][i] = positionListR1[(targetPositionPointer[legNum]) % positionListR1.size()][i];
-			}
-			break;
-		case 5:
-			for( int i = 0; i < 3; i++ ){
-				angleVector[legNum][i] = positionListR2[(targetPositionPointer[legNum]) % positionListR2.size()][i];
-			}
-			break;
-		default:
-			std::cout << "error 2" << std::endl;
-			break;
-	}
-	*/
+		double threshold = 0.05;
+
+		if( dist_fin < threshold ){
+			targetPositionPointer[legNum] = targetPositionPointer[legNum]+1;
+			std::cout << "TRUE TRUE TRUE" << std::endl;
+			std::cout << "leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << std::endl;
+		}
+		else{
+			std::cout << "FALSE FALSE FALSE" << std::endl;
+			std::cout << "leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << std::endl;
+		}
 }
 
 bool kinematicsController::legAtPosition( std::vector<double> currentPos, double deadband, int legNum )
