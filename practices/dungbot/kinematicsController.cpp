@@ -101,12 +101,23 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 
 	double scale = 3.75+9.111+10.324;
 
-	//	todo: multiply with -1 on one side.
+	int lr;
+	switch (legNum) {
+		case 0: case 1: case 2:
+			lr = 1;
+			break;
+		case 3: case 4: case 5:
+			lr = -1;
+			break;
+		default:
+			break;
+	}
 
+	tc = {0,0,0};
 	switch (legNum) {
 		case 0: case 3:
 		//	TC offset.
-			tc = {conf.coxaRadius[1]-2.8689/tempScale, lr * 2.5409/tempScale, -conf.rearDimension[2]/2 + 0.4841/tempScale};
+			//tc = {1.65227/scale/4-2.8689/scale, lr * 2.5409/scale, -4.9/scale/2 + 0.4841/scale};
 		//	Limb lengths
 			coxa = {0, 0, 2.46037/scale};
 			femur = {0, 0, 3.24472/scale};
@@ -114,7 +125,7 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 			break;
 		case 1: case 4:
 		//	TC offset.
-			tc = {conf.coxaRadius[1]+0/tempScale, lr * 2.5883/tempScale, -conf.rearDimension[2]/2 + 0.5672/tempScale};
+			//tc = {1.65227/scale/4+0/scale, lr * 2.5883/scale, -4.9/scale/2 + 0.5672/scale};
 		//	Limb lengths
 			coxa = {0, 0, 2.11888/scale};
 			femur = {0, 0, 4.23025/scale};
@@ -126,7 +137,7 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 		//	Joint limits
 			break;
 		case 2: case 5:
-			tc = {conf.coxaRadius[1]+3.1666/tempScale, lr * 4.7496/tempScale, -conf.rearDimension[2]/2 + 0/tempScale};
+			//tc = {1.65227/scale/4+3.1666/scale, lr * 4.7496/scale, -4.9/scale/2 + 0/scale};
 			coxa = {0, 0, 4.05514/scale};
 			femur = {0, 0, 4.63394/scale};
 			tibia = {0, 0, 5.54793/scale};
@@ -170,7 +181,7 @@ void kinematicsController::kinematic( std::vector<double> &newAngle, std::vector
 
 	newAngle.push_back(temp3[0][3]);
 	newAngle.push_back(temp3[1][3]);
-	newAngle.push_back(temp3[2][3]);
+	newAngle.push_back(-temp3[2][3]);
 }
 
 void kinematicsController::preOffset( std::vector<double> &angleVector, int legNum ){
@@ -179,15 +190,12 @@ void kinematicsController::preOffset( std::vector<double> &angleVector, int legN
 	 *	"Small to large"
 	 */
 
-	//	todo: Matlab check the offset here. Possible some minus offset, then multiply.
-
 	double scale = 0.9;
 	std::vector<double> tc;
 	std::vector<double> cf;
 	std::vector<double> ft;
 	std::vector<double> temp;
 	switch (legNum) {
-		//todo: cf and ft might need to be turned around 1->2 2->1
 		case 0: case 3:
 			tc = { 95.7878*scale, 	-M_PI / 180.0 * 80, 	M_PI / 180.0 * (95.7878*scale - 80) };
 			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
@@ -206,16 +214,23 @@ void kinematicsController::preOffset( std::vector<double> &angleVector, int legN
 		default:
 			break;
 	}
-	std::cout << "***********************-PRE" << std::endl;
-	std::cout << angleVector[0] << " " << angleVector[1] << " " << angleVector[2] << std::endl;
 
-	angleVector[legNum][0] = angleVector[legNum][0] * preScale( tc[0] ) + ( tc[1]+tc[2] )/2;
-	angleVector[legNum][1] = angleVector[legNum][1] * preScale( cf[0] ) + ( cf[1]+cf[2] )/2;
-	angleVector[legNum][2] = angleVector[legNum][2] * preScale( ft[0] ) + ( ft[1]+ft[2] )/2;
+	if(true){
+		std::cout << "***********************-PRE" << std::endl;
+		std::cout << angleVector[0] << " " << angleVector[1] << " " << angleVector[2] << std::endl;
+	}
 
-	std::cout << angleVector[0] << " " << angleVector[1] << " " << angleVector[2] << std::endl;
-	std::cout << "***********************" << std::endl;
+	angleVector[0] = ( angleVector[0] - ( tc[1]+tc[2] )/2 ) * preScale( tc[0] );
+	angleVector[1] = ( angleVector[1] - ( cf[1]+cf[2] )/2 ) * preScale( cf[0] );
+	angleVector[2] = ( angleVector[2] - ( ft[1]+ft[2] )/2 ) * preScale( ft[0] );
 
+	if(true){
+		std::cout << angleVector[0] << " " << angleVector[1] << " " << angleVector[2] << std::endl;
+	}
+}
+
+double kinematicsController::preScale( double x ){
+	return ( 2 * M_PI / 360 * x ) / (2 * M_PI/360 * 360);
 }
 
 void kinematicsController::postOffset( std::vector<std::vector<double>> &angleVector, int legNum ){
@@ -230,7 +245,6 @@ void kinematicsController::postOffset( std::vector<std::vector<double>> &angleVe
 	std::vector<double> ft;
 	std::vector<double> temp;
 	switch (legNum) {
-		//todo: cf and ft might need to be turned around 1->2 2->1
 		case 0: case 3:
 			tc = { 95.7878*scale, 	-M_PI / 180.0 * 80, 	M_PI / 180.0 * (95.7878*scale - 80) };
 			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
@@ -238,8 +252,8 @@ void kinematicsController::postOffset( std::vector<std::vector<double>> &angleVe
 			break;
 		case 1: case 4:
 			tc = { 116.1153*scale, 	-M_PI / 180.0 * 50, 	M_PI / 180.0 * (116.1153*scale - 50) };
-			cf = { 90*scale, 		M_PI / 180.0 * 30, 		-M_PI / 180.0 * ( 30*scale - 30) };
-			ft = { 170*scale, 		M_PI / 180.0 * 85, 		-M_PI / 180.0 * ( 170*scale - 85) };
+			cf = { 90*scale, 		 M_PI / 180.0 * 30, 	-M_PI / 180.0 * ( 30*scale - 30) };
+			ft = { 170*scale, 		 M_PI / 180.0 * 85, 	-M_PI / 180.0 * ( 170*scale - 85), };
 			break;
 		case 2: case 5:
 			tc = { 160.8514*scale, 	-M_PI / 180.0 * 50, 	M_PI / 180.0 * (160.8514*scale - 50) };
@@ -249,23 +263,21 @@ void kinematicsController::postOffset( std::vector<std::vector<double>> &angleVe
 		default:
 			break;
 	}
-	std::cout << "***********************-POST" << std::endl;
-	std::cout << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
 
-	angleVector[legNum][0] = angleVector[legNum][0] * postScale( tc[0] ) + ( tc[1]+tc[2] )/2;
-	angleVector[legNum][1] = angleVector[legNum][1] * postScale( cf[0] ) + ( cf[1]+cf[2] )/2;
-	angleVector[legNum][2] = angleVector[legNum][2] * postScale( ft[0] ) + ( ft[1]+ft[2] )/2;
+	if(true){
+		std::cout << "***********************-POST" << std::endl;
+		std::cout << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
+	}
+	angleVector[legNum][0] = ( angleVector[legNum][0] * postScale( tc[0] ) ) + ( tc[1]+tc[2] )/2;
+	angleVector[legNum][1] = ( angleVector[legNum][1] * postScale( cf[0] ) ) + ( cf[1]+cf[2] )/2;
+	angleVector[legNum][2] = ( angleVector[legNum][2] * postScale( ft[0] ) ) + ( ft[1]+ft[2] )/2;
 
-	std::cout << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
-	std::cout << "***********************" << std::endl;
-
+	if(true){
+		std::cout << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
+	}
 }
 
 double kinematicsController::postScale( double x ){
-	return ( 2 * M_PI / 360 * x ) / (2 * M_PI/360 * 360);
-}
-
-double kinematicsController::preScale( double x ){
 	return ( 2 * M_PI / 360 * 360 ) / (2 * M_PI/360 * x);
 }
 
@@ -301,10 +313,6 @@ void kinematicsController::stepKinematicsController( const sensor* sensor, std::
 void kinematicsController::legPositionControl( const sensor* sensor, std::vector<std::vector<double>> &angleVector, int legNum ) {
 		double stepsize = 0.005;
 
-	//	Write the target position. (load from file)
-		std::vector<double> targetPos;
-		targetPos.push_back( 0.05 ); targetPos.push_back( 0.05 ); targetPos.push_back( 0.2 );
-/*todo: incomment when complete
 		std::vector<double> targetPos = {0, 0, 0};
 		switch(legNum){
 			case 0:
@@ -341,7 +349,7 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 				std::cout << "error 2" << std::endl;
 				break;
 		}
-*/
+
 	//	The current sensor values for the leg. (non-offset)
 		std::vector<double> legSensor = { sensor[legNum], sensor[6+legNum], sensor[12+legNum] };
 
@@ -364,16 +372,16 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 	//	Position we want to hit
 		std::vector<double> stepPosition = { currentPos[0] + deltaStep[0], currentPos[1] + deltaStep[1], currentPos[2] + deltaStep[2] };
 
-	//	Now that we have the position we want to hit, we try to rotate the joints, to the positions.
-		std::cout << std::endl;
-		std::cout << "*******" << std::endl;
-		std::cout << "cx: " << currentPos[0] << " cy: " << currentPos[1]  << " cz: " << currentPos[2]  << std::endl;
-		std::cout << "ex: " << errorPos[0] << " ey: " << errorPos[1]  << " ez: " << errorPos[2]  << std::endl;
-		std::cout << "dx: " << stepPosition[0] << " dy: " << stepPosition[1] << " dz: " << stepPosition[2] << std::endl;
-		std::cout << "tx: " << targetPos[0] << " ty: " << targetPos[1] << " tz: " << targetPos[2] << std::endl;
-		std::cout << "*******" << std::endl;
-		std::cout << std::endl;
+std::cout << std::endl;
+std::cout << "*******" << std::endl;
+std::cout << "cx: " << currentPos[0] << " cy: " << currentPos[1]  << " cz: " << currentPos[2]  << std::endl;
+std::cout << "ex: " << errorPos[0] << " ey: " << errorPos[1]  << " ez: " << errorPos[2]  << std::endl;
+std::cout << "dx: " << stepPosition[0] << " dy: " << stepPosition[1] << " dz: " << stepPosition[2] << std::endl;
+std::cout << "tx: " << targetPos[0] << " ty: " << targetPos[1] << " tz: " << targetPos[2] << std::endl;
+std::cout << "*******" << std::endl;
+std::cout << std::endl;
 
+		//	Now that we have the position we want to hit, we try to rotate the joints, to the positions.
 		//	Do the six calculations.
 		std::vector<double> temp = legSensor;
 
@@ -417,6 +425,7 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 		std::vector<double> cal6;
 		legSensor[2] = legSensor[2] + stepsize;
 		kinematic( cal6, legSensor, legNum );
+		legSensor = temp;
 
 		//	Now we need to calculate the distance to the point, with the different joint moves.
 		std::vector<double> lt;
@@ -430,55 +439,59 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 
 		if( (lt[0] < lt[1]) && (lt[0] < lt[2]) && (lt[0] < lt[3]) && (lt[0] < lt[4]) && (lt[0] < lt[5]) ){
 			std::cout << "CASE 0" << std::endl;
-			angleVector[legNum][0] = sensor[legNum]		- stepsize;
-			angleVector[legNum][1] = sensor[6+legNum]	;
-			angleVector[legNum][2] = sensor[12+legNum]	;
+			angleVector[legNum][0] = legSensor[0]	- stepsize;
+			angleVector[legNum][1] = legSensor[1]	;
+			angleVector[legNum][2] = legSensor[2]	;
 		}
 		else if( (lt[1] < lt[0]) && (lt[1] < lt[2]) && (lt[1] < lt[3]) && (lt[1] < lt[4]) && (lt[1] < lt[5]) ){
 			std::cout << "CASE 1" << std::endl;
-			angleVector[legNum][0] = sensor[legNum]		+ stepsize;
-			angleVector[legNum][1] = sensor[6+legNum]	;
-			angleVector[legNum][2] = sensor[12+legNum]	;
+			angleVector[legNum][0] = legSensor[0]	+ stepsize;
+			angleVector[legNum][1] = legSensor[1]	;
+			angleVector[legNum][2] = legSensor[2]	;
 		}
 		else if( (lt[2] < lt[0]) && (lt[2] < lt[1]) && (lt[2] < lt[3]) && (lt[2] < lt[4]) && (lt[2] < lt[5]) ){
 			std::cout << "CASE 2" << std::endl;
-			angleVector[legNum][0] = sensor[legNum]		;
-			angleVector[legNum][1] = sensor[6+legNum]	- stepsize;
-			angleVector[legNum][2] = sensor[12+legNum]	;
+			angleVector[legNum][0] = legSensor[0]	;
+			angleVector[legNum][1] = legSensor[1]	- stepsize;
+			angleVector[legNum][2] = legSensor[2]	;
 		}
 		else if( (lt[3] < lt[0]) && (lt[3] < lt[1]) && (lt[3] < lt[2]) && (lt[3] < lt[4]) && (lt[3] < lt[5]) ){
 			std::cout << "CASE 3" << std::endl;
-			angleVector[legNum][0] = sensor[legNum]		;
-			angleVector[legNum][1] = sensor[6+legNum]	+ stepsize;
-			angleVector[legNum][2] = sensor[12+legNum]	;
+			angleVector[legNum][0] = legSensor[0]	;
+			angleVector[legNum][1] = legSensor[1]	+ stepsize;
+			angleVector[legNum][2] = legSensor[2]	;
 		}
 		else if( (lt[4] < lt[0]) && (lt[4] < lt[1]) && (lt[4] < lt[2]) && (lt[4] < lt[3]) && (lt[4] < lt[5]) ){
 			std::cout << "CASE 4" << std::endl;
-			angleVector[legNum][0] = sensor[legNum]		;
-			angleVector[legNum][1] = sensor[6+legNum]	;
-			angleVector[legNum][2] = sensor[12+legNum]	- stepsize;
+			angleVector[legNum][0] = legSensor[0]	;
+			angleVector[legNum][1] = legSensor[1]	;
+			angleVector[legNum][2] = legSensor[2]	- stepsize;
 		}
 		else if( (lt[5] < lt[0]) && (lt[5] < lt[1]) && (lt[5] < lt[2]) && (lt[5] < lt[3]) && (lt[5] < lt[4]) ){
 			std::cout << "CASE 5" << std::endl;
-			angleVector[legNum][0] = sensor[legNum]		;
-			angleVector[legNum][1] = sensor[6+legNum]	;
-			angleVector[legNum][2] = sensor[12+legNum]	+ stepsize;
+			angleVector[legNum][0] = legSensor[0]	;
+			angleVector[legNum][1] = legSensor[1]	;
+			angleVector[legNum][2] = legSensor[2]	+ stepsize;
 		}
 		else{
 			std::cout << "DEFAULT CASE" << std::endl;
 			std::cout << lt[0] << " " << lt[1] << " " << lt[2] << " " << lt[3] << " " << lt[4] << " " << lt[5] << std::endl;
 		}
 
-		temp[0] = angleVector[legNum][0];
-		temp[1] = angleVector[legNum][1];
-		temp[2] = angleVector[legNum][2];
-
 		std::vector<double> nextPos;
+		temp = { angleVector[legNum][0], angleVector[legNum][1], angleVector[legNum][2] };
 		kinematic( nextPos, temp, legNum );
 
 		double dist_fin = sqrt( pow(targetPos[0] - nextPos[0],2) + pow(targetPos[1] - nextPos[1],2) + pow(targetPos[2] - nextPos[2],2) );
-		std::cout << "AngleVec: " << angleVector[legNum][0] << " " << angleVector[legNum][1] << " " << angleVector[legNum][2] << std::endl;
-		std::cout << "Traveled: " << dist_fin << "-" << dist_start << "=" << dist_fin-dist_start << std::endl << std::endl;
+
+		double threshold = 0.01; //todo: put in .h
+		if( dist_fin < threshold ){
+			targetPositionPointer[legNum] = targetPositionPointer[legNum]+1;
+			std::cout << dist_fin << " - TRUE  TRUE  TRUE  - leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << " state changed: " << targetPositionPointer[legNum] << std::endl;
+		}
+		else{
+			std::cout << dist_fin << " - FALSE FALSE FALSE - leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << " state changed: " << targetPositionPointer[legNum] << std::endl;
+		}
 
 		/**
 		 * 	The last thing before leaving, is making sure that the joints behave as we want them too.
@@ -489,74 +502,11 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 
 		postOffset( angleVector, legNum );
 
-		double threshold = 0.05;
-
-		if( dist_fin < threshold ){
-			targetPositionPointer[legNum] = targetPositionPointer[legNum]+1;
-			std::cout << "TRUE TRUE TRUE" << std::endl;
-			std::cout << "leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << std::endl;
+		if(false){
+			angleVector[legNum][0] = 0;
+			angleVector[legNum][1] = 0;
+			angleVector[legNum][2] = 0;
 		}
-		else{
-			std::cout << "FALSE FALSE FALSE" << std::endl;
-			std::cout << "leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << std::endl;
-		}
-}
-
-bool kinematicsController::legAtPosition( std::vector<double> currentPos, double deadband, int legNum )
-{
-	std::vector<double> targetPos;
-
-	switch(legNum){
-		case 0:
-			for( int i = 0; i < 3; i++ ){
-				targetPos.push_back( positionListL0[(targetPositionPointer[legNum]) % positionListL0.size()][i] );
-			}
-			break;
-		case 1:
-			for( int i = 0; i < 3; i++ ){
-				targetPos.push_back( positionListL1[(targetPositionPointer[legNum]) % positionListL1.size()][i] );
-			}
-			break;
-		case 2:
-			for( int i = 0; i < 3; i++ ){
-				targetPos.push_back( positionListL2[(targetPositionPointer[legNum]) % positionListL2.size()][i] );
-			}
-			break;
-		case 3:
-			for( int i = 0; i < 3; i++ ){
-				targetPos.push_back( positionListR0[(targetPositionPointer[legNum]) % positionListR0.size()][i] );
-			}
-			break;
-		case 4:
-			for( int i = 0; i < 3; i++ ){
-				targetPos.push_back( positionListR1[(targetPositionPointer[legNum]) % positionListR1.size()][i] );
-			}
-			break;
-		case 5:
-			for( int i = 0; i < 3; i++ ){
-				targetPos.push_back( positionListR2[(targetPositionPointer[legNum]) % positionListR2.size()][i] );
-			}
-			break;
-		default:
-			break;
-	}
-
-	double coxaError = targetPos[0] - currentPos[0];
-	double femurError = targetPos[1] - currentPos[1];
-	double tibiaError = targetPos[2] - currentPos[2];
-/*
-	if( legNum == 0 ){
-		std::cout << "TEST TEST" << std::endl;
-		std::cout << coxaError << " " << femurError << " " << tibiaError << std::endl;
-		std::cout << std::abs(coxaError) << " " << std::abs(femurError) << " " << std::abs(tibiaError) << std::endl;
-	}
-*/
-
-	if(std::abs(coxaError) < deadband && std::abs(femurError) < deadband && std::abs(tibiaError) < deadband){
-		return true;
-	} else {
-		return false;
-	}
 }
 
 void kinematicsController::loadPositionVectors(void) {
@@ -597,11 +547,11 @@ void kinematicsController::loadPositionVectors(void) {
 
 		for( int i=0; i<record.size(); i=i+3 )
 		{
-			std::cout << record[i] << " I= " << i << " m= " << m << std::endl;
+			//todo:	outcomment if input file is very long
+			std::cout << record[i] << " " << record[i+1] << " " << record[i+2] << " I= " << i << " m= " << m << " " << record.size() << std::endl;
 
 			//	INPUT TO THE VECTOR
 			std::vector<double> temp_vec;
-			temp_vec.push_back(record[i]);
 
 			switch (i) {
 				case 0: case 1: case 2:			//	L0
@@ -659,3 +609,69 @@ void kinematicsController::loadPositionVectors(void) {
 		m++;	//	Increment m for the rows for the vectors.
 	}
 }
+
+
+
+
+
+
+
+
+/*
+bool kinematicsController::legAtPosition( std::vector<double> currentPos, double deadband, int legNum )
+{
+	std::vector<double> targetPos;
+
+	switch(legNum){
+		case 0:
+			for( int i = 0; i < 3; i++ ){
+				targetPos.push_back( positionListL0[(targetPositionPointer[legNum]) % positionListL0.size()][i] );
+			}
+			break;
+		case 1:
+			for( int i = 0; i < 3; i++ ){
+				targetPos.push_back( positionListL1[(targetPositionPointer[legNum]) % positionListL1.size()][i] );
+			}
+			break;
+		case 2:
+			for( int i = 0; i < 3; i++ ){
+				targetPos.push_back( positionListL2[(targetPositionPointer[legNum]) % positionListL2.size()][i] );
+			}
+			break;
+		case 3:
+			for( int i = 0; i < 3; i++ ){
+				targetPos.push_back( positionListR0[(targetPositionPointer[legNum]) % positionListR0.size()][i] );
+			}
+			break;
+		case 4:
+			for( int i = 0; i < 3; i++ ){
+				targetPos.push_back( positionListR1[(targetPositionPointer[legNum]) % positionListR1.size()][i] );
+			}
+			break;
+		case 5:
+			for( int i = 0; i < 3; i++ ){
+				targetPos.push_back( positionListR2[(targetPositionPointer[legNum]) % positionListR2.size()][i] );
+			}
+			break;
+		default:
+			break;
+	}
+
+	double coxaError = targetPos[0] - currentPos[0];
+	double femurError = targetPos[1] - currentPos[1];
+	double tibiaError = targetPos[2] - currentPos[2];
+/*
+	if( legNum == 0 ){
+		std::cout << "TEST TEST" << std::endl;
+		std::cout << coxaError << " " << femurError << " " << tibiaError << std::endl;
+		std::cout << std::abs(coxaError) << " " << std::abs(femurError) << " " << std::abs(tibiaError) << std::endl;
+	}
+*/
+/*
+	if(std::abs(coxaError) < deadband && std::abs(femurError) < deadband && std::abs(tibiaError) < deadband){
+		return true;
+	} else {
+		return false;
+	}
+}
+*/

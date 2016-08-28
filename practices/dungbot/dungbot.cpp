@@ -221,19 +221,19 @@ namespace lpzrobots
 				case L0:
 				case R0:
 					xPosition = conf.coxaRadius[1]-2.8689/tempScale;
-					yPosition = lr * 2.5409/tempScale;
+					yPosition = 0.4*lr+lr * 2.5409/tempScale;
 					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale;
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.coxaRadius[1]+0/tempScale;
-					yPosition = lr * 2.5883/tempScale;
+					yPosition = 0.4*lr+lr * 2.5883/tempScale;
 					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale;
 					break;
 				case L2:
 				case R2:
 					xPosition = conf.coxaRadius[1]+3.1666/tempScale;
-					yPosition = lr * 4.7496/tempScale;
+					yPosition = 0.4*lr+lr * 4.7496/tempScale;
 					zPosition = -conf.rearDimension[2]/2 + 0/tempScale;
 					break;
 
