@@ -23,6 +23,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <iomanip>
 
 #include "DungBotProperties.h"
 
@@ -62,6 +63,8 @@ class kinematicsController
 	std::vector<int> targetPositionPointer;
 
 	int counter = 0;
+	int num_test_counter = 0;
+	int last_case;
 
 	private:
 	//	Private methods
@@ -77,6 +80,9 @@ class kinematicsController
 	void loadPositionVectors( void );
 	void legPositionControl( const sensor*, std::vector<std::vector<double>> &, int );
 	bool legAtPosition( std::vector<double>, double, int );
+
+	void frame(); //test function
+
 };
 
 #endif

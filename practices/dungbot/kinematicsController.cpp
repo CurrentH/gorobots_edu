@@ -20,10 +20,20 @@ kinematicsController::kinematicsController(void) {
 
 	loadPositionVectors();
 
+	std::cout << "CREATE FRAME" << std::endl;
+
+	frame();
+
 	std::cout << "KinematicsController Constructor DONE" << std::endl;
 }
 
 kinematicsController::~kinematicsController(void) {
+}
+
+void kinematicsController::frame(){
+
+
+
 }
 
 void kinematicsController::homo( std::vector<std::vector<double>> &t, std::vector<std::vector<double>> r, std::vector<double> p ){
@@ -311,8 +321,6 @@ void kinematicsController::stepKinematicsController( const sensor* sensor, std::
 }
 
 void kinematicsController::legPositionControl( const sensor* sensor, std::vector<std::vector<double>> &angleVector, int legNum ) {
-		double stepsize = 0.005;
-
 		std::vector<double> targetPos = {0, 0, 0};
 		switch(legNum){
 			case 0:
@@ -366,11 +374,30 @@ void kinematicsController::legPositionControl( const sensor* sensor, std::vector
 	//	Find the distance from the start.
 		double dist_start = sqrt( pow(errorPos[0],2) + pow(errorPos[1],2) + pow(errorPos[2],2) );
 
-	//	Step we want to take
-		std::vector<double> deltaStep = { errorPos[0]*stepsize, errorPos[1]*stepsize, errorPos[2]*stepsize };
+		std::vector<double> deltaStep;
+		std::vector<double> stepPosition;
+		double dist_test;
+		double nummerical_value = 0.001;
+		double stepsize = 0.0005;
+//used in the bottom of the function
+double threshold = 0.01; //todo: put in .h
 
-	//	Position we want to hit
-		std::vector<double> stepPosition = { currentPos[0] + deltaStep[0], currentPos[1] + deltaStep[1], currentPos[2] + deltaStep[2] };
+		while( true ){
+			//	Step we want to take
+			deltaStep = { errorPos[0]*stepsize, errorPos[1]*stepsize, errorPos[2]*stepsize };
+
+			//	Position we want to hit
+			stepPosition = { currentPos[0] + deltaStep[0], currentPos[1] + deltaStep[1], currentPos[2] + deltaStep[2] };
+
+			dist_test = sqrt( pow(deltaStep[0],2) + pow(deltaStep[1],2) + pow(deltaStep[2],2) );
+
+			if( dist_test < nummerical_value ){
+				stepsize *= 2;
+				num_test_counter++;
+			}else{
+				break;
+			}
+		}
 
 std::cout << std::endl;
 std::cout << "*******" << std::endl;
@@ -378,8 +405,10 @@ std::cout << "cx: " << currentPos[0] << " cy: " << currentPos[1]  << " cz: " << 
 std::cout << "ex: " << errorPos[0] << " ey: " << errorPos[1]  << " ez: " << errorPos[2]  << std::endl;
 std::cout << "dx: " << stepPosition[0] << " dy: " << stepPosition[1] << " dz: " << stepPosition[2] << std::endl;
 std::cout << "tx: " << targetPos[0] << " ty: " << targetPos[1] << " tz: " << targetPos[2] << std::endl;
+std::cout << "d:  " << std::setprecision(5) <<dist_start << std::endl;
 std::cout << "*******" << std::endl;
 std::cout << std::endl;
+
 
 		//	Now that we have the position we want to hit, we try to rotate the joints, to the positions.
 		//	Do the six calculations.
@@ -484,13 +513,14 @@ std::cout << std::endl;
 
 		double dist_fin = sqrt( pow(targetPos[0] - nextPos[0],2) + pow(targetPos[1] - nextPos[1],2) + pow(targetPos[2] - nextPos[2],2) );
 
-		double threshold = 0.01; //todo: put in .h
 		if( dist_fin < threshold ){
 			targetPositionPointer[legNum] = targetPositionPointer[legNum]+1;
 			std::cout << dist_fin << " - TRUE  TRUE  TRUE  - leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << " state changed: " << targetPositionPointer[legNum] << std::endl;
+			std::cout << "test condition: " << num_test_counter << std::endl;
 		}
 		else{
 			std::cout << dist_fin << " - FALSE FALSE FALSE - leg: " << legNum << " state: " << targetPositionPointer[legNum] % positionListL0.size() << " state changed: " << targetPositionPointer[legNum] << std::endl;
+			std::cout << "test condition: " << num_test_counter << std::endl;
 		}
 
 		/**
@@ -502,10 +532,15 @@ std::cout << std::endl;
 
 		postOffset( angleVector, legNum );
 
+		if( angleVector[legNum][0] >= 1 ){ angleVector[legNum][0] = 0.99; };
+		if( angleVector[legNum][1] >= 1 ){ angleVector[legNum][1] = 0.99; };
+		if( angleVector[legNum][2] >= 1 ){ angleVector[legNum][2] = 0.99; };
+
+
 		if(false){
 			angleVector[legNum][0] = 0;
 			angleVector[legNum][1] = 0;
-			angleVector[legNum][2] = 0;
+			angleVector[legNum][2] = -1;
 		}
 }
 
