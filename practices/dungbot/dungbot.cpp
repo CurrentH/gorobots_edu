@@ -102,15 +102,14 @@ namespace lpzrobots
     {
     	OdeRobot::update();
     	assert( created );
-
-    	for( int i = 0; i < LEG_POS_MAX; i++ )
-		{
-			for( int j = 0; j < 6; j++ )
-			{
-				if( conf.testTarsusSensor )
-				{
-					if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
-					{
+    	for( int i = 0; i < LEG_POS_MAX; i++ ){
+    		if( conf.testFemurTibiaSensor ){
+				femurContactSensors[ std::make_pair( LegPos(i), 0 ) ]->update();
+				tibiaContactSensors[ std::make_pair( LegPos(i), 0 ) ]->update();
+			}
+			for( int j = 0; j < 6; j++ ){
+				if( conf.testTarsusSensor ){
+					if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] ){
 						tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->update();
 					}
 				}
@@ -121,22 +120,19 @@ namespace lpzrobots
     void DungBot::sense( GlobalData& globalData )
     {
     	OdeRobot::sense( globalData );
-
-    	for( int i = 0; i < LEG_POS_MAX; i++ )
-		{
-			for( int j = 0; j < 6; j++ )
-			{
-				if( conf.testTarsusSensor )
-				{
-					if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] )
-					{
+    	for( int i = 0; i < LEG_POS_MAX; i++ ){
+    		if( conf.testFemurTibiaSensor ){
+				femurContactSensors[ std::make_pair( LegPos(i), 0 ) ]->sense( globalData );
+				tibiaContactSensors[ std::make_pair( LegPos(i), 0 ) ]->sense( globalData );
+			}
+			for( int j = 0; j < 6; j++ ){
+				if( conf.testTarsusSensor ){
+					if( tarsusContactSensors[ std::make_pair( LegPos(i), j ) ] ){
 						tarsusContactSensors[ std::make_pair( LegPos(i), j ) ]->sense( globalData );
 					}
 				}
 			}
 		}
-
-
     }
 
     void DungBot::create( const Matrix& pose )
@@ -221,19 +217,19 @@ namespace lpzrobots
 				case L0:
 				case R0:
 					xPosition = conf.coxaRadius[1]-2.8689/tempScale;
-					yPosition = 0.4*lr+lr * 2.5409/tempScale;
+					yPosition = lr * 2.5409/tempScale;
 					zPosition = -conf.rearDimension[2]/2 + 0.4841/tempScale;
 					break;
 				case L1:
 				case R1:
 					xPosition = conf.coxaRadius[1]+0/tempScale;
-					yPosition = 0.4*lr+lr * 2.5883/tempScale;
+					yPosition = lr * 2.5883/tempScale;
 					zPosition = -conf.rearDimension[2]/2 + 0.5672/tempScale;
 					break;
 				case L2:
 				case R2:
 					xPosition = conf.coxaRadius[1]+3.1666/tempScale;
-					yPosition = 0.4*lr+lr * 4.7496/tempScale;
+					yPosition = lr * 4.7496/tempScale;
 					zPosition = -conf.rearDimension[2]/2 + 0/tempScale;
 					break;
 
@@ -314,6 +310,21 @@ namespace lpzrobots
 			odeHandle.addIgnoredPair(tibia, front);
 			odeHandle.addIgnoredPair(tibia, coxaThorax);
 			objects.push_back( tibia );
+
+				/************************************
+				 *	Contact sensors for femur and tibia
+				 ***********************************/
+				if( conf.testFemurTibiaSensor )
+				{
+					femurContactSensors[ std::make_pair( LegPos(i), 0) ] = new ContactSensor(true, 65, 2.5 * conf.femurRadius[i%3], false, true, Color(255,0,0));
+					femurContactSensors[ std::make_pair( LegPos(i), 0) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -0.5 *conf.femurLength[i%3] / 2));
+					femurContactSensors[ std::make_pair( LegPos(i), 0) ]->init(femurThorax);
+
+
+					tibiaContactSensors[ std::make_pair( LegPos(i), 0) ] = new ContactSensor(true, 65, 2.5 * conf.tibiaRadius[i%3], false, true, Color(255,0,0));
+					tibiaContactSensors[ std::make_pair( LegPos(i), 0) ]->setInitData(odeHandle, osgHandle, osg::Matrix::translate(0, 0, -0.5 *conf.tibiaLength[i%3] / 2));
+					tibiaContactSensors[ std::make_pair( LegPos(i), 0) ]->init(tibia);
+				}
 
 
 	    	/********************************************
@@ -598,8 +609,9 @@ namespace lpzrobots
 		assert( created );
 		assert( sensorNumber >= getSensorNumberIntern() );
 
-		//	Angle sensors
-		//	We multiple with -1 to map to real hexapod
+		/********************************************
+		 * 	Angle sensors
+		 ********************************************/
 		sensors[DungBotMotorSensor::TR0_as] = servos[DungBotMotorSensor::TR0_m] ? -servos[DungBotMotorSensor::TR0_m]->get() : 0;
 		sensors[DungBotMotorSensor::TR1_as] = servos[DungBotMotorSensor::TR1_m] ? -servos[DungBotMotorSensor::TR1_m]->get() : 0;
 		sensors[DungBotMotorSensor::TR2_as] = servos[DungBotMotorSensor::TR2_m] ? -servos[DungBotMotorSensor::TR2_m]->get() : 0;
@@ -621,9 +633,11 @@ namespace lpzrobots
 		sensors[DungBotMotorSensor::BJ_as] = servos[DungBotMotorSensor::BJ_m] ? -servos[DungBotMotorSensor::BJ_m]->get() : 0;
 		sensors[DungBotMotorSensor::HJ_as] = servos[DungBotMotorSensor::HJ_m] ? -servos[DungBotMotorSensor::HJ_m]->get() : 0;
 
+		/********************************************
+		 * Contact sensors, tarsus
+		 ********************************************/
 		if( conf.testTarsusSensor && conf.testTarsus)
 		{
-
 			sensors[DungBotMotorSensor::L0_s1] = tarsusContactSensors[std::make_pair(L0,1)]->get();
 			sensors[DungBotMotorSensor::L0_s2] = tarsusContactSensors[std::make_pair(L0,2)]->get();
 			sensors[DungBotMotorSensor::L0_s3] = tarsusContactSensors[std::make_pair(L0,3)]->get();
@@ -675,6 +689,7 @@ namespace lpzrobots
 			sensors[DungBotMotorSensor::R2_s0] = tarsusContactSensors[std::make_pair(R2,0)]->get();
 			sensors[DungBotMotorSensor::L2_s0] = tarsusContactSensors[std::make_pair(L2,0)]->get();
 		}
+
     	/********************************************
          * Position sensors
          ********************************************/
@@ -832,6 +847,28 @@ namespace lpzrobots
 					sensors[DungBotMotorSensor::RPS_Leg6Taz] = gls_val.back(); gls_val.pop_back();
 
 		}
+
+		/********************************************
+		 * Contact sensors, femur and tibia
+		 ********************************************/
+		if( conf.testFemurTibiaSensor )
+		{
+			sensors[DungBotMotorSensor::L0_CSF] = femurContactSensors[std::make_pair(L0,0)]->get();
+			sensors[DungBotMotorSensor::L1_CSF] = femurContactSensors[std::make_pair(L1,0)]->get();
+			sensors[DungBotMotorSensor::L2_CSF] = femurContactSensors[std::make_pair(L2,0)]->get();
+			sensors[DungBotMotorSensor::R0_CSF] = femurContactSensors[std::make_pair(R0,0)]->get();
+			sensors[DungBotMotorSensor::R1_CSF] = femurContactSensors[std::make_pair(R1,0)]->get();
+			sensors[DungBotMotorSensor::R2_CSF] = femurContactSensors[std::make_pair(R2,0)]->get();
+
+			sensors[DungBotMotorSensor::L0_CST] = tibiaContactSensors[std::make_pair(L0,0)]->get();
+			sensors[DungBotMotorSensor::L1_CST] = tibiaContactSensors[std::make_pair(L1,0)]->get();
+			sensors[DungBotMotorSensor::L2_CST] = tibiaContactSensors[std::make_pair(L2,0)]->get();
+			sensors[DungBotMotorSensor::R0_CST] = tibiaContactSensors[std::make_pair(R0,0)]->get();
+			sensors[DungBotMotorSensor::R1_CST] = tibiaContactSensors[std::make_pair(R1,0)]->get();
+			sensors[DungBotMotorSensor::R2_CST] = tibiaContactSensors[std::make_pair(R2,0)]->get();
+
+		}
+
 		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
 	}
 
@@ -954,14 +991,16 @@ namespace lpzrobots
     	/********************************************
          * What to test?
          ********************************************/
-		conf.testNo = false;	//	If true, then all hinges exist.
-		conf.testHead = false;	//	If true, then Head hinges is made else fixed joints.
-		conf.testBody = false;	//	If true, then Body hinges is made else fixed joints.
-		conf.testCoxa = true;	//	If true, then Coxa hinges is made else fixed joints.
-		conf.testFemur = true;	//	If true, then Femur hinges is made else fixed joints.
-		conf.testTibia = true;	//	If true, then Tibia hinges is made else fixed joints.
+		conf.testNo = false;				//	If true, then all hinges exist.
+		conf.testHead = false;				//	If true, then Head hinges is made else fixed joints.
+		conf.testBody = false;				//	If true, then Body hinges is made else fixed joints.
+		conf.testCoxa = true;				//	If true, then Coxa hinges is made else fixed joints.
+		conf.testFemur = true;				//	If true, then Femur hinges is made else fixed joints.
+		conf.testTibia = true;				//	If true, then Tibia hinges is made else fixed joints.
 
-		conf.testTarsus = false; // If true, then tarsus is created, else it is not created
+		conf.testFemurTibiaSensor = true;	//	If true, then contact sensors on femur and tibia is created.
+
+		conf.testTarsus = false; 			// 	If true, then tarsus is created, else it is not created
 		conf.testTarsusSensor = true;
 
     	/********************************************

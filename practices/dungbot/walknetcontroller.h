@@ -50,6 +50,9 @@ class walknetcontroller
 	std::vector<double> nextLegPos;
 	std::vector<double> tmpAEP;
 
+	//	Used for testing the tripod gait
+	bool switchFlag = false;
+
 	private:
 	//	Private methods
 	void coordinatingInfluences( const sensor* );
@@ -60,8 +63,7 @@ class walknetcontroller
 
 	double calculateRule4Distance( std::vector<double> &, std::vector<double> & );
 
-	//	Used for testing the tripod gait
-	bool switchFlag = false;
+
 
 };
 

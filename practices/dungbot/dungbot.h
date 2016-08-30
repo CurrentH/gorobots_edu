@@ -128,6 +128,8 @@ namespace lpzrobots
 			//	Typedefs
 			typedef std::map< LegPos, Leg > LegMap;
 			typedef std::map< MotorName, OneAxisServo* > MotorMap;
+			typedef std::map< std::pair< LegPos, int >, ContactSensor* > FemurContactMap;
+			typedef std::map< std::pair< LegPos, int >, ContactSensor* > TibiaContactMap;
 			typedef std::map< std::pair< LegPos, int >, ContactSensor* > TarsusContactMap;
 			typedef std::vector< OneAxisServo* > ServoList;
 
@@ -142,8 +144,12 @@ namespace lpzrobots
 			ServoList passiveServos;
 			MotorMap servos;
 
-			//	For tarsus contact
+			//	Contact sensors
+			FemurContactMap femurContactSensors;
+			TibiaContactMap tibiaContactSensors;
 			TarsusContactMap tarsusContactSensors;
+
+			//	Position sensors
 			std::vector<RelativePositionSensor> bodyPartSensors;
 
 		private:

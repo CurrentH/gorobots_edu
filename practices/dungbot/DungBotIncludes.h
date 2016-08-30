@@ -16,6 +16,7 @@ namespace lpzrobots
 	typedef struct
 	{
 		//	Used for tests
+		bool testFemurTibiaSensor;
 		bool testTarsusSensor;
 		bool testNo;
 		bool testHead;
@@ -24,6 +25,7 @@ namespace lpzrobots
 		bool testFemur;
 		bool testTibia;
 		bool testTarsus;
+
 
 		//	Body
 		double massFront;
