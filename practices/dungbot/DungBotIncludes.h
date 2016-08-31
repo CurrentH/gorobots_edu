@@ -54,31 +54,31 @@ namespace lpzrobots
 		//	Motor settings
 		double head_Kp;
 		double back_Kp;
-		double coxa_Kp;
-		double femur_Kp;
-		double tibia_Kp;
+		std::vector<double> coxa_Kp;
+		std::vector<double> femur_Kp;
+		std::vector<double> tibia_Kp;
 		double tarsus_Kp;
 
 		double head_Kd;
 		double back_Kd;
-		double coxa_Kd;
-		double femur_Kd;
-		double tibia_Kd;
+		std::vector<double> coxa_Kd;
+		std::vector<double> femur_Kd;
+		std::vector<double> tibia_Kd;
 		double tarsus_Kd;
 
 		double head_Ki;
 		double back_Ki;
-		double coxa_Ki;
-		double femur_Ki;
-		double tibia_Ki;
+		std::vector<double> coxa_Ki;
+		std::vector<double> femur_Ki;
+		std::vector<double> tibia_Ki;
 		double tarsus_Ki;
 
 		double headMaxVel;
 		double backMaxVel;
-		double coxaMaxVel;
-		double femurMaxVel;
-		double tibiaMaxVel;
-		double footMaxVel;
+		std::vector<double> coxaMaxVel;
+		std::vector<double> femurMaxVel;
+		std::vector<double> tibiaMaxVel;
+		std::vector<double> footMaxVel;
 		double tarsusMaxVel;
 
 		//	Joint limits

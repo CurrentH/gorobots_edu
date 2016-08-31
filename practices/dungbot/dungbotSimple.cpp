@@ -893,7 +893,7 @@ namespace lpzrobots
 	bool DungBotSimple::setParam( const paramkey& key, paramval val )
 	{
 	    bool rv = Configurable::setParam(key, val);
-
+	    int i = 0;
 	    //	We set all parameters here
 	    for( LegMap::iterator it = legs.begin(); it != legs.end(); it++ )
 	    {
@@ -909,10 +909,10 @@ namespace lpzrobots
 			OneAxisServo * tc = it->second.tcServo;
 			if( tc )
 			{
-				tc->setPower( conf.coxa_Kp );
-				tc->setDamping( conf.coxa_Kd );
-				tc->setIntegration( conf.coxa_Ki );
-				tc->setMaxVel( conf.coxaMaxVel );			// Power scale for the motor
+				tc->setPower( conf.coxa_Kp[i%3] );
+				tc->setDamping( conf.coxa_Kd[i%3] );
+				tc->setIntegration( conf.coxa_Ki[i%3] );
+				tc->setMaxVel( conf.coxaMaxVel[i%3] );			// Power scale for the motor
 
 				if (it->first == L2 || it->first == R2) tc->setMinMax(conf.rCoxaJointLimitF, conf.rCoxaJointLimitB);
 				if (it->first == L1 || it->first == R1) tc->setMinMax(conf.mCoxaJointLimitF, conf.mCoxaJointLimitB);
@@ -922,10 +922,10 @@ namespace lpzrobots
 			OneAxisServo * ctr = it->second.ctrServo;
 			if(ctr)
 			{
-				ctr->setPower( conf.femur_Kp );
-				ctr->setDamping( conf.femur_Kd );
-				ctr->setIntegration( conf.femur_Ki );
-				ctr->setMaxVel( conf.femurMaxVel );   	// Power scale for the motor
+				ctr->setPower( conf.femur_Kp[i%3] );
+				ctr->setDamping( conf.femur_Kd[i%3] );
+				ctr->setIntegration( conf.femur_Ki[i%3] );
+				ctr->setMaxVel( conf.femurMaxVel[i%3] );   	// Power scale for the motor
 
 				//	Min is up, up is negative
 				if (it->first == L2 || it->first == R2) ctr->setMinMax(conf.rFemurJointLimitU, conf.rFemurJointLimitD);
@@ -936,15 +936,16 @@ namespace lpzrobots
 			OneAxisServo * fti = it->second.ftiServo;
 			if( fti )
 			{
-				fti->setPower( conf.tibia_Kp );
-				fti->setDamping( conf.tibia_Kd );
-				fti->setIntegration( conf.tibia_Ki );
-				fti->setMaxVel( conf.tibiaMaxVel ); 	// Power scale for the motor
+				fti->setPower( conf.tibia_Kp[i%3] );
+				fti->setDamping( conf.tibia_Kd[i%3] );
+				fti->setIntegration( conf.tibia_Ki[i%3] );
+				fti->setMaxVel( conf.tibiaMaxVel[i%3] ); 	// Power scale for the motor
 
 				if (it->first == L2 || it->first == R2) fti->setMinMax(conf.rTibiaJointLimitU, conf.rTibiaJointLimitD);
 				if (it->first == L1 || it->first == R1) fti->setMinMax(conf.mTibiaJointLimitU, conf.mTibiaJointLimitD);
 				if (it->first == L0 || it->first == R0) fti->setMinMax(conf.fTibiaJointLimitU, conf.fTibiaJointLimitD);
 			}
+			i++;
 		}
 
 		if( backboneServo && (conf.testBody || conf.testNo ) )
@@ -1096,31 +1097,36 @@ namespace lpzrobots
 
 		// This is the maximum force for the motors (should just be height enough)
 	    // Consider using another conf. var
-		conf.back_Kp 	= 4.0;
-		conf.coxa_Kp 	= 2.5;
-		conf.femur_Kp	= 2.5;
-		conf.tibia_Kp 	= 2.5;
+
+	    conf.back_Kp 	= 4.0;
+		conf.coxa_Kp 	= {2.5, 2.5, 2.5}; 	// Originally 2.5 *This new speed (and 2.5) works very well, but when changed, the legs gets out of sync
+		conf.femur_Kp	= {2.5, 2.5, 2.5}; 	// Originally 2.5
+		conf.tibia_Kp 	= {2.5, 2.5, 2.5};	// Originally 2.5
 		conf.tarsus_Kp 	= 0.0;
 
-		// Kd and Ki parameters are not used anymore
 		conf.back_Kd 	= 0.0;
-		conf.coxa_Kd 	= 0.5;
-		conf.femur_Kd 	= 0.5;
-		conf.tibia_Kd 	= 0.5;
+		conf.coxa_Kd 	= {0.5, 0.5, 0.5};
+		conf.femur_Kd 	= {0.5, 0.5, 0.5};
+		conf.tibia_Kd 	= {0.5, 0.5, 0.5};
 		conf.tarsus_Kd	= 0.0;
 
 		conf.back_Ki 	= 0.0;
-		conf.coxa_Ki 	= 0.5;
-		conf.femur_Ki 	= 0.5;
-		conf.tibia_Ki 	= 0.5;
+		conf.coxa_Ki 	= {0.5, 0.5, 0.5};
+		conf.femur_Ki 	= {0.5, 0.5, 0.5};
+		conf.tibia_Ki 	= {0.5, 0.5, 0.5};
 		conf.tarsus_Ki	= 0.0;
+
+		conf.backMaxVel 	= 2.0;
+		conf.coxaMaxVel 	= {2.0, 2.0, 2.0};
+		conf.femurMaxVel 	= {2.0, 2.0, 2.0};
+		conf.tibiaMaxVel 	= {2.0, 2.0, 2.0};
 
 		// The following sets the max output for the motor. It scales the input to fit this
 		// So that 1 = maxVel TODO REFACTOR THIS VAR
-		conf.backMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
-		conf.coxaMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
-		conf.femurMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
-		conf.tibiaMaxVel 	= 2.0;//1.7 * 1.961 * M_PI;
+		conf.backMaxVel 	= 2.0;
+		conf.coxaMaxVel 	= {2.0, 2.0, 2.0};
+		conf.femurMaxVel 	= {2.0, 2.0, 2.0};
+		conf.tibiaMaxVel 	= {2.0, 2.0, 2.0};
 
 		return conf;
 	}
