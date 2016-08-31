@@ -1138,9 +1138,9 @@ namespace lpzrobots
          ********************************************/
 	    conf.head_Kp	= 1.5;
 	    conf.back_Kp 	= 4.0;
-		conf.coxa_Kp 	= {5.0, 5.0, 5.0}; 	// Originally 2.5 *This new speed (and 2.5) works very well, but when changed, the legs gets out of sync
-		conf.femur_Kp	= {5.0, 5.0, 5.0}; 	// Originally 2.5
-		conf.tibia_Kp 	= {5.0, 5.0, 5.0};	// Originally 2.5
+		conf.coxa_Kp 	= {4.3, 5.0, 4.8}; 	// Originally 2.5 *This new speed (and 2.5) works very well, but when changed, the legs gets out of sync
+		conf.femur_Kp	= {4.3, 5.0, 4.8}; 	// Originally 2.5
+		conf.tibia_Kp 	= {4.3, 5.0, 4.8};	// Originally 2.5
 		conf.tarsus_Kp 	= 0.0;
 
 		conf.head_Kd	= 0.0;
