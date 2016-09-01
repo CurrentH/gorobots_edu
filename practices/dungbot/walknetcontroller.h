@@ -49,9 +49,11 @@ class walknetcontroller
 	std::vector<double> legPos;
 	std::vector<double> nextLegPos;
 	std::vector<double> tmpAEP;
+	std::vector<bool> reverse;
 
 	//	Used for testing the tripod gait
 	bool switchFlag = false;
+	bool reverseTestFlag = true;
 
 	private:
 	//	Private methods

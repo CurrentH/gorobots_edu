@@ -54,13 +54,17 @@ walknetSeparateLeg::walknetSeparateLeg( int newlegNum ){
 walknetSeparateLeg::~walknetSeparateLeg(void) {
 }
 
-void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle, std::vector<double> &jointVel )
+void walknetSeparateLeg::stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &viaAngle, std::vector<double> &jointVel, bool reverseFlag )
 {
-	 extractSensor(sensor, legNum, localSensorArray);
-	 //stanceNet_maxmin(sensor, viaAngle );
-	 selectorNet( sensor, viaAngle, jointVel );
-	 //stanceNet2(sensor,viaAngle);
-	 //swingNet2(sensor,viaAngle);
+	if( reverseFlag ){
+		reverse();
+	}
+
+	extractSensor(sensor, legNum, localSensorArray);
+	//stanceNet_maxmin(sensor, viaAngle );
+	selectorNet( sensor, viaAngle, jointVel );
+	//stanceNet2(sensor,viaAngle);
+	//swingNet2(sensor,viaAngle);
 }
 
 void walknetSeparateLeg::selectorNet( const sensor* sensor, std::vector<double> &viaAngle, std::vector<double> &jointVel )
@@ -607,6 +611,10 @@ bool walknetSeparateLeg::atPosition( std::vector<double> targetPos, double deadb
 	} else {
 		return false;
 	}
+}
+
+void walknetSeparateLeg::reverse( void ){
+	std::swap( AEP, PEP );
 }
 
 bool walknetSeparateLeg::getPhase( void )

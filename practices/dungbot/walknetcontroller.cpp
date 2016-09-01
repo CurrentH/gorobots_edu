@@ -30,6 +30,9 @@ walknetcontroller::walknetcontroller( void )
 	nextLegPos.assign( 4 , 0 );
 	legPos.assign( 4 , 0 );
 	tmpAEP.assign( 3 , 0 );
+
+	//todo: set to 1, for start reverse, set to 0 for forward
+	reverse.assign( 6, 1 );
 }
 
 walknetcontroller::~walknetcontroller( void )
@@ -91,7 +94,7 @@ void walknetcontroller::stepWalknetTripod( const sensor* sensor, std::vector<std
 
 	for( int i = 0; i < 6; i++ )
 	{
-		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i], velocityVector[i] );
+		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i], velocityVector[i], reverse[i] );
 	}
 
 }
@@ -102,7 +105,13 @@ void walknetcontroller::stepWalknet( const sensor* sensor, std::vector<std::vect
 	coordinatingInfluences( sensor );
 	for( int i = 0; i < 6; i++ )
 	{
-		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i], velocityVector[i] );
+		separateLegs[i].stepWalknetSeprateLeg( sensor, angleVector[i], velocityVector[i], reverse[i] );
+	}
+
+	if( reverseTestFlag ){
+		reverseTestFlag = false;
+
+		reverse = {0, 0, 0, 0, 0, 0};
 	}
 }
 
