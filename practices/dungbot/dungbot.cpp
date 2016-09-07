@@ -188,6 +188,12 @@ namespace lpzrobots
 		makeAllLegs( pose , rear, front , head);
 
 		/************************************
+		 * Tilt sensor
+		 ***********************************/
+		OrientationSensor = new AxisOrientationSensor(AxisOrientationSensor::Axis,Sensor::X |Sensor::Y | Sensor::Z);
+		OrientationSensor->init(front);
+
+		/************************************
 		 * 	Set all the parameters
 		 ***********************************/
 		setParam( "dummy", 0 ); // apply all parameters.
@@ -872,6 +878,18 @@ namespace lpzrobots
 			sensors[DungBotMotorSensor::R2_CST] = tibiaContactSensors[std::make_pair(R2,0)]->get();
 
 		}
+
+		/********************************************
+		 *	Tilt sensor
+		 ********************************************/
+		std::list<sensor> Ori_lst =  OrientationSensor->getList();
+		double tmp;
+		tmp = Ori_lst.front(); Ori_lst.pop_front();
+		sensors[DungBotMotorSensor::BX_ori] = tmp;
+		tmp = Ori_lst.front(); Ori_lst.pop_front();
+		sensors[DungBotMotorSensor::BY_ori] = tmp;
+		tmp = Ori_lst.front();
+		sensors[DungBotMotorSensor::BY_ori] = tmp;
 
 		return DungBotMotorSensor::DUNGBOT_SENSOR_MAX;
 	}
