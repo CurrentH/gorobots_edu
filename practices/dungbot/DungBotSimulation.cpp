@@ -97,7 +97,7 @@ namespace lpzrobots
 		setSimulationDuration( simulation_time_seconds );
 
 
-		if(true){ // TODO IF TRUE, THEN A BALL SPAWNS
+		if(false){ // TODO IF TRUE, THEN A BALL SPAWNS
 		PassiveSphere* s1 = new PassiveSphere(odeHandle, osgHandle, 0.3, 10); // If ball stand = 0.42 ~ If roll stand = 0.3
 	    s1->setPosition(osg::Vec3(-1.8, 0.0, 0.04)); // If ball stand = 0.032 ~ If roll stand = 0.3
 	    s1->setTexture("ground_texture3.jpg");
@@ -167,8 +167,8 @@ namespace lpzrobots
 	{
 		// implement playground here.
 	    lpzrobots::Playground* playground = new lpzrobots::Playground(odeHandle, osgHandle, osg::Vec3(10, 0.05, 0.4),0.3);
-	    Substance PGsubstance;
-	    PGsubstance.toRubber( 50 );
+	    Substance PGsubstance(100,0,100,0);
+	    //PGsubstance.toRubber( 50 );
 	    playground->setGroundSubstance(PGsubstance);
 	    playground->setTexture(0,0,lpzrobots::TextureDescr("Images/wall_bw.jpg",-1.5,-3));
 	    playground->setGroundColor(Color(0.372, 0.737, 0.360));  //http://doc.instantreality.org/tools/color_calculator/

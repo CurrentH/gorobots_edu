@@ -50,7 +50,7 @@ class walknetSeparateLeg
 	walknetSeparateLeg( );
 	walknetSeparateLeg( int legNum );
 	virtual ~walknetSeparateLeg( void );
-	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &, std::vector<double> &  );
+	void stepWalknetSeprateLeg( const sensor* sensor, std::vector<double> &, std::vector<double> &, bool );
 	//	Used by the walknet to make the control laws for the legs.
 	void extractSensor( const sensor* sensor, int leg, std::vector<double> & );
 	void setAEP( std::vector<double> & );
@@ -108,6 +108,7 @@ class walknetSeparateLeg
 	void swingNet2( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	void swingNet3( const sensor* sensor, std::vector<double> &, std::vector<double> & );
 	double trajectory( double, int );
+	void reverse( void );
 
 
 };
